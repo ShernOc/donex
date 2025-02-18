@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData, ForeignKey
 from sqlalchemy.orm import relationship
 
+
 metadata = MetaData()
 db = SQLAlchemy(metadata=metadata)
 
@@ -45,3 +46,4 @@ class Admin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(128), nullable=False, unique=True)
+    
