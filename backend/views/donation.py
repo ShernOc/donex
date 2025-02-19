@@ -96,7 +96,6 @@ def update_donation(donation_id):
     return jsonify({"message": "Donation updated successfully"}), 200
 
 
-
 # Delete a donation
 @donation_bp.route('/donations/<int:donation_id>', methods=['DELETE'])
 def delete_donation(donation_id):
