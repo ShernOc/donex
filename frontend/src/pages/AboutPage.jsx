@@ -31,15 +31,15 @@ const AboutPage = () => {
           <div className="grid md:grid-cols-3 gap-6 mt-6">
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-lg font-bold text-gray-700">Maxwel Kirimi</h3>
-              <p className="text-gray-500">Founder & Software Engineer</p>
+              <p className="text-gray-500">Software Engineer</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-lg font-bold text-gray-700">Catherine Henu</h3>
-              <p className="text-gray-500">Operations Manager</p>
+              <h3 className="text-lg font-bold text-gray-700">sherlyne ochieng</h3>
+              <p className="text-gray-500">software engineer</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-lg font-bold text-gray-700">Zuruel Adrian</h3>
-              <p className="text-gray-500">Marketing & Outreach</p>
+              <h3 className="text-lg font-bold text-gray-700">collins kathurima</h3>
+              <p className="text-gray-500">software engineer</p>
             </div>
           </div>
         </div>
