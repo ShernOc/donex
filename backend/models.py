@@ -50,12 +50,11 @@ class Admin(db.Model):
     full_name = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(128), nullable=False, unique=True)
     password = db.Column(db.String(512),nullable=False)
-    
+
     # limit to 3 admins
     @staticmethod
     def can_register():
         return Admin.query.count() < 3
-
 
 class TokenBlocklist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
