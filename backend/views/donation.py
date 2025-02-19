@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 donation_bp = Blueprint("donation_bp", __name__)
 
 # get the donation 
-@donation_bp()
+# @donation_bp()
 
 
 #update the donations 
@@ -15,6 +15,3 @@ donation_bp = Blueprint("donation_bp", __name__)
 
 
 #delete the donations 
-
-
-
