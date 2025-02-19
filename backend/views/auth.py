@@ -1,6 +1,7 @@
 from flask import jsonify, request, Blueprint
 from models import db, User, TokenBlocklist
-from werkzeug.security import check_password_hash
+from models import *
+from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
@@ -28,7 +29,8 @@ def register():
     if User.query.filter_by(email=data["email"]).first():
         return jsonify({"msg": "Email already registered"}), 400
 
-    user = User(full_name=data["full_name"], email=data["email"], password=generate_password_hash(data["password"]))
+    user = User(full_name=data["full_name"], email=data["email"], 
+    password=generate_password_hash(data["password"]))
     db.session.add(user)
     db.session.commit()
 
@@ -53,3 +55,4 @@ def logout():
     db.session.add(TokenBlocklist(jti=jti, created_at=now))
     db.session.commit()
     return jsonify({"success":"Logged out successfully"})
+
