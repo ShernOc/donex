@@ -31,6 +31,7 @@ class Donation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Float, nullable=False)
     donation_date = db.Column(db.DateTime, nullable=False)
+    type= db.Column(db.String, nullable=False)
 
     # Foreign keys
     user_id = db.Column(db.Integer, ForeignKey("user.id"))
@@ -45,6 +46,11 @@ class Admin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(128), nullable=False, unique=True)
+
+class Story(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(128), nullable=False)
+    content = db.Column(db.Text, nullable=False)
 
 
 class TokenBlocklist(db.Model):
