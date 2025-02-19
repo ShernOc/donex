@@ -34,6 +34,7 @@ class Donation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Float, nullable=False)
     donation_date = db.Column(db.DateTime, nullable=False)
+    type= db.Column(db.String, nullable=False)
 
     # Foreign keys
     user_id = db.Column(db.Integer, ForeignKey("user.id"))
@@ -55,5 +56,8 @@ class Admin(db.Model):
     def can_register():
         return Admin.query.count() < 3
 
-        
-    
+class TokenBlocklist(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    jti = db.Column(db.String(36), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, nullable=False)
+

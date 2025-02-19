@@ -10,6 +10,8 @@ import CharityList from './pages/CharityList';
 import BeneficiaryStories from './pages/BeneficiaryStories';
 import AboutPage from './pages/AboutPage';
 import CharityDetail from './pages/CharityDetail';
+import LoginPage from './pages/LoginPage';
+import Register from './pages/Register';
 
 function App() {
   return (
@@ -27,6 +29,9 @@ function App() {
             <Route path="/stories" element={<BeneficiaryStories />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/charity/:id" element={<CharityDetail />} />
+            <Route path="/login" element={<LoginPage/>} />
+            <Route path="/register" element={<Register />}
+            />
           </Routes>
         </main>
         <Footer />
