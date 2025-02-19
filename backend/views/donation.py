@@ -66,8 +66,6 @@ def get_donations():
     monthly_total = {
         f"{int(year)}-{int(month)}": total for year, month, total in monthly_donations
     }
-    
-
     return jsonify({
         "user_donations": user_total, # {user_id: total_donated}
         "charity_donations": charity_total,# {charity_id: total_received}
