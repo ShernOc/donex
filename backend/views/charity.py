@@ -5,7 +5,6 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 charity_bp = Blueprint("charity_bp",__name__)
 
-
 #get all charities
 @charity_bp.route('/charities', methods = ['GET'])
 @jwt_required()
@@ -135,6 +134,3 @@ def delete_charity(id):
     db.session.commit()
     
     return jsonify({"Success": f"A charity with has been deleted Successfully"})
-
-
-      
