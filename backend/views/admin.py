@@ -48,7 +48,7 @@ def register_admin():
     #call the function 
     db.session.add(new_admin)
     db.session.commit()
-    return jsonify({"Success":"Admin added successfully"}), 201
+    return jsonify({"Success":"Admin added successfully"}), 200
 
       
 #update the admin 
@@ -79,6 +79,7 @@ def update_admin(id):#
         return jsonify({
             "Success":"Admin updated successfully"
         }), 200
+     
         
 #delete the admin 
 @admin_bp.route('/admin/delete/<int:id>' ,methods=['DELETE'])  
