@@ -20,10 +20,14 @@ class User(db.Model):
 
 class Charity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name_of_organization = db.Column(db.String(128), nullable=False, unique=True)
+    organization = db.Column(db.String(128), nullable=False, unique=True)
+    
+    #Foreign keys
+    user_id= db.Column(db.Integer, db.ForeignKey("users.id"), nullable = False)
+    
 
     # Relationships
-    users = relationship("User", back_populates="charities")
+    user= relationship("User", back_populates="charities")
     donations = relationship("Donation", back_populates="charity")
 
 
@@ -47,13 +51,9 @@ class Admin(db.Model):
     full_name = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(128), nullable=False, unique=True)
 
-class Story(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(128), nullable=False)
-    content = db.Column(db.Text, nullable=False)
-
 
 class TokenBlocklist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     jti = db.Column(db.String(36), nullable=False, index=True)
     created_at = db.Column(db.DateTime, nullable=False)
+

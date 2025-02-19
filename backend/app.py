@@ -12,8 +12,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///donex.db'
 migrate = Migrate(app, db)
 
 db.init_app(app)
-
-
 app.config["JWT_SECRET_KEY"] = "jiyucfvbkaudhudkvfbt" 
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] =  timedelta(hours=1)
 
@@ -23,7 +21,6 @@ jwt.init_app(app)
 
 # import all functions in views
 from views import *
-
 
 app.register_blueprint(user_bp)
 app.register_blueprint(charity_bp)
