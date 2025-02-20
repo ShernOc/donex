@@ -86,3 +86,37 @@ def internal_error(error):
 # Run the application
 if __name__ == "__main__":
     app.run(debug=True)
+ 
+
+
+# # Mail Credentials 
+# # SMTP credentials
+# app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+# app.config['MAIL_PORT'] = 587
+# app.config['MAIL_USERNAME'] = 'sherlynea8622@gmail.com'
+# app.config['MAIL_DEFAULT_SENDER'] = 'sherlynea8622@gmail.com'
+# app.config['MAIL_PASSWORD'] = 'slim hbpc dwit bsli'
+# app.config['MAIL_USE_TLS'] = True
+# app.config['MAIL_USE_SSL'] = False
+
+# #initialize 
+# mail = Mail(app)
+
+# #create an instance of Message 
+# @app.route('/send_email')
+# def email():
+#     try: 
+#         msg = Message(
+#         subject = "First Email!",
+#         sender = ['MAIL_DEFAULT_SENDER'],
+#         recipients= ["sherlyne.ochieng@student.moringaschool.com","david.kakhayanga@student.moringaschool.com" ],
+#         #What the message body will send
+#         body = "Hello: You are welcomed to join collaborative Blogging platform")
+        
+#         mail.send(msg)
+#         return jsonify({"Success": "Message sent Successfully"
+#             })
+
+#     except Exception as e: 
+#         return jsonify({"Error" :"Message not sent"})
+

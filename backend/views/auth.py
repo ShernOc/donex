@@ -1,7 +1,11 @@
 from flask import jsonify, request, Blueprint, render_template, url_for, redirect
 from models import db, User, TokenBlocklist
+
+from models import *
 from werkzeug.security import check_password_hash, generate_password_hash
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 from app import oauth, app
 
@@ -110,12 +114,8 @@ def register():
     if User.query.filter_by(email=data["email"]).first():
         return jsonify({"msg": "Email already registered"}), 400
 
-    # Create new user
-    user = User(
-        full_name=data["full_name"],
-        email=data["email"],
-        password=generate_password_hash(data["password"]),
-    )
+    user = User(full_name=data["full_name"], email=data["email"], 
+    password=generate_password_hash(data["password"]))
     db.session.add(user)
     db.session.commit()
 
@@ -148,4 +148,5 @@ def logout():
     now = datetime.now(timezone.utc)
     db.session.add(TokenBlocklist(jti=jti, created_at=now))
     db.session.commit()
+
     return jsonify({"success": "Logged out successfully"}), 200
