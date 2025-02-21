@@ -155,34 +155,77 @@ const Home = () => {
       </section>
 
       {/* Featured Charities */}
-      <section className="w-full bg-gray-50 animate__animated animate__fadeIn animate__delay-12s">
-        <div className="max-w-7xl mx-auto px-4 py-16">
-          <h2 className="text-3xl font-bold text-center mb-12">Featured Charities</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden">
-                <img
-                  src={`https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&w=800&q=80`}
-                  alt="Charity"
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">Charity Name {i}</h3>
-                  <p className="text-gray-600 mb-4">
-                    Brief description of the charity and its mission to help those in need.
-                  </p>
-                  <Link
-                    to={`/charity/${i}`}
-                    className="text-rose-500 font-semibold hover:text-rose-600"
-                  >
-                    Learn More →
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
+<section className="w-full bg-gray-50 animate__animated animate__fadeIn animate__delay-12s">
+  <div className="max-w-7xl mx-auto px-4 py-16">
+    <h2 className="text-3xl font-bold text-center mb-12">Featured Charities</h2>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {/* Kenya Red Cross Society */}
+      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&w=800&q=80"
+          className="w-full h-48 object-cover"
+        />
+        <div className="p-6">
+          <h3 className="text-xl font-semibold mb-2">Kenya Red Cross Society</h3>
+          <p className="text-gray-600 mb-4">
+            Dedicated to alleviating human suffering and empowering communities in Kenya through various humanitarian initiatives.
+          </p>
+          <a
+            href="https://www.redcross.or.ke/"
+            className="text-rose-500 font-semibold hover:text-rose-600"
+            target="_blank" rel="noopener noreferrer"
+          >
+            Learn More →
+          </a>
         </div>
-      </section>
+      </div>
+
+      {/* Amref Health Africa */}
+      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&w=800&q=80"
+          alt="Amref Health Africa"
+          className="w-full h-48 object-cover"
+        />
+        <div className="p-6">
+          <h3 className="text-xl font-semibold mb-2">Amref Health Africa</h3>
+          <p className="text-gray-600 mb-4">
+            Focused on improving health care in Kenya by addressing the needs of vulnerable populations, especially women and children.
+          </p>
+          <a
+            href="https://amref.org/kenya/"
+            className="text-rose-500 font-semibold hover:text-rose-600"
+            target="_blank" rel="noopener noreferrer"
+          >
+            Learn More →
+          </a>
+        </div>
+      </div>
+
+      {/* Shining Hope for Communities (SHOFCO) */}
+      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&w=800&q=80"
+          alt="Shining Hope for Communities"
+          className="w-full h-48 object-cover"
+        />
+        <div className="p-6">
+          <h3 className="text-xl font-semibold mb-2">Shining Hope for Communities (SHOFCO)</h3>
+          <p className="text-gray-600 mb-4">
+            Combines community advocacy with tangible services to combat urban poverty and gender inequality in Kenya's informal settlements.
+          </p>
+          <a
+            href="https://shofco.org/"
+            className="text-rose-500 font-semibold hover:text-rose-600"
+            target="_blank" rel="noopener noreferrer"
+          >
+            Learn More →
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
     </div>
   );
 };
