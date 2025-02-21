@@ -17,27 +17,25 @@ app = Flask(__name__)
 
 CORS(app) 
 
-# #postgreSQL connection
-# DB_USERNAME=os.getenv("DB_USERNAME") #donex
-# DB_PASSWORD=os.getenv("DB_PASSWORD") # 2609
-# DB_NAME=os.getenv("DB_NAME") # donex_db
-# DB_HOST = os.getenv("DB_HOST",) # local host 
-# DB_PORT = os.getenv("DB_PORT") # 5432
 
-# # app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-
-#POSTGRESQL  CONNECTION / BACKEND 
-
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://donex:2609@localhost:5432/donex_db"
+# app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://donex:2609@localhost:5432/donex_db",
 
 #SQLITE CONNECTION
 # initialize the donex.db table 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///donex.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///donex.db'
+
+app.config['SQLALCHEMY_BINDS'] = {
+    'sqlite_db': 'sqlite:///instance/donex.db',
+    'postgres_db': 'postgresql://donex:2609@localhost/donex_db'
+}
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+<<<<<<< HEAD
 print("Database URI:", app.config['SQLALCHEMY_DATABASE_URI'])
 =======
+=======
+>>>>>>> 032ca5d (update the models and postgresql)
 
 # Enable Cross-Origin Resource Sharing (CORS)
 CORS(app, supports_credentials=True)
@@ -116,15 +114,15 @@ app.register_blueprint(admin_bp)
 def not_found_error(error):
     return jsonify({"error": "Not Found"}), 404
 
-#SQLITE 
-@app.route('/')
-def index(): 
-    return jsonify ({"Success":"Donex"})
+#SQLite route 
+@app.route('/sqlite')
+def sqlite_index(): 
+    return jsonify ({"Success":"Donex Sqlite"})
 
-# # postgreSQL 
-# @app.route('/')
-# def index(): 
-#     return render_template("index.html")
+# postgreSQL route 
+@app.route('/')
+def postgre_index(): 
+    return render_template("index.html")
 
 
 @jwt.token_in_blocklist_loader
