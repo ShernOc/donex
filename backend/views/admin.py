@@ -12,7 +12,7 @@ def get_admin():
     admins = Admin.query.all()
     admin_list = [{
             "id": admin.id,
-            "fullname":admin.fullname,
+            "full_name":admin.full_name,
             "email":admin.email,
             "password":admin.password}
         
@@ -31,19 +31,19 @@ def register_admin():
 
     # get the data
     data = request.get_json()
-    fullname= data["fullname"]
+    full_name= data["full_name"]
     email = data["email"]
     password = data["password"]
     
     #Check name and email of the admin exist or not 
-    check_name = Admin.query.filter_by(Admin.full_name==fullname).first()
+    check_name = Admin.query.filter_by(Admin.full_name==full_name).first()
     check_email = Admin.query.filter(Admin.email==email).first()
 
     if check_name and check_email:
         return jsonify({"Error":"Name/email already exist"}),406
      
     #new admin 
-    new_admin = Admin(fullname=fullname,user_id=current_user_id,email=email, password =password)
+    new_admin = Admin(fullname=full_name,user_id=current_user_id,email=email, password =password)
     
     #call the function 
     db.session.add(new_admin)
@@ -62,16 +62,16 @@ def update_admin(id):#
         return jsonify({"Error": "Not an admin/ authorized"}),400
     
     data = request.json
-    fullname = data.get("fullname", admin.fullname)
+    full_name = data.get("full_name", admin.full_name)
     email = data.get("email",admin.email)
     
-    check_name = Admin.query.filter(Admin.full_name==fullname).first()
+    check_name = Admin.query.filter(Admin.full_name==full_name).first()
     check_email = Admin.query.filter(Admin.email==email).first()
 
     if check_name and check_email:
         return jsonify({"Error":"Name/email already exist v update the admin"}),406
     else:
-        admin.fullname = fullname
+        admin.full_name = full_name
         admin.email = email
         
         #commit the work
