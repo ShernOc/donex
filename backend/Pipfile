@@ -11,6 +11,8 @@ flask-mail = "*"
 flask-cors = "*"
 flask-jwt-extended = "*"
 flask-bcrypt = "*"
+authlib = "*"
+flask-oauthlib = "*"
 
 [dev-packages]
 
