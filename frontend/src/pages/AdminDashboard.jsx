@@ -1,14 +1,50 @@
-import React, { useState } from 'react';
-import { Users, Building2, AlertCircle, CheckCircle } from 'lucide-react';
+import React, { useState } from "react";
+import { Users, Building2, AlertCircle, CheckCircle } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 const AdminDashboard = () => {
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [newRegistrations, setNewRegistrations] = useState(true);
+  const [charityApplications, setCharityApplications] = useState([
+    { id: 1, name: "Hope Foundation", status: "Pending", date: "2024-03-15", type: "Education" },
+    { id: 2, name: "Green Earth", status: "Approved", date: "2024-03-10", type: "Environment" },
+    { id: 3, name: "Care for All", status: "Under Review", date: "2024-03-05", type: "Healthcare" },
+  ]);
 
-  const charityApplications = [
-    { id: 1, name: 'Hope Foundation', status: 'Pending', date: '2024-03-15', type: 'Education' },
-    { id: 2, name: 'Green Earth', status: 'Approved', date: '2024-03-10', type: 'Environment' },
-    { id: 3, name: 'Care for All', status: 'Under Review', date: '2024-03-05', type: 'Healthcare' },
+  const [activeCharities, setActiveCharities] = useState([
+    { id: 1, name: "Helping Hands", type: "Food Aid" },
+    { id: 2, name: "Safe Haven", type: "Shelter" },
+    { id: 3, name: "Bright Future", type: "Education" },
+  ]);
+
+  const handleApprove = (id) => {
+    setCharityApplications((prev) =>
+      prev.map((app) => (app.id === id ? { ...app, status: "Approved" } : app))
+    );
+  };
+
+  const handleReject = (id) => {
+    setCharityApplications((prev) => prev.filter((app) => app.id !== id));
+  };
+
+  const handleDeleteCharity = (id) => {
+    setActiveCharities((prev) => prev.filter((charity) => charity.id !== id));
+  };
+
+  const donationData = [
+    { month: "Jan", donations: 3000 },
+    { month: "Feb", donations: 4500 },
+    { month: "Mar", donations: 5000 },
+    { month: "Apr", donations: 7000 },
+    { month: "May", donations: 8000 },
+  ];
+
+  const userGrowthData = [
+    { month: "Jan", users: 100 },
+    { month: "Feb", users: 250 },
+    { month: "Mar", users: 400 },
+    { month: "Apr", users: 600 },
+    { month: "May", users: 850 },
   ];
 
   return (
@@ -21,41 +57,48 @@ const AdminDashboard = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="flex items-center justify-between">
+          {[
+            { label: "Total Users", value: "1,234", icon: <Users className="h-8 w-8 text-rose-500" /> },
+            { label: "Active Charities", value: activeCharities.length, icon: <Building2 className="h-8 w-8 text-rose-500" /> },
+            { label: "Pending Reviews", value: charityApplications.filter(app => app.status === "Pending").length, icon: <AlertCircle className="h-8 w-8 text-rose-500" /> },
+            { label: "Approved Today", value: charityApplications.filter(app => app.status === "Approved").length, icon: <CheckCircle className="h-8 w-8 text-rose-500" /> },
+          ].map((stat, index) => (
+            <div key={index} className="bg-white p-6 rounded-lg shadow-sm flex justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Users</p>
-                <p className="text-2xl font-bold text-gray-900">1,234</p>
+                <p className="text-sm text-gray-600">{stat.label}</p>
+                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
               </div>
-              <Users className="h-8 w-8 text-rose-500" />
+              {stat.icon}
             </div>
+          ))}
+        </div>
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="bg-white p-6 rounded-lg shadow-sm">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Monthly Donations</h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={donationData}>
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="donations" fill="#E53E3E" />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
+
           <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Active Charities</p>
-                <p className="text-2xl font-bold text-gray-900">45</p>
-              </div>
-              <Building2 className="h-8 w-8 text-rose-500" />
-            </div>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Pending Reviews</p>
-                <p className="text-2xl font-bold text-gray-900">12</p>
-              </div>
-              <AlertCircle className="h-8 w-8 text-rose-500" />
-            </div>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Approved Today</p>
-                <p className="text-2xl font-bold text-gray-900">3</p>
-              </div>
-              <CheckCircle className="h-8 w-8 text-rose-500" />
-            </div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">User Growth</h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={userGrowthData}>
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="users" fill="#3182CE" />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
@@ -68,31 +111,32 @@ const AdminDashboard = () => {
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Charity Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  {["Charity Name", "Type", "Date", "Status", "Actions"].map((header, index) => (
+                    <th key={index} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      {header}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {charityApplications.map((application) => (
-                  <tr key={application.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{application.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{application.type}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{application.date}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        application.status === 'Approved' ? 'bg-green-100 text-green-800' :
-                        application.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-blue-100 text-blue-800'
+                {charityApplications.map((app) => (
+                  <tr key={app.id}>
+                    <td className="px-6 py-4 text-sm text-gray-900">{app.name}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500">{app.type}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500">{app.date}</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2 inline-flex text-xs font-semibold rounded-full ${
+                        app.status === "Approved" ? "bg-green-100 text-green-800" :
+                        app.status === "Pending" ? "bg-yellow-100 text-yellow-800" :
+                        "bg-blue-100 text-blue-800"
                       }`}>
-                        {application.status}
+                        {app.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button className="text-rose-600 hover:text-rose-900 mr-4">Review</button>
-                      <button className="text-gray-600 hover:text-gray-900">Details</button>
+                    <td className="px-6 py-4">
+                      <button onClick={() => handleApprove(app.id)} className="text-green-600 hover:text-green-900 mr-4">Review</button>
+                      <button onClick={() => handleApprove(app.id)} className="text-green-600 hover:text-green-900 mr-4">Approve</button>
+                      <button onClick={() => handleReject(app.id)} className="text-red-600 hover:text-red-900">Reject</button>
                     </td>
                   </tr>
                 ))}
@@ -101,39 +145,19 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Platform Settings */}
-        <div className="bg-white rounded-lg shadow-sm">
+        {/* Active Charities */}
+        <div className="bg-white rounded-lg shadow-sm mb-8">
           <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Platform Settings</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Active Charities</h2>
           </div>
-          <div className="p-6">
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900">Maintenance Mode</h3>
-                  <p className="text-sm text-gray-500">Temporarily disable the platform for maintenance</p>
-                </div>
-                <button
-                  className={`bg-gray-200 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 ${maintenanceMode ? 'bg-rose-600' : 'bg-gray-200'}`}
-                  onClick={() => setMaintenanceMode(!maintenanceMode)}
-                >
-                  <span className={`translate-x-0 inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${maintenanceMode ? 'translate-x-5' : ''}`}></span>
-                </button>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900">New Registrations</h3>
-                  <p className="text-sm text-gray-500">Allow new charity registrations</p>
-                </div>
-                <button
-                  className={`bg-rose-600 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 ${newRegistrations ? 'bg-rose-600' : 'bg-gray-200'}`}
-                  onClick={() => setNewRegistrations(!newRegistrations)}
-                >
-                  <span className={`translate-x-0 inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${newRegistrations ? 'translate-x-5' : ''}`}></span>
-                </button>
-              </div>
-            </div>
-          </div>
+          <ul className="p-6">
+            {activeCharities.map((charity) => (
+              <li key={charity.id} className="flex justify-between p-3 border-b">
+                <span className="text-gray-900">{charity.name} ({charity.type})</span>
+                <button onClick={() => handleDeleteCharity(charity.id)} className="text-red-600 hover:text-red-900">Delete</button>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>

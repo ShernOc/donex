@@ -17,9 +17,26 @@ const DonorDashboard = () => {
   return (
     <div className="flex-1 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Donor Dashboard</h1>
-          <p className="text-gray-600 mt-2">Welcome back! Manage your donations and impact.</p>
+
+        {/* Profile Section */}
+        <div className="mb-8 flex items-center justify-between bg-white p-6 rounded-lg shadow-sm">
+          <div className="flex items-center space-x-4">
+            <img 
+              src="/profile-placeholder.png" 
+              alt="Profile" 
+              className="h-16 w-16 rounded-full border border-gray-300"
+            />
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">Welcome back, User!</h2>
+              <p className="text-gray-600">Manage your donations and impact.</p>
+            </div>
+          </div>
+          <Link 
+            to="/profile" 
+            className="bg-rose-500 text-white px-4 py-2 rounded-lg shadow-sm hover:bg-rose-600 transition"
+          >
+            Edit Profile
+          </Link>
         </div>
 
         {/* Stats Grid */}
@@ -129,6 +146,7 @@ const DonorDashboard = () => {
             </table>
           </div>
         </div>
+
       </div>
     </div>
   );
