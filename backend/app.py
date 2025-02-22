@@ -31,12 +31,6 @@ app.config['SQLALCHEMY_BINDS'] = {
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-<<<<<<< HEAD
-print("Database URI:", app.config['SQLALCHEMY_DATABASE_URI'])
-=======
-=======
->>>>>>> 032ca5d (update the models and postgresql)
-
 # Enable Cross-Origin Resource Sharing (CORS)
 CORS(app, supports_credentials=True)
 
