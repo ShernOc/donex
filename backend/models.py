@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData, ForeignKey
+from sqlalchemy import MetaData ,ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -10,6 +10,7 @@ db = SQLAlchemy(metadata=metadata)
 # Define the User model
 class User(db.Model):
     __tablename__ = "users"
+
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)
@@ -79,3 +80,14 @@ class TokenBlocklist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     jti = db.Column(db.String(36), nullable=False, index=True)
     created_at = db.Column(db.DateTime, nullable=False)
+    
+class SQLiteModel(db.Model):
+    __bind_key__ = 'sqlite_db'  
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+
+class PostgresModel(db.Model):
+    __bind_key__ = 'postgres_db' 
+    
+    id = db.Column(db.Integer, primary_key=True)
+    data = db.Column(db.String(100))
