@@ -1,9 +1,16 @@
-import { useState, useContext } from "react";
-import { UserContext } from "../context/UserContext";
+import { useState } from "react";
+import { useUser } from "../context/UserContext";
 import { Link } from "react-router-dom";
 
 const Register = () => {
-  const { register } = useContext(UserContext);
+  const userContext = useUser(); // Ensure useUser() is returning a valid context object
+  if (!userContext) {
+    console.error("UserContext is not found! Make sure UserProvider is wrapping your app.");
+    return null; // Prevent crashing if UserProvider is missing
+  }
+  
+  const { registerUser } = userContext;
+
   const [activeTab, setActiveTab] = useState("user");
   const [error, setError] = useState("");
 
@@ -39,7 +46,7 @@ const Register = () => {
     }
 
     setError("");
-    await register(formData, formType);
+    await registerUser(formData, formType);
   };
 
   return (
@@ -75,31 +82,21 @@ const Register = () => {
         <form onSubmit={(e) => handleSubmit(e, activeTab)} className="space-y-4 mt-6">
           {activeTab === "user" ? (
             <>
-              <input type="text" name="fullName" placeholder="Full Name" value={userForm.fullName} onChange={(e) => handleChange(e, "user")} required className="w-full p-3 border rounded-lg shadow-md dark:bg-gray-800 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 transition duration-300" />
-              <input type="email" name="email" placeholder="Email" value={userForm.email} onChange={(e) => handleChange(e, "user")} required className="w-full p-3 border rounded-lg shadow-md dark:bg-gray-800 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 transition duration-300" />
-              <input type="password" name="password" placeholder="Password" value={userForm.password} onChange={(e) => handleChange(e, "user")} required className="w-full p-3 border rounded-lg shadow-md dark:bg-gray-800 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 transition duration-300" />
-              <input type="password" name="confirmPassword" placeholder="Confirm Password" value={userForm.confirmPassword} onChange={(e) => handleChange(e, "user")} required className="w-full p-3 border rounded-lg shadow-md dark:bg-gray-800 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 transition duration-300" />
+              <input type="text" name="fullName" placeholder="Full Name" value={userForm.fullName} onChange={(e) => handleChange(e, "user")} required className="w-full p-3 border rounded-lg" />
+              <input type="email" name="email" placeholder="Email" value={userForm.email} onChange={(e) => handleChange(e, "user")} required className="w-full p-3 border rounded-lg" />
+              <input type="password" name="password" placeholder="Password" value={userForm.password} onChange={(e) => handleChange(e, "user")} required className="w-full p-3 border rounded-lg" />
+              <input type="password" name="confirmPassword" placeholder="Confirm Password" value={userForm.confirmPassword} onChange={(e) => handleChange(e, "user")} required className="w-full p-3 border rounded-lg" />
             </>
           ) : (
             <>
-              <input type="text" name="charityName" placeholder="Charity Name" value={charityForm.charityName} onChange={(e) => handleChange(e, "charity")} required className="w-full p-3 border rounded-lg shadow-md dark:bg-gray-800 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 transition duration-300" />
-              <input type="email" name="email" placeholder="Email" value={charityForm.email} onChange={(e) => handleChange(e, "charity")} required className="w-full p-3 border rounded-lg shadow-md dark:bg-gray-800 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 transition duration-300" />
-              <input type="password" name="password" placeholder="Password" value={charityForm.password} onChange={(e) => handleChange(e, "charity")} required className="w-full p-3 border rounded-lg shadow-md dark:bg-gray-800 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 transition duration-300" />
-              <input type="password" name="confirmPassword" placeholder="Confirm Password" value={charityForm.confirmPassword} onChange={(e) => handleChange(e, "charity")} required className="w-full p-3 border rounded-lg shadow-md dark:bg-gray-800 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 transition duration-300" />
-              <textarea name="description" placeholder="Description" value={charityForm.description} onChange={(e) => handleChange(e, "charity")} required className="w-full p-3 border rounded-lg shadow-md dark:bg-gray-800 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 transition duration-300" />
+              <input type="text" name="charityName" placeholder="Charity Name" value={charityForm.charityName} onChange={(e) => handleChange(e, "charity")} required className="w-full p-3 border rounded-lg" />
+              <input type="email" name="email" placeholder="Email" value={charityForm.email} onChange={(e) => handleChange(e, "charity")} required className="w-full p-3 border rounded-lg" />
+              <input type="password" name="password" placeholder="Password" value={charityForm.password} onChange={(e) => handleChange(e, "charity")} required className="w-full p-3 border rounded-lg" />
+              <input type="password" name="confirmPassword" placeholder="Confirm Password" value={charityForm.confirmPassword} onChange={(e) => handleChange(e, "charity")} required className="w-full p-3 border rounded-lg" />
             </>
           )}
-          <button type="submit" className="w-full p-3 text-white bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg shadow-lg hover:scale-105 transition duration-300">
-            Register
-          </button>
+          <button type="submit" className="w-full p-3 text-white bg-blue-500 rounded-lg">Register</button>
         </form>
-
-        <p className="text-center mt-4">
-          Already have an account?{" "}
-          <Link to="/login" className="text-blue-400 hover:underline">
-            Login
-          </Link>
-        </p>
       </div>
     </div>
   );

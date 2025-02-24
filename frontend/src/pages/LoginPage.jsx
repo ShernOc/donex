@@ -1,11 +1,11 @@
 import { useState, useContext } from "react";
-import { UserContext } from "../context/UserContext";
+// import { UserContext } from "../context/UserContext";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import signinwithgoogle from "./signinwithgoogle"; // Adjust path to match your folder structure
 import signinwithgithub from "./siginwithgithub";
 const Login = () => {
-  const { login } = useContext(UserContext);
+  // const { login } = useContext(UserContext);
   const navigate = useNavigate();
   const { googleLogin } = signinwithgoogle; // Access Google Login function
   const { githubLogin } = signinwithgithub();// Access Github Login function
@@ -29,14 +29,22 @@ const Login = () => {
       setError("Please fill in all fields!");
       return;
     }
-  
-    try {
-      await login(email, password); // ✅ Ensure login function is called with valid values
-      navigate("/Donor/Dashboard"); // ✅ Ensure correct path
-    } catch (error) {
-      console.error("Login error:", error); // Debugging
-      setError("Invalid email or password!");
-    }
+    setError("");
+
+    // Call the loginUser function (which contacts the backend)
+    loginUser(form)
+      .then((response) => {
+        const { role } = response; // role is either 'charity' or 'donor'
+        
+        if (role === "charity") {
+          navigate("/charity/dashboard"); // Redirect to charity dashboard
+        } else if (role === "donor") {
+          navigate("/donor/dashboard"); // Redirect to donor dashboard
+        } else {
+          navigate("/"); // Default to home if no role matches
+        }
+      })
+      .catch(() => setError("Invalid email or password!"));
   };
   
   
@@ -162,7 +170,7 @@ const Login = () => {
         </div>
 
         <p className="text-center dark:text-gray-300 text-gray-700">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link to="/register" className="text-blue-400 hover:underline">
             Register
           </Link>
