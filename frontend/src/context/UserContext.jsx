@@ -3,12 +3,10 @@ import { createContext, useState, useEffect, useContext } from "react";
 // Create the UserContext
 export const UserContext = createContext();
 
-// Create a custom hook to use the UserContext
-export const useUser = () => {
-    return useContext(UserContext);
-};
+// Custom hook to use UserContext
+export const useUser = () => useContext(UserContext);
 
-// Create the provider component
+// Provider component
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
 
@@ -20,29 +18,31 @@ export const UserProvider = ({ children }) => {
         }
     }, []);
 
-    // Function to log in the user
-    const loginUser = (userData) => {
-        setUser(userData);
-        localStorage.setItem("user", JSON.stringify(userData));
-    };
+    // ✅ Register User Function
+    const registerUser = async (userData, userType) => {
+        try {
+            const response = await fetch("http://127.0.0.1:5000/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ...userData, userType }),
+            });
 
-    // Function to log out the user
-    const logoutUser = () => {
-        setUser(null);
-        localStorage.removeItem("user");
-    };
+            const data = await response.json();
 
-    // Function to update user profile details (e.g., name, phone, profile picture)
-    const updateUserProfile = (updatedData) => {
-        setUser((prevUser) => {
-            const newUser = { ...prevUser, ...updatedData };
-            localStorage.setItem("user", JSON.stringify(newUser));
-            return newUser;
-        });
+            if (response.ok) {
+                setUser(data.user);
+                localStorage.setItem("user", JSON.stringify(data.user));
+                console.log("Registration successful:", data);
+            } else {
+                console.error("Registration failed:", data.error || "Unknown error");
+            }
+        } catch (error) {
+            console.error("Error during registration:", error);
+        }
     };
 
     return (
-        <UserContext.Provider value={{ user, loginUser, logoutUser, updateUserProfile }}>
+        <UserContext.Provider value={{ user, registerUser }}>
             {children}
         </UserContext.Provider>
     );

@@ -9,13 +9,12 @@ db = SQLAlchemy(metadata=metadata)
 
 # Define the User model
 class User(db.Model):
-    __tablename__ ="users"
-    
-    id = db.Column(db.Integer, primary_key=True)
-    full_name = db.Column(db.String(128), nullable=False)
-    email = db.Column(db.String(128), nullable=False, unique=True)
-    password = db.Column(db.String(512), nullable=False)
+    __tablename__ = "users"
 
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(256), nullable=False)
+    full_name = db.Column(db.String(100))
     # Relationships
     charities= relationship("Charity", back_populates="user")
     donations = relationship("Donation", back_populates="user")
@@ -75,6 +74,9 @@ class Admin(db.Model):
         return Admin.query.count() < 3
       
 class TokenBlocklist(db.Model):
+    __tablename__ = "token_blocklist"
+    __table_args__ = {"extend_existing": True}  # Prevents table redefinition error
+
     id = db.Column(db.Integer, primary_key=True)
     jti = db.Column(db.String(36), nullable=False, index=True)
     created_at = db.Column(db.DateTime, nullable=False)
@@ -89,4 +91,3 @@ class PostgresModel(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.String(100))
-

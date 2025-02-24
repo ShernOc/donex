@@ -7,6 +7,7 @@ user_bp= Blueprint("user_bp", __name__)
 
 # create user
 @user_bp.route("/user", methods=["POST"])
+
 def create_user():
     
     data = request.get_json()
@@ -23,6 +24,7 @@ def create_user():
     db.session.commit()
 
     return jsonify({"msg":"User created successfully"}), 201
+
 
 # get all users
 @user_bp.route("/user", methods=["GET"])
@@ -53,7 +55,7 @@ def update_user_by_id(user_id):
 
     db.session.commit()
 
-    return jsonify({"id": user.id, "full_name": user.full_name, "email": user.email})
+    return jsonify({"msg": "user updated successfully"})
 
 # delete user by id
 @user_bp.route("/user/delete/<int:user_id>", methods=["DELETE"])

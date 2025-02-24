@@ -7,6 +7,15 @@ from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
+
+
+auth_bp = Blueprint("auth_bp", __name__)
+
+
+
+# Email/Password Login
+
+
 # from app import oauth, app
 
 auth_bp = Blueprint("auth_bp", __name__)
@@ -85,12 +94,24 @@ auth_bp = Blueprint("auth_bp", __name__)
 
 
 # Email/Password Login/ both User and Admin
+
 @auth_bp.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
 
-    # Validate request payload
     if not data or "email" not in data or "password" not in data:
+
+        return jsonify({"error": "Email and password required"}), 400
+
+    email = data["email"]
+    password = data["password"]
+
+    user = User.query.filter_by(email=email).first()
+
+    if user and check_password_hash(user.password, password):
+        access_token = create_access_token(identity=user.id)
+        return jsonify({"access_token": access_token}), 200
+
         return jsonify({"msg": "Invalid request"}), 400
 
     user = User.query.filter_by(email=data["email"]).first() 
@@ -129,6 +150,7 @@ def register():
     return jsonify({"access_token": access_token}), 200
 
 
+    return jsonify({"error": "Either email or password is incorrect"}), 401
 # Get Current User Info
 @auth_bp.route("/user", methods=["GET"])
 @jwt_required()
