@@ -12,7 +12,6 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 auth_bp = Blueprint("auth_bp", __name__)
 
 
-
 # Email/Password Login
 
 

@@ -21,7 +21,7 @@ export const UserProvider = ({ children }) => {
     // ✅ Register User Function
     const registerUser = async (userData, userType) => {
         try {
-            const response = await fetch("http://127.0.0.1:5000/register", {
+            const response = await fetch("https://donex-uq5f.onrender.com/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ ...userData, userType }),
