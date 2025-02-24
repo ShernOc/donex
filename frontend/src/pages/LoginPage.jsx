@@ -2,8 +2,8 @@ import { useState, useContext } from "react";
 // import { UserContext } from "../context/UserContext";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGithub, FaGoogle } from "react-icons/fa";
-import signinwithgoogle from "./signinwithgoogle"; // Adjust path to match your folder structure
-import signinwithgithub from "./siginwithgithub";
+import signinwithgoogle from "./Google"; // Adjust path to match your folder structure
+import signinwithgithub from "./Github";
 const Login = () => {
   // const { login } = useContext(UserContext);
   const navigate = useNavigate();
@@ -20,11 +20,11 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     // Trim inputs and validate fields
     const email = form.email.trim();
     const password = form.password.trim();
-  
+
     if (!email || !password) {
       setError("Please fill in all fields!");
       return;
@@ -35,7 +35,7 @@ const Login = () => {
     loginUser(form)
       .then((response) => {
         const { role } = response; // role is either 'charity' or 'donor'
-        
+
         if (role === "charity") {
           navigate("/charity/dashboard"); // Redirect to charity dashboard
         } else if (role === "donor") {
@@ -46,8 +46,6 @@ const Login = () => {
       })
       .catch(() => setError("Invalid email or password!"));
   };
-  
-  
 
   const togglePassword = () => {
     setShowPassword(!showPassword);
@@ -64,8 +62,8 @@ const Login = () => {
   };
   const handleGithubLogin = async () => {
     try {
-      await githubLogin(); 
-      navigate("/Donor/dashboard"); 
+      await githubLogin();
+      navigate("/Donor/dashboard");
     } catch (error) {
       console.error("GitHub Login Error:", error.code, error.message);
       setError(`GitHub login failed! ${error.message}`);
@@ -160,11 +158,11 @@ const Login = () => {
             <FaGoogle className="w-5 h-5 mr-2" />
             Login with Google
           </button>
-           <button
+          <button
             onClick={handleGithubLogin}
             className="flex items-center justify-center p-3 text-gray-700 bg-gray-100 rounded-lg shadow hover:scale-105 transition transform duration-300"
           >
-          <FaGithub className="w-5 h-5 mr-2" />
+            <FaGithub className="w-5 h-5 mr-2" />
             Login with Github
           </button>
         </div>

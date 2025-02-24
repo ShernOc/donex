@@ -5,31 +5,35 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 user_bp= Blueprint("user_bp", __name__)
 
-# # create user
-# @user_bp.route("/user", methods=["POST"])
-# def create_user():
+# create user
+@user_bp.route("/register", methods=["POST"])
+def register_user():
     
-#     data = request.get_json()
+    data = request.get_json()
     
-#     if User.query.filter_by(email=data["email"]).first():
-#         return jsonify({"msg":"Email already registered"}), 400
+    # Validate request payload
+    if not data or "email" not in data or "password" not in data or "full_name" not in data:
+        return jsonify({"msg": "Invalid request"}), 400
     
-#     full_name=data["full_name"]
-#     email=data["email"]
-#     password=generate_password_hash(data["password"])
+    if User.query.filter_by(email=data["email"]).first():
+        return jsonify({"msg":"Email already registered"}), 400
     
-#     new_user = User(full_name=full_name,email=email,password=password)
-#     db.session.add(new_user)
-#     db.session.commit()
+    full_name=data["full_name"]
+    email=data["email"]
+    password=generate_password_hash(data["password"])
+    
+    new_user = User(full_name=full_name,email=email,password= generate_password_hash(password))
+    db.session.add(new_user)
+    db.session.commit()
 
-#     return jsonify({"msg":"User created successfully"}), 201
+    return jsonify({"msg":"User created successfully"}), 201
 
 
 # get all users
 @user_bp.route("/user", methods=["GET"])
 def get_users():
     users = User.query.all()
-    return jsonify([{"id": user.id, "full_name": user.full_name, "email": user.email} for user in users])
+    return jsonify([{"id": user.id, "full_name": user.full_name, "email": user.email} for user in users]), 200
 
 
 # get user by id

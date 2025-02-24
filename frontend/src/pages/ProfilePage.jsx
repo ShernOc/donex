@@ -165,7 +165,7 @@ export default function ProfilePage() {
           Save Changes
         </button>
       </div>
-    </div>
+    
   );
 }
 

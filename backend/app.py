@@ -9,7 +9,6 @@ import os
 # from authlib.integrations.flask_client import OAuth
 from views import *
 
-
 app = Flask(__name__)
 CORS(app) 
 
@@ -47,7 +46,6 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] =  timedelta(hours=1)
 jwt = JWTManager(app)
 # oauth = OAuth(app)
 
-
 # Register blueprints
 app.register_blueprint(user_bp)
 app.register_blueprint(charity_bp)
@@ -62,8 +60,7 @@ def not_found_error(error):
 #SQLITE 
 @app.route('/')
 def index(): 
-    return jsonify ({"Success":"Donex"})
-
+    return jsonify ({"Success":"Donex Charity Platform"})
 
 # JWT token revocation callback
 @jwt.token_in_blocklist_loader

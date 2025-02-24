@@ -1,5 +1,5 @@
 from flask import jsonify, request, Blueprint, render_template, url_for, redirect
-from models import db, User, TokenBlocklist
+from models import db, User, TokenBlocklist, Admin
 
 from models import *
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -8,16 +8,10 @@ from datetime import timedelta
 from datetime import timezone
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 
-
 auth_bp = Blueprint("auth_bp", __name__)
 
 
 # Email/Password Login
-
-
-# from app import oauth, app
-
-auth_bp = Blueprint("auth_bp", __name__)
 
 # # OAuth Configuration (No need to re-register here, since already done in `app.py`)
 # google = oauth.google
@@ -97,63 +91,44 @@ auth_bp = Blueprint("auth_bp", __name__)
 @auth_bp.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
-
+    
     if not data or "email" not in data or "password" not in data:
-
-        return jsonify({"error": "Email and password required"}), 400
+        return jsonify({"error":"Email and password required"}), 400
 
     email = data["email"]
     password = data["password"]
-
+    
+    # check if user exist admin
     user = User.query.filter_by(email=email).first()
+    admin = Admin.query.filter_by(email=email).first()
+    
+    print("User", user)
+    print("Admin", admin)
+    
+    if user:
+        print("User password hash:", user.password)
+    if admin:
+        print("Admin password hash:", admin.password)
 
     if user and check_password_hash(user.password, password):
-        access_token = create_access_token(identity=user.id)
+        access_token = create_access_token(identity=str(user.id),expires_delta=timedelta(hours=1))
+        print("Generated Token:", access_token)
         return jsonify({"access_token": access_token}), 200
-
-        return jsonify({"msg": "Invalid request"}), 400
-
-    user = User.query.filter_by(email=data["email"]).first() 
-    admin = Admin.query.filter_by(email=data["email"]).first()
-    if user and check_password_hash(user.password, data["password"]):
-        access_token = create_access_token(identity= str(user.id), expires_delta=timedelta(hours=2))
-        return jsonify({"msg": "Login successful", "access_token": access_token}),200
-                        
-        # return jsonify({"msg": "Invalid email or password"}), 401
-    if admin and check_password_hash(admin.password, data["password"]):
-        access_token = create_access_token(identity= str(admin.id), expires_delta=timedelta(hours=2))
-        return jsonify({"msg": "Login successful", "access_token": access_token}), 200
-        
-    return jsonify({"msg":"Invalid email or password"}), 401
     
+    elif admin and check_password_hash(admin.password,password):
+        access_token = create_access_token(identity= str(admin.id), expires_delta=timedelta(hours=2))
+        return jsonify({"access_token": access_token}), 200
+    
+    
+    return jsonify({"msg": "Invalid email or password"}), 401
+   
+    
+    # return jsonify({"error": "Either email or password is incorrect"}), 401
 
-# User Registration
-@auth_bp.route("/register", methods=["POST"])
-def register():
-    data = request.get_json()
-
-    # Validate request payload
-    if not data or "email" not in data or "password" not in data or "full_name" not in data:
-        return jsonify({"msg": "Invalid request"}), 400
-
-    if User.query.filter_by(email=data["email"]).first():
-        return jsonify({"msg": "Email already registered"}), 400
-
-    user = User(full_name=data["full_name"], email=data["email"], 
-    password=generate_password_hash(data["password"]))
-    db.session.add(user)
-    db.session.commit()
-
-    # Generate JWT access token
-    access_token = create_access_token(identity=str(user.id), expires_delta=timedelta(minutes=15))
-    return jsonify({"access_token": access_token}), 200
-
-
-    return jsonify({"error": "Either email or password is incorrect"}), 401
 # Get Current User Info
-@auth_bp.route("/user", methods=["GET"])
+@auth_bp.route("current_user", methods=["GET"])
 @jwt_required()
-def get_user():
+def get_current_user():
     current_user = get_jwt_identity()
     user = User.query.get(current_user)
     if not user:

@@ -14,9 +14,12 @@ import LoginPage from './pages/LoginPage';
 import Register from './pages/Register';
 import Profile from './pages/ProfilePage';
 // import { UserProvider } from './context/UserContext';
+import Github
+  from './pages/Github';
+import Google from './pages/Google';
 
 import ProtectedRoute from './components/ProtectedRoute'; // import the ProtectedRoute compon
-import Profile from './pages/ProfilePage';
+// import Profile from './pages/ProfilePage';
 import ProfilePage from './pages/ProfilePage';
 
 
@@ -38,11 +41,15 @@ function App() {
           <Route path="/stories" element={<BeneficiaryStories />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/charity/:id" element={<CharityDetail />} />
-          <Route path="/profile" element={<Profile />} />
-
           {/* profile */}
-           <Route path="/profile" element={<ProfilePage/>} /> 
+          <Route path="/profile" element={<Profile />} />
+          {/* github/google */}
+          <Route path="/profile" element={<ProfilePage />} />
           
+          <Route path="github" element={<Github />} />
+          <Route path="/google" element={<Google />} />
+
+
           {/* Protect Login and Register routes */}
           <Route
             path="/login"
