@@ -15,8 +15,10 @@ import Register from './pages/Register';
 import Profile from './pages/ProfilePage';
 // import { UserProvider } from './context/UserContext';
 
-import ProtectedRoute from './components/ProtectedRoute'; // import the ProtectedRoute component
+import ProtectedRoute from './components/ProtectedRoute'; // import the ProtectedRoute compon
+import Profile from './pages/ProfilePage';
 import ProfilePage from './pages/ProfilePage';
+
 
 function App() {
   // You can check if the user is authenticated here, e.g., from localStorage or context
@@ -36,6 +38,8 @@ function App() {
           <Route path="/stories" element={<BeneficiaryStories />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/charity/:id" element={<CharityDetail />} />
+          <Route path="/profile" element={<Profile />} />
+
           {/* profile */}
            <Route path="/profile" element={<ProfilePage/>} /> 
           
