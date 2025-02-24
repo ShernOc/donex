@@ -88,7 +88,6 @@ def update_charity(charity_id):
     if charity.user_id != current_user_id and not admin:
         return jsonify({"Error":"You are Unauthorized to edit the charity"}), 403
     
-   
     #if the data is not provided issues the data
     data = request.get_json()
     organization= data.get("organization", charity.organization)
@@ -113,10 +112,14 @@ def update_charity(charity_id):
 def delete_charity(charity_id):
     current_user_id = get_jwt_identity()
     
-    charity =Charity.query.get(charity_id) 
+    charity =Charity.query.filter_by(id=charity_id).first()
     admin = Admin.query.get(current_user_id)
-    if charity.user_id !=current_user_id or not admin:
+    if not charity:
+        return jsonify({"Error": "Charity not found"})
+    
+    if charity.user_id !=current_user_id and not admin:
         return jsonify({"Error": "Charity not found/Unauthorized"}), 406 
+    
     db.session.delete(charity)
     db.session.commit()
     return jsonify({"Success": f"A charity with has been deleted Successfully"})

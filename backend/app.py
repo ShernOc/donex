@@ -37,7 +37,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 CORS(app, supports_credentials=True)
 
 # Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///donex.db'
+#from the render
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://donex_db_user:takDWY5czIgTlDzsXsOtYqLTfs8ZVsAM@dpg-cuu60slds78s7396gcsg-a.oregon-postgres.render.com/donex_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # OAuth configurations

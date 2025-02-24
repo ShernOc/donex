@@ -5,24 +5,24 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 user_bp= Blueprint("user_bp", __name__)
 
-# create user
-@user_bp.route("/user", methods=["POST"])
-def create_user():
+# # create user
+# @user_bp.route("/user", methods=["POST"])
+# def create_user():
     
-    data = request.get_json()
+#     data = request.get_json()
     
-    if User.query.filter_by(email=data["email"]).first():
-        return jsonify({"msg":"Email already registered"}), 400
+#     if User.query.filter_by(email=data["email"]).first():
+#         return jsonify({"msg":"Email already registered"}), 400
     
-    full_name=data["full_name"]
-    email=data["email"]
-    password=generate_password_hash(data["password"])
+#     full_name=data["full_name"]
+#     email=data["email"]
+#     password=generate_password_hash(data["password"])
     
-    new_user = User(full_name=full_name,email=email,password=password)
-    db.session.add(new_user)
-    db.session.commit()
+#     new_user = User(full_name=full_name,email=email,password=password)
+#     db.session.add(new_user)
+#     db.session.commit()
 
-    return jsonify({"msg":"User created successfully"}), 201
+#     return jsonify({"msg":"User created successfully"}), 201
 
 # get all users
 @user_bp.route("/user", methods=["GET"])

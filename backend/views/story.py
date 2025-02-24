@@ -1,5 +1,5 @@
 from flask import jsonify, request, Blueprint
-from models import db, Story, Admin
+from models import db, Story, Admin, User
 from datetime import datetime
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -12,7 +12,7 @@ def get_story():
     # get all the stories
     # current_user_id = get_jwt_identity()
     stories= Story.query.all()
-
+    
     story_list= []
     for story in stories:
             story_list.append({ 
@@ -29,14 +29,16 @@ def get_story():
 def post_story():
     current_user_id = get_jwt_identity()
     #fetch the admin
+    user = User.query.get(current_user_id)
     admin = Admin.query.get(current_user_id)
     
-    if not admin:
-        return jsonify({"Error": "Only admins can post stories"}), 403
+    if not user and not admin:
+        return jsonify({"Error":"Only admins can post stories"}), 403
     
     data = request.get_json()
-    title = data["title"]
-    content = data["content"]
+    title = data.get("title")
+    content = data.get("content")
+    user_id = data.get("user_id")
 
     #Check if the tittle already exist
     check_title = Story.query.filter(title==title).first()
@@ -92,6 +94,7 @@ def update_story_id(story_id):
 @jwt_required()
 def delete_story(story_id):
     current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
     admin = Admin.query.get(current_user_id)
     if not admin: 
         return jsonify({"Error":"Cannot delete story/Unauthorized"}), 406 
@@ -103,4 +106,5 @@ def delete_story(story_id):
     db.session.commit()
     
     return jsonify({"Success":f"Story deleted Successfully"})
+
 
