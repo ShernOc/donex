@@ -24,6 +24,7 @@ user_bp= Blueprint("user_bp", __name__)
 
 #     return jsonify({"msg":"User created successfully"}), 201
 
+
 # get all users
 @user_bp.route("/user", methods=["GET"])
 def get_users():
@@ -53,7 +54,7 @@ def update_user_by_id(user_id):
 
     db.session.commit()
 
-    return jsonify({"id": user.id, "full_name": user.full_name, "email": user.email})
+    return jsonify({"msg": "user updated successfully"})
 
 # delete user by id
 @user_bp.route("/user/delete/<int:user_id>", methods=["DELETE"])
