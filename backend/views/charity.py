@@ -1,5 +1,5 @@
 from flask import jsonify, request, Blueprint
-from models import db, Charity, Admin
+from models import db, Charity, Admin, User
 from datetime import datetime
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -21,60 +21,52 @@ def get_charity():
             "id": charity.id,
             "organization":charity.organization,
             "user_id": charity.user_id,
-            #Provides the users associated with the charity
-            "users":[
-                    {
-                        "id":users.id,
-                        "name":users.name
-                        
-                    } for users in charity.users
-                ] 
+            "type":charity.type
+
             }) 
         return jsonify({"Charity": charity_list}), 200
     else: 
          return jsonify({"Error": "Login to view the charities"}),400 
 
 # Get charity by current_user_id 
-@charity_bp.route('/charities/<int:id>', methods=['GET'])
+@charity_bp.route('/charities/<int:charity_id>', methods=['GET'])
 @jwt_required()
-def get_charity_id(id):
+def get_charity_id(charity_id):
     current_user_id = get_jwt_identity()
     
     # get a single charity post that belongs to the currently logged-in user.
-    charities = Charity.query.filter_by(id, user_id=current_user_id).all()
-    if not charities: 
-        return jsonify({"Error": "No charities found"}), 404
-   
-    charities_list = [{  
-        "id": charity.id,
+    charity = Charity.query.filter_by(id=charity_id, user_id = current_user_id).first()
+    
+    if not charity: 
+        return jsonify({"Error":"No charities found"}), 404
+    return jsonify({  
+        "id":charity.id,
         "organization":charity.organization,
         "user_id": charity.user_id,
+        "type":charity.type
         }
-    for charity in charities
-    ]
+    )
+
     
-    return jsonify({"Charities": charities_list})
-       
 #Post a charity
 @charity_bp.route('/charity', methods = ["POST"])
 @jwt_required()
 def post_charity():
     current_user_id = get_jwt_identity()
-    if current_user_id:
-    # get the data
-        data = request.get_json()
-        organization = data["organization"]
-        user_id = data["user_id"]
+    
+# get the data
+    data = request.get_json()
+    organization = data.get("organization")
+    type = data.get("type")
     
     #Check organization exist and if error message. 
-    check_organization = Charity.query.filter(Charity.organization==organization).first()
-    check_user_id = Charity.query.filter(Charity.user_id ==user_id).first()
+    check_organization = Charity.query.filter(organization==organization).first()
 
-    if check_organization and check_user_id:
+    if not check_organization:
         return jsonify({"Error":"The Charity already exist or posted"}), 406
     else: 
         #create a new charity
-        new_charity = Charity(organization,user_id=current_user_id)
+        new_charity = Charity(organization=organization, type=type, user_id=current_user_id)
         
         #call the function 
         db.session.add(new_charity)
@@ -82,55 +74,49 @@ def post_charity():
         return jsonify({"Success":"Charity added successfully"}), 201
       
 #Update a charity
-@charity_bp.route('/charities/update/<int:id>', methods =["PATCH"])
+@charity_bp.route('/charities/update/<int:charity_id>', methods =["PATCH"])
 @jwt_required()
-def update_charity(id):
+def update_charity(charity_id):
     current_user_id = get_jwt_identity()
-    #get the charities 
-    charity= Charity.query.get(id)
     
-    # #all the admin
-    # admin = Admin.query.all()
+    charity=Charity.query.filter_by(id=charity_id).first()
+    admin = Admin.query.get(current_user_id)
     
-    # check if the user exist, 
     if not charity:
-        return jsonify({"Error":"Charity not found"}), 404
+        return jsonify({"Error": "Charity not found"}),404
+   
+    if charity.user_id != current_user_id and not admin:
+        return jsonify({"Error":"You are Unauthorized to edit the charity"}), 403
     
-    #checks if user is the owner or admin 
-    if int(Charity.user_id) !=int(current_user_id) and not int(Admin.id):
-        return jsonify({"Error": "You are Unauthorized to edit the charity"}), 403
-    
+   
     #if the data is not provided issues the data
     data = request.get_json()
     organization= data.get("organization", charity.organization)
-    user_id = data.get("user_id", charity.user_id)
-         
+    type = data.get("type", charity.type)
+   
     check_organization = Charity.query.filter(Charity.organization==organization).first()
-    check_user_id = Charity.query.filter(Charity.user_id ==user_id).first()
-
-    if check_organization and check_user_id:
-        return jsonify({"Error":"The Charity with the name already exist or posted"}), 406
-    else: 
-        #if no conflict update 
-        charity.organization =organization        
-        charity.user_id = current_user_id
-        
-        #commit the function 
-        db.session.commit()
+    check_type = Charity.query.filter(Charity.type==type).first()
+    
+    if check_organization and check_type: 
+        return jsonify({"Error":"An organization with this title and already exist. Update the organization"}),409
+    
+    charity.organization=organization        
+    charity.type=type
+    
+    #commit the function 
+    db.session.commit()
     return jsonify({"Success":f"Charity was updated successfully"}),200
 
 # Delete charity only by the user/admin
-@charity_bp.route('/charity/delete/<int:id>',methods=['DELETE']) 
+@charity_bp.route('/charity/delete/<int:charity_id>',methods=['DELETE']) 
 @jwt_required()
-def delete_charity(id):
+def delete_charity(charity_id):
     current_user_id = get_jwt_identity()
     
-    charity =Charity.query.filter_by(id, user_id=current_user_id).first()
-    
-    if not charity:
+    charity =Charity.query.get(charity_id) 
+    admin = Admin.query.get(current_user_id)
+    if charity.user_id !=current_user_id or not admin:
         return jsonify({"Error": "Charity not found/Unauthorized"}), 406 
-    
     db.session.delete(charity)
     db.session.commit()
-    
     return jsonify({"Success": f"A charity with has been deleted Successfully"})
