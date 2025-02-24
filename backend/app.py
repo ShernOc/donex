@@ -7,40 +7,28 @@ from flask_cors import CORS
 import os
 
 # from authlib.integrations.flask_client import OAuth
-from views import user_bp, charity_bp, donation_bp, admin_bp
+from views import *
 
 
 app = Flask(__name__)
 CORS(app) 
 
-# #postgreSQL connection
-# DB_USERNAME=os.getenv("DB_USERNAME") #donex
-# DB_PASSWORD=os.getenv("DB_PASSWORD") # 2609
-# DB_NAME=os.getenv("DB_NAME") # donex_db
-# DB_HOST = os.getenv("DB_HOST",) # local host 
-# DB_PORT = os.getenv("DB_PORT") # 5432
+#backend postgresql connection from render 
 
-# # app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://donex_db_user:takDWY5czIgTlDzsXsOtYqLTfs8ZVsAM@dpg-cuu60slds78s7396gcsg-a.oregon-postgres.render.com/donex_db'
 
-#POSTGRESQL  CONNECTION / BACKEND 
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://donex:2609@localhost:5432/donex_db"
-
-#SQLITE CONNECTION
-# initialize the donex.db table 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///donex.db'
-
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 print("Database URI:", app.config['SQLALCHEMY_DATABASE_URI'])
 
 # Enable Cross-Origin Resource Sharing (CORS)
 CORS(app, supports_credentials=True)
 
-# Database configuration
-#from the render
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://donex_db_user:takDWY5czIgTlDzsXsOtYqLTfs8ZVsAM@dpg-cuu60slds78s7396gcsg-a.oregon-postgres.render.com/donex_db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# Initialize extensions
+db.init_app(app)
+migrate = Migrate(app, db)
+
 
 # OAuth configurations
 app.config['GOOGLE_CLIENT_ID'] = "464191634541-ia1thmau2nnpqakl0sdeu2hm0kc8gthu.apps.googleusercontent.com"
@@ -52,31 +40,13 @@ app.config['GITHUB_CLIENT_SECRET'] = "51f8733d82eb4a1f0274f49218ca174a0b7b5f88"
 app.config["JWT_SECRET_KEY"] = "jiyucfvbkaudhudkvfbt"
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 
-# Initialize extensions
-db.init_app(app)
-migrate = Migrate(app, db)
-
 
 app.config["JWT_SECRET_KEY"] = "jiyucfvbkaudhudkvfbt" 
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] =  timedelta(hours=1)
 
-
 jwt = JWTManager(app)
-oauth = OAuth(app)
+# oauth = OAuth(app)
 
-# import all functions in views
-from views import *
-
-
-
-
-# JWT token revocation callback
-@jwt.token_in_blocklist_loader
-def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
-    """Check if a JWT is revoked."""
-    jti = jwt_payload["jti"]
-    token = db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
-    return token is not None
 
 # Register blueprints
 app.register_blueprint(user_bp)
@@ -94,11 +64,14 @@ def not_found_error(error):
 def index(): 
     return jsonify ({"Success":"Donex"})
 
-# # postgreSQL 
-# @app.route('/')
-# def index(): 
-#     return render_template("index.html")
 
+# JWT token revocation callback
+@jwt.token_in_blocklist_loader
+def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
+    """Check if a JWT is revoked."""
+    jti = jwt_payload["jti"]
+    token = db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
+    return token is not None
 
 @jwt.token_in_blocklist_loader
 def check_if_token_revoked(jwt_header, jwt_payload):
@@ -110,12 +83,7 @@ def check_if_token_revoked(jwt_header, jwt_payload):
 def internal_error(error):
     return jsonify({"error": "Internal Server Error"}), 500
 
-
-# Run the application
-if __name__ == "__main__":
-    app.run(debug=True)
  
-
 if __name__ == '__main__':
     app.run(debug=True)
 
