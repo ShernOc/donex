@@ -7,17 +7,27 @@ user_bp= Blueprint("user_bp", __name__)
 
 # create user
 @user_bp.route("/user", methods=["POST"])
-def create_user():
+def create_users():
     data = request.get_json()
+    username = data['username']
+    email = data['email']
+    password = generate_password_hash(data['password'])
 
-    if User.query.filter_by(email=data["email"]).first():
-        return jsonify({"msg": "Email already registered"}), 400
+    check_username = User.query.filter_by(username=username).first()
+    check_email = User.query.filter_by(email=email).first()
 
-    user = User(full_name=data["full_name"], email=data["email"], password=generate_password_hash(data["password"]))
-    db.session.add(user)
-    db.session.commit()
+    print("Email ",check_email)
+    print("Username",check_username)
+    if check_username or check_email:
+        return jsonify({"error":"Username/email exists"}),406
 
-    return jsonify({"msg": "User created successfully"}), 201
+    else:
+        new_user = User(username=username, email=email, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+      
+        return jsonify({"msg":"User saved successfully!"}), 201
+        
 
 # get all users
 @user_bp.route("/user", methods=["GET"])
@@ -46,7 +56,7 @@ def update_user_by_id(user_id):
 
     db.session.commit()
 
-    return jsonify({"id": user.id, "full_name": user.full_name, "email": user.email})
+    return jsonify({"msg": "user updated successfully"})
 
 # delete user by id
 @user_bp.route("/user/<int:user_id>", methods=["DELETE"])

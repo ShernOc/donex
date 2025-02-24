@@ -12,10 +12,11 @@ import AboutPage from './pages/AboutPage';
 import CharityDetail from './pages/CharityDetail';
 import LoginPage from './pages/LoginPage';
 import Register from './pages/Register';
-
+import { UserProvider } from './context/UserContext';
 function App() {
   return (
     <Router>
+      <UserProvider>
       <div className="min-h-screen flex flex-col bg-gray-50">
         <Navbar />
         <main className="flex-1 flex flex-col">
@@ -36,6 +37,8 @@ function App() {
         </main>
         <Footer />
       </div>
+
+     </UserProvider>
     </Router>
   );
 }

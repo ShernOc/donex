@@ -8,13 +8,11 @@ flask = "*"
 flask-migrate = "*"
 flask-sqlalchemy = "*"
 flask-mail = "*"
-flask-cors = "*"
 flask-jwt-extended = "*"
 flask-bcrypt = "*"
 psycopg2-binary = "*"
 authlib = "*"
 flask-oauthlib = "*"
-
 
 [dev-packages]
 
