@@ -12,8 +12,12 @@ import AboutPage from './pages/AboutPage';
 import CharityDetail from './pages/CharityDetail';
 import LoginPage from './pages/LoginPage';
 import Register from './pages/Register';
+import ProtectedRoute from './components/ProtectedRoute'; // import the ProtectedRoute component
 
 function App() {
+  // You can check if the user is authenticated here, e.g., from localStorage or context
+  const isAuthenticated = Boolean(localStorage.getItem('authToken')); // Example authentication check
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
@@ -28,8 +32,20 @@ function App() {
           <Route path="/stories" element={<BeneficiaryStories />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/charity/:id" element={<CharityDetail />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<Register />} />
+          
+          {/* Protect Login and Register routes */}
+          <Route
+            path="/login"
+            element={
+              <ProtectedRoute element={<LoginPage />} isAuthenticated={isAuthenticated} />
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <ProtectedRoute element={<Register />} isAuthenticated={isAuthenticated} />
+            }
+          />
         </Routes>
       </main>
       <Footer />

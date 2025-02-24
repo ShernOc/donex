@@ -23,9 +23,20 @@ const Login = () => {
     }
     setError("");
 
+    // Call the loginUser function (which contacts the backend)
     loginUser(form)
-      .then(() => navigate("/dashboard"))
-      .catch((err) => setError("Invalid email or password!"));
+      .then((response) => {
+        const { role } = response; // role is either 'charity' or 'donor'
+        
+        if (role === "charity") {
+          navigate("/charity/dashboard"); // Redirect to charity dashboard
+        } else if (role === "donor") {
+          navigate("/donor/dashboard"); // Redirect to donor dashboard
+        } else {
+          navigate("/"); // Default to home if no role matches
+        }
+      })
+      .catch(() => setError("Invalid email or password!"));
   };
 
   const togglePassword = () => {
@@ -33,7 +44,7 @@ const Login = () => {
   };
 
   const handleOAuthRedirect = (provider) => {
-    window.location.href = `${process.env.REACT_APP_API_URL}/auth/login/${provider}`;
+    window.location.href = `${import.meta.env.VITE_APP_API_URL}/auth/login/${provider}`;
   };
 
   return (
@@ -99,7 +110,7 @@ const Login = () => {
         </div>
 
         <p className="text-center dark:text-gray-300 text-gray-700">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link to="/register" className="text-blue-400 hover:underline">
             Register
           </Link>
