@@ -7,84 +7,84 @@ from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
-from app import oauth, app
+# from app import oauth, app
 
 auth_bp = Blueprint("auth_bp", __name__)
 
-# OAuth Configuration (No need to re-register here, since already done in `app.py`)
-google = oauth.google
-github = oauth.github
+# # OAuth Configuration (No need to re-register here, since already done in `app.py`)
+# google = oauth.google
+# github = oauth.github
 
 
-# Google OAuth Login
-@auth_bp.route("/login/google")
-def google_login():
-    redirect_uri = url_for("auth_bp.google_authorize", _external=True)
-    return google.authorize_redirect(redirect_uri)
+# # Google OAuth Login
+# @auth_bp.route("/login/google")
+# def google_login():
+#     redirect_uri = url_for("auth_bp.google_authorize", _external=True)
+#     return google.authorize_redirect(redirect_uri)
 
 
 # Google OAuth Callback
-@auth_bp.route("/login/google/authorize")
-def google_authorize():
-    try:
-        token = google.authorize_access_token()
-        resp = google.get("userinfo").json()
+# @auth_bp.route("/login/google/authorize")
+# def google_authorize():
+#     try:
+#         token = google.authorize_access_token()
+#         resp = google.get("userinfo").json()
 
-        email = resp.get("email")
-        if not email:
-            return jsonify({"error": "Google login failed: Email not found"}), 400
+#         email = resp.get("email")
+#         if not email:
+#             return jsonify({"error": "Google login failed: Email not found"}), 400
+
+#         # Fetch or create user
+#         user = User.query.filter_by(email=email).first()
+#         if not user:
+#             user = User(full_name=resp.get("name"), email=email)
+#             db.session.add(user)
+#             db.session.commit()
+
+#         # Generate JWT access token
+#         access_token = create_access_token(identity=user.id)
+#         return jsonify({"access_token": access_token}), 200
+
+#     except Exception as e:
+#         print(f"Google OAuth Error: {e}")
+#         return jsonify({"error": "Google login failed"}), 500
+
+
+# # GitHub OAuth Login
+# @auth_bp.route("/login/github")
+# def github_login():
+#     redirect_uri = url_for("auth_bp.github_authorize", _external=True)
+#     return github.authorize_redirect(redirect_uri)
+
+
+# # GitHub OAuth Callback
+# @auth_bp.route("/login/github/authorize")
+# def github_authorize():
+#     try:
+#         token = github.authorize_access_token()
+#         resp = github.get("user").json()
+
+#         email = resp.get("email")
+#         if not email:
+#             return jsonify({"error": "GitHub login failed: Email not found"}), 400
 
         # Fetch or create user
-        user = User.query.filter_by(email=email).first()
-        if not user:
-            user = User(full_name=resp.get("name"), email=email)
-            db.session.add(user)
-            db.session.commit()
+        # user = User.query.filter_by(email=email).first()
+        # if not user:
+        #     user = User(full_name=resp.get("name"), email=email)
+        #     db.session.add(user)
+        #     db.session.commit()
 
         # Generate JWT access token
-        access_token = create_access_token(identity=user.id)
-        return jsonify({"access_token": access_token}), 200
+        # access_token = create_access_token(identity=user.id)
+        # return jsonify({"access_token": access_token}), 200
 
-    except Exception as e:
-        print(f"Google OAuth Error: {e}")
-        return jsonify({"error": "Google login failed"}), 500
-
-
-# GitHub OAuth Login
-@auth_bp.route("/login/github")
-def github_login():
-    redirect_uri = url_for("auth_bp.github_authorize", _external=True)
-    return github.authorize_redirect(redirect_uri)
+    # except Exception as e:
+        # print(f"GitHub OAuth Error: {e}")
+        # return jsonify({"error": "GitHub login failed"}), 500
 
 
-# GitHub OAuth Callback
-@auth_bp.route("/login/github/authorize")
-def github_authorize():
-    try:
-        token = github.authorize_access_token()
-        resp = github.get("user").json()
-
-        email = resp.get("email")
-        if not email:
-            return jsonify({"error": "GitHub login failed: Email not found"}), 400
-
-        # Fetch or create user
-        user = User.query.filter_by(email=email).first()
-        if not user:
-            user = User(full_name=resp.get("name"), email=email)
-            db.session.add(user)
-            db.session.commit()
-
-        # Generate JWT access token
-        access_token = create_access_token(identity=user.id)
-        return jsonify({"access_token": access_token}), 200
-
-    except Exception as e:
-        print(f"GitHub OAuth Error: {e}")
-        return jsonify({"error": "GitHub login failed"}), 500
-
-
-# Email/Password Login
+# Email/Password Login/ both User and Admin
 @auth_bp.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
@@ -93,14 +93,19 @@ def login():
     if not data or "email" not in data or "password" not in data:
         return jsonify({"msg": "Invalid request"}), 400
 
-    user = User.query.filter_by(email=data["email"]).first()
-    if not user or not check_password_hash(user.password, data["password"]):
-        return jsonify({"msg": "Invalid email or password"}), 401
-
-    # Generate JWT access token
-    access_token = create_access_token(identity=user.id, expires_delta=timedelta(minutes=15))
-    return jsonify({"access_token": access_token}), 200
-
+    user = User.query.filter_by(email=data["email"]).first() 
+    admin = Admin.query.filter_by(email=data["email"]).first()
+    if user and check_password_hash(user.password, data["password"]):
+        access_token = create_access_token(identity= str(user.id), expires_delta=timedelta(hours=2))
+        return jsonify({"msg": "Login successful", "access_token": access_token}),200
+                        
+        # return jsonify({"msg": "Invalid email or password"}), 401
+    if admin and check_password_hash(admin.password, data["password"]):
+        access_token = create_access_token(identity= str(admin.id), expires_delta=timedelta(hours=2))
+        return jsonify({"msg": "Login successful", "access_token": access_token}), 200
+        
+    return jsonify({"msg":"Invalid email or password"}), 401
+    
 
 # User Registration
 @auth_bp.route("/register", methods=["POST"])
@@ -120,7 +125,7 @@ def register():
     db.session.commit()
 
     # Generate JWT access token
-    access_token = create_access_token(identity=user.id, expires_delta=timedelta(minutes=15))
+    access_token = create_access_token(identity=str(user.id), expires_delta=timedelta(minutes=15))
     return jsonify({"access_token": access_token}), 200
 
 
@@ -149,4 +154,4 @@ def logout():
     db.session.add(TokenBlocklist(jti=jti, created_at=now))
     db.session.commit()
 
-    return jsonify({"success": "Logged out successfully"}), 200
+    return jsonify({"Success": "Logged out successfully"}), 200

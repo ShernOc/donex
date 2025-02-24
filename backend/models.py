@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData, ForeignKey
+from sqlalchemy import MetaData ,ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -9,7 +9,7 @@ db = SQLAlchemy(metadata=metadata)
 
 # Define the User model
 class User(db.Model):
-    __tablename__ = "users"
+    __tablename__ ="users"
     
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(128), nullable=False)
