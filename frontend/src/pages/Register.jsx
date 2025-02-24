@@ -35,7 +35,7 @@ const Register = () => {
 
   const handleSubmit = (e, formType) => {
     e.preventDefault();
-    const formData = formType === "user" ? userForm : charityForm;
+    const formData = formType ==="user" ? userForm : charityForm;
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match!");
       return;
