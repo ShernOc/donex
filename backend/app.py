@@ -6,7 +6,7 @@ from datetime import timedelta
 from flask_cors import CORS
 import os
 
-from authlib.integrations.flask_client import OAuth
+# from authlib.integrations.flask_client import OAuth
 from views import user_bp, charity_bp, donation_bp, admin_bp
 
 
