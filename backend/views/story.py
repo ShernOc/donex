@@ -1,5 +1,5 @@
 from flask import jsonify, request, Blueprint
-from models import db, Story, Admin, User
+from models import db, Story, User
 from datetime import datetime
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -30,9 +30,9 @@ def post_story():
     current_user_id = get_jwt_identity()
     #fetch the admin
     user = User.query.get(current_user_id)
-    admin = Admin.query.get(current_user_id)
+    # admin = Admin.query.get(current_user_id)
     
-    if not user and not admin:
+    if not user:
         return jsonify({"Error":"Only admins can post stories"}), 403
     
     data = request.get_json()
@@ -60,7 +60,7 @@ def post_story():
 @jwt_required()
 def update_story_id(story_id):
     current_user_id = get_jwt_identity()
-    admin = Admin.query.filter_by(id=current_user_id).first()
+    # admin = Admin.query.filter_by(id=current_user_id).first()
     
     if not admin:
         return jsonify({"Error":" Only admins can update the stories"}), 404

@@ -1,8 +1,8 @@
-"""fixed.
+"""ADDED ROLE
 
-Revision ID: 377ad1e12979
+Revision ID: a0c6b1e248dd
 Revises: 
-Create Date: 2025-02-25 11:44:02.751969
+Create Date: 2025-02-25 17:26:15.577582
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '377ad1e12979'
+revision = 'a0c6b1e248dd'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -40,6 +40,7 @@ def upgrade():
     sa.Column('email', sa.String(length=120), nullable=False),
     sa.Column('password', sa.String(length=256), nullable=False),
     sa.Column('full_name', sa.String(length=100), nullable=True),
+    sa.Column('role', sa.String(length=100), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )

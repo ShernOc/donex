@@ -1,5 +1,5 @@
 from flask import jsonify, request, Blueprint
-from models import db, User, Admin
+from models import db, User
 from werkzeug.security import generate_password_hash
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -21,7 +21,17 @@ def create_user():
     email=data["email"]
     password=generate_password_hash(data["password"])
     
-    new_user = User(full_name=full_name,email=email,password= generate_password_hash(password))
+    #default role = user 
+    role = data.get("role", "user")
+    
+    allowed_roles = ["user","admin"]
+    if role not in allowed_roles:
+        return jsonify({"msg": "Invalid role. Choose from 'user', 'donor', or 'admin'"}), 400
+    if role =="admin" and not User.can_register():
+        return jsonify({"msg": "Admin limit reached. Only 3 admins allowed."}), 403
+    
+    
+    new_user = User(full_name=full_name,email=email,password=password, role=role)
     db.session.add(new_user)
     db.session.commit()
 
@@ -32,14 +42,14 @@ def create_user():
 @user_bp.route("/user", methods=["GET"])
 def get_users():
     users = User.query.all()
-    return jsonify([{"id": user.id, "full_name": user.full_name, "email": user.email} for user in users]), 200
+    return jsonify([{"id": user.id, "full_name": user.full_name, "email": user.email,"role":user.role} for user in users]), 200
 
 
 # get user by id
 @user_bp.route("/user/<int:user_id>", methods=["GET"])
 def get_user_by_id(user_id):
     user = User.query.get_or_404(user_id)
-    return jsonify({"id": user.id, "full_name": user.full_name, "email": user.email})
+    return jsonify({"id": user.id, "full_name": user.full_name, "email": user.email,"role":user.role})
 
 # update user by id
 @user_bp.route("/user/<int:user_id>", methods=["PATCH"])
@@ -51,6 +61,7 @@ def update_user_by_id(user_id):
 
     user.full_name = data["full_name"]
     user.email = data["email"]
+    user.role = data["role"]
 
     if "password" in data:
         user.password = generate_password_hash(data["password"])

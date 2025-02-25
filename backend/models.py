@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData ,ForeignKey
+from sqlalchemy import MetaData ,ForeignKey, CheckConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -15,11 +15,23 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)
     full_name = db.Column(db.String(100))
+    role = db.Column(db.String(100), nullable=False,default="user")
+    
     # Relationships
     charities= relationship("Charity", back_populates="user")
     donations = relationship("Donation", back_populates="user")
     stories = relationship("Story", back_populates="user")
-
+    
+    __table_args__ = (
+        CheckConstraint(role.in_(["user", "admin"]), name="valid_role"),
+    )
+    
+     # limit admin to 3 users
+    @staticmethod
+    def can_register():
+        admin_count = db.session.query(func.count(User.id)).filter_by(role="admin").scalar()
+        return admin_count < 3
+    
 class Charity(db.Model):
     __tablename__ = "charities"
     
@@ -61,18 +73,18 @@ class Donation(db.Model):
     user=relationship("User", back_populates="donations")
     charities= relationship("Charity", back_populates="donations")
 
-class Admin(db.Model):
-    __tablename__ ="admins"
+# class Admin(db.Model):
+#     __tablename__ ="admins"
     
-    id = db.Column(db.Integer, primary_key=True)
-    full_name = db.Column(db.String(128), nullable=False)
-    email = db.Column(db.String(128), nullable=False, unique=True)
-    password = db.Column(db.String(512),nullable=False)
+#     id = db.Column(db.Integer, primary_key=True)
+#     full_name = db.Column(db.String(128), nullable=False)
+#     email = db.Column(db.String(128), nullable=False, unique=True)
+#     password = db.Column(db.String(512),nullable=False)
 
-    # limit to 3 admins
-    @staticmethod
-    def can_register():
-        return Admin.query.count() < 3
+#     # limit to 3 admins
+#     @staticmethod
+#     def can_register():
+#         return Admin.query.count() < 3
       
 class TokenBlocklist(db.Model):
     __tablename__ = "token_blocklist"
