@@ -131,6 +131,17 @@ export default function ProfilePage() {
             style={{ width: "128px", height: "128px" }}
           />
           <input type="file" accept="image/*" onChange={handleImageUpload} className="border p-2 w-full rounded mt-4" />
+
+        </div>
+
+        {/* Profile Information */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+          <input type="text" name="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Full Name" className="border p-3 w-full rounded" />
+          <input type="email" name="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="Email" className="border p-3 w-full rounded" />
+          <input type="text" name="phone" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="Phone Number" className="border p-3 w-full rounded" />
+        </div>
+
+
         </div>
 
         {/* Profile Information */}
@@ -154,7 +165,7 @@ export default function ProfilePage() {
           Save Changes
         </button>
       </div>
-    </div>
+    
   );
 }
 
@@ -164,5 +175,5 @@ const createImage = (url) =>
     const img = new Image();
     img.src = url;
     img.onload = () => resolve(img);
-    img.onerror = (error) => reject(error);
+    img.onerror = (error) => reject(error)
   });

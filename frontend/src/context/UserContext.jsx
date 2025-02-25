@@ -16,12 +16,12 @@ export const UserProvider = ({ children }) => {
         }
     }, [token]);
 
-    // ✅ Register User Function
+    // Register User Function
     const registerUser = async (formData, userType, navigate) => {
         try {
-            toast.loading("Registering...");
-    
-            const response = await fetch("http://127.0.0.1:5000/register", {
+            toast.loading("Registering...")
+            const response = await fetch("https://donex-uq5f.onrender.com/register", {
+
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ ...formData, userType }),
@@ -32,7 +32,7 @@ export const UserProvider = ({ children }) => {
     
             if (response.ok) {
                 toast.success(data.msg || "Registration successful!");
-                navigate("/login");  // ✅ Now navigate is passed correctly
+                navigate("/login"); 
             } else {
                 toast.error(data.error || "Registration failed.");
             }
@@ -43,15 +43,14 @@ export const UserProvider = ({ children }) => {
         }
     };
     
-
       // LOGIN
       const loginUser = (email, password) => 
         {
             toast.loading("Logging you in ... ")
-            fetch("http://127.0.0.1:5000/login",{
+            fetch("https://donex-uq5f.onrender.com/login",{
                 method:"POST",
                 headers: {
-                    'Content-type': 'application/json',
+                    'Content-Type': 'application/json',
                   },
                 body: JSON.stringify({
                     email, password
@@ -66,10 +65,10 @@ export const UserProvider = ({ children }) => {
     
                     setToken(response.access_token)
     
-                    fetch('http://127.0.0.1:5000/current_user',{
+                    fetch('https://donex-uq5f.onrender.com/current_user',{
                         method:"GET",
                         headers: {
-                            'Content-type': 'application/json',
+                            'Content-Type': 'application/json',
                             Authorization: `Bearer ${response.access_token}`
                         }
                     })
@@ -98,10 +97,10 @@ export const UserProvider = ({ children }) => {
             })
         };
 
-    // ✅ Fetch Current User Function
+    // current_user function 
     const fetchCurrentUser = async () => {
         try {
-            const response = await fetch("http://127.0.0.1:5000/user", {
+            const response = await fetch("https://donex-uq5f.onrender.com/user", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -124,10 +123,10 @@ export const UserProvider = ({ children }) => {
         }
     };
 
-    // ✅ Logout User Function
+    // Logout Function
     const logoutUser = async () => {
         try {
-            await fetch("http://127.0.0.1:5000/logout", {
+            await fetch("https://donex-uq5f.onrender.com/logout", {
                 method: "DELETE",
                 headers: { "Authorization": `Bearer ${token}` },
             });

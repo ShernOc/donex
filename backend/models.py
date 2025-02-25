@@ -82,13 +82,3 @@ class TokenBlocklist(db.Model):
     jti = db.Column(db.String(36), nullable=False, index=True)
     created_at = db.Column(db.DateTime, nullable=False)
     
-class SQLiteModel(db.Model):
-    __bind_key__ = 'sqlite_db'  
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-
-class PostgresModel(db.Model):
-    __bind_key__ = 'postgres_db' 
-    
-    id = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.String(100))

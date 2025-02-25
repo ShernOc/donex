@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useUser } from "../context/UserContext";
-import { useNavigate } from "react-router-dom";  // ✅ Import here
+import { useNavigate } from "react-router-dom";  
 
 const Register = () => {
   const { registerUser } = useUser();
-  const navigate = useNavigate();  // ✅ Now used inside the component
+  const navigate = useNavigate(); 
   const [activeTab, setActiveTab] = useState("user");
   const [error, setError] = useState("");
 
@@ -40,13 +40,9 @@ const Register = () => {
       setError("Please fill in all fields!");
       return;
     }
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match!");
-      return;
-    }
-
+   
     setError("");
-    await registerUser(formData, formType, navigate);  // ✅ Pass navigate
+    await registerUser(formData, formType, navigate); 
   };
 
   return (
