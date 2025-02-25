@@ -102,29 +102,13 @@ def login():
     user = User.query.filter_by(email=email).first()
     admin = Admin.query.filter_by(email=email).first()
     
-    print("User", user)
-    print("Admin", admin)
-    
-    if user:
-        print("User password hash:", user.password)
-    if admin:
-        print("Admin password hash:", admin.password)
-
-    if user and check_password_hash(user.password, password):
+    if user or admin check_password_hash(user.password, password):
         access_token = create_access_token(identity=str(user.id),expires_delta=timedelta(hours=1))
         print("Generated Token:", access_token)
         return jsonify({"access_token": access_token}), 200
-    
-    elif admin and check_password_hash(admin.password,password):
-        access_token = create_access_token(identity= str(admin.id), expires_delta=timedelta(hours=2))
-        return jsonify({"access_token": access_token}), 200
-    
-    
-    return jsonify({"msg": "Invalid email or password"}), 401
-   
-    
-    # return jsonify({"error": "Either email or password is incorrect"}), 401
 
+    return jsonify({"msg":"Invalid email or password"}), 401
+ 
 # Get Current User Info
 @auth_bp.route("current_user", methods=["GET"])
 @jwt_required()
@@ -139,7 +123,6 @@ def get_current_user():
         "email": user.email,
         "full_name": user.full_name,
     }), 200
-
 
 # Logout (Revoke JWT Token)
 @auth_bp.route("/logout", methods=["DELETE"])

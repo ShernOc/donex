@@ -7,8 +7,7 @@ user_bp= Blueprint("user_bp", __name__)
 
 # create user
 @user_bp.route("/register", methods=["POST"])
-def register_user():
-    
+def create_user():
     data = request.get_json()
     
     # Validate request payload
