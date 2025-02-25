@@ -1,7 +1,7 @@
 import { GithubAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "../firebase"; // ✅ Ensure correct path
+import { auth } from "../firebase"; 
 
-function signinwithgithub() {
+function Github() {
   const githubLogin = async () => {
     try {
       const provider = new GithubAuthProvider();
@@ -16,4 +16,4 @@ function signinwithgithub() {
   return { githubLogin }; // ✅ Return function properly
 }
 
-export default signinwithgithub;
+export default Github;
