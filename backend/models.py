@@ -24,8 +24,9 @@ class Charity(db.Model):
     __tablename__ = "charities"
     
     id = db.Column(db.Integer, primary_key=True)
-    organization = db.Column(db.String(128), nullable=False, unique=True)
-    type= db.Column(db.String, nullable=False)
+    email = db.Column(db.String(128), nullable=False)
+    charity_name = db.Column(db.String(128), nullable=False, unique=True)
+    password= db.Column(db.String(512), nullable=False)
     
     #Foreign keys
     user_id= db.Column(db.Integer, db.ForeignKey("users.id"), nullable = False)

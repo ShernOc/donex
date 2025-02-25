@@ -112,45 +112,10 @@ def login():
         access_token = create_access_token(identity=user.id)
         return jsonify({"access_token": access_token}), 200
 
-        return jsonify({"msg": "Invalid request"}), 400
-
-    user = User.query.filter_by(email=data["email"]).first() 
-    admin = Admin.query.filter_by(email=data["email"]).first()
-    if user and check_password_hash(user.password, data["password"]):
-        access_token = create_access_token(identity= str(user.id), expires_delta=timedelta(hours=2))
-        return jsonify({"msg": "Login successful", "access_token": access_token}),200
-                        
-        # return jsonify({"msg": "Invalid email or password"}), 401
-    if admin and check_password_hash(admin.password, data["password"]):
-        access_token = create_access_token(identity= str(admin.id), expires_delta=timedelta(hours=2))
-        return jsonify({"msg": "Login successful", "access_token": access_token}), 200
-        
     return jsonify({"msg":"Invalid email or password"}), 401
     
 
-# User Registration
-@auth_bp.route("/register", methods=["POST"])
-def register():
-    data = request.get_json()
 
-    # Validate request payload
-    if not data or "email" not in data or "password" not in data or "full_name" not in data:
-        return jsonify({"msg": "Invalid request"}), 400
-
-    if User.query.filter_by(email=data["email"]).first():
-        return jsonify({"msg": "Email already registered"}), 400
-
-    user = User(full_name=data["full_name"], email=data["email"], 
-    password=generate_password_hash(data["password"]))
-    db.session.add(user)
-    db.session.commit()
-
-    # Generate JWT access token
-    access_token = create_access_token(identity=str(user.id), expires_delta=timedelta(minutes=15))
-    return jsonify({"access_token": access_token}), 200
-
-
-    return jsonify({"error": "Either email or password is incorrect"}), 401
 # Get Current User Info
 @auth_bp.route("/user", methods=["GET"])
 @jwt_required()

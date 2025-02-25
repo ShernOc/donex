@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 user_bp= Blueprint("user_bp", __name__)
 
 # create user
-@user_bp.route("/user", methods=["POST"])
+@user_bp.route("/register", methods=["POST"])
 
 def create_user():
     

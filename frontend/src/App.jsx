@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import{ Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -13,7 +13,7 @@ import CharityDetail from './pages/CharityDetail';
 import LoginPage from './pages/LoginPage';
 import Register from './pages/Register';
 import Profile from './pages/ProfilePage';
-// import { UserProvider } from './context/UserContext';
+
 
 import ProtectedRoute from './components/ProtectedRoute'; // import the ProtectedRoute component
 import ProfilePage from './pages/ProfilePage';
@@ -26,7 +26,9 @@ function App() {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
       <main className="flex-1 flex flex-col">
+       
         <Routes>
+          
           <Route path="/" element={<Home />} />
           <Route path="/donor/dashboard" element={<DonorDashboard />} />
           <Route path="/charity/dashboard" element={<CharityDashboard />} />
@@ -52,7 +54,10 @@ function App() {
               <ProtectedRoute element={<Register />} isAuthenticated={isAuthenticated} />
             }
           />
+         
         </Routes>
+    
+             
       </main>
       <Footer />
     </div>
