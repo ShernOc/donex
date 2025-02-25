@@ -20,6 +20,7 @@ import Google from './pages/Google';
 import ProtectedRoute from './components/ProtectedRoute'; // import the ProtectedRoute compon
 // import Profile from './pages/ProfilePage';
 import ProfilePage from './pages/ProfilePage';
+import CharityRegister from './pages/CharityRegister';
 
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           {/* github/google */}
           <Route path="/profile" element={<ProfilePage />} />
+
           
           <Route path="github" element={<Github />} />
           <Route path="/google" element={<Google />} />
@@ -62,6 +64,12 @@ function App() {
             path="/register"
             element={
               <ProtectedRoute element={<Register />} isAuthenticated={isAuthenticated} />
+            }
+          />
+           <Route
+            path="/charityregister"
+            element={
+              <ProtectedRoute element={<CharityRegister />} isAuthenticated={isAuthenticated} />
             }
           />
          
