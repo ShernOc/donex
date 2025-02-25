@@ -1,14 +1,14 @@
 import { useState, useContext } from "react";
-// import { UserContext } from "../context/UserContext";
+import { UserContext } from "../context/UserContext";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import signinwithgoogle from "./Google"; // Adjust path to match your folder structure
 import signinwithgithub from "./Github";
 const Login = () => {
-  // const { login } = useContext(UserContext);
+  const { loginUser } = useContext(UserContext);
   const navigate = useNavigate();
-  const { googleLogin } = signinwithgoogle; // Access Google Login function
-  const { githubLogin } = signinwithgithub();// Access Github Login function
+  const { googleLogin } = signinwithgoogle; 
+  const { githubLogin } = signinwithgithub();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -30,6 +30,22 @@ const Login = () => {
       return;
     }
     setError("");
+  
+//     try {
+//       // Now we wait for the value, and `response` will not be a Promise
+//       const response = await loginUser(form);
+//       const { role } = response; // role is either 'charity' or 'donor'
+  
+//       if (role === "charity") {
+//         navigate("/charity/dashboard"); // Redirect to charity dashboard
+//       } else if (role === "donor") {
+//         navigate("/donor/dashboard"); // Redirect to donor dashboard
+//       } else {
+//         navigate("/"); // Default to home if no role matches
+//       }
+//     } catch (err) {
+//       setError("Invalid email or password!");
+//     }
 
     // Call the loginUser function (which contacts the backend)
     loginUser(form)
