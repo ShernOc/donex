@@ -1,6 +1,7 @@
 import { DollarSign, Users, TrendingUp, BarChart } from 'lucide-react';
 
 
+
 const CharityDashboard = () => {
   const donations = [
     { id: 1, donor: 'Anonymous', amount: 50, date: '2024-03-15', type: 'One-time' },

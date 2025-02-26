@@ -3,9 +3,9 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 export const UserContext = createContext();
+
 export const useUser = () => useContext(UserContext);
 
-// eslint-disable-next-line react/prop-types
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(sessionStorage.getItem("token") || "");
@@ -17,6 +17,7 @@ export const UserProvider = ({ children }) => {
     }
   }, [token]);
 
+  
 // register user
   const registerUser = async (formData, userType) => {
     try {

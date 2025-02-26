@@ -33,7 +33,7 @@ from views import *
 app.register_blueprint(user_bp)
 app.register_blueprint(charity_bp)
 app.register_blueprint(donation_bp)
-# app.register_blueprint(admin_bp)
+app.register_blueprint(story_bp)
 app.register_blueprint(auth_bp)
 
 

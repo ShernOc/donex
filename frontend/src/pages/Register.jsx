@@ -1,9 +1,11 @@
 import { useState, useContext } from "react";
 import { UserContext } from "../context/UserContext";
+import {CharityContext} from "../context/CharityContext";
 import { Link, useNavigate } from "react-router-dom";
 
 const Register = () => {
-  const { registerUser, registerCharity } = useContext(UserContext);
+  const {registerUser} = useContext(UserContext);
+  const {registerCharity}=useContext(CharityContext);
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("user");
   const [error, setError] = useState("");
@@ -36,6 +38,7 @@ const Register = () => {
 
   const handleSubmit = async (e, formType) => {
     e.preventDefault();
+    
     const formData = formType === "user" ? userForm : charityForm;
 
     if (formData.password !== formData.confirmPassword) {
@@ -43,16 +46,17 @@ const Register = () => {
       return;
     }
     setError("");
+    
 
-    if (formType === "user") {
+      if (formType === "user") {
       await registerUser(userForm);
       navigate("/login");
     } else {
       await registerCharity(charityForm);
       setMessage("Your charity application is successful, pending approval.");
     }
-  };
-
+};
+  
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-700 p-4">
       <div className="w-full max-w-lg bg-white shadow-lg  rounded-lg p-8 space-y-6">
