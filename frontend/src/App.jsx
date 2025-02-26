@@ -21,17 +21,11 @@ import AboutPage from './pages/AboutPage';
 import CharityDetail from './pages/CharityDetail';
 import LoginPage from './pages/LoginPage';
 import Register from './pages/Register';
-import Profile from './pages/ProfilePage';
-import Github
-  from './pages/Github';
-import Google from './pages/Google';
-
-import ProtectedRoute from './components/ProtectedRoute'; 
-// import the ProtectedRoute compon
-// import Profile from './pages/ProfilePage';
 import ProfilePage from './pages/ProfilePage';
-
-
+import ProtectedRoute from './components/ProtectedRoute'; 
+import Profile from './pages/ProfilePage';
+import Github from './pages/Github';
+import Google from './pages/Google';
 
 function App() {
   const isAuthenticated = Boolean(localStorage.getItem('authToken')); 

@@ -28,8 +28,7 @@ def login():
     else:
 
         return jsonify({"msg":"Invalid email or password"}), 401
-    
-    
+     
 # Get Current User Info
 @auth_bp.route("/current_user", methods=["GET"])
 @jwt_required()

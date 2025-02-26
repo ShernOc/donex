@@ -22,7 +22,7 @@ export const UserProvider = ({ children }) => {
   const registerUser = async (formData, userType) => {
     try {
       toast.loading("Registering...");
-      const response = await fetch("http://127.0.0.1:5001/register", {
+      const response = await fetch("http://127.0.0.1:5000/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...formData, userType }),
@@ -46,11 +46,11 @@ export const UserProvider = ({ children }) => {
 
   // Login User/Admin
 
-  const loginUser = async (email, password, navigate) => {
+  const loginUser = async (email, password ) => {
     toast.loading("Logging you in ...");
   
     try {
-      const response = await fetch("http://127.0.0.1:5001/login", {
+      const response = await fetch("http://127.0.0.1:5000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -68,7 +68,7 @@ export const UserProvider = ({ children }) => {
       await new Promise((resolve) => setTimeout(resolve, 500));
   
       // Get User
-      const userResponse = await fetch("http://127.0.0.1:5001/current_user", {
+      const userResponse = await fetch("http://127.0.0.1:5000/current_user", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -88,8 +88,11 @@ export const UserProvider = ({ children }) => {
       if (userData.role ==="admin") {
         navigate("/admin/dashboard");
       } else if (userData.role === "user") {
-        navigate("/donor/dashboard");
-      } else {
+        navigate("donor/dashboard");
+      } else if (userData.role === "charity") {
+        navigate("charity/dashboard");
+        }
+      else {
         navigate("/");
       }
     } catch (error) {
@@ -102,7 +105,7 @@ export const UserProvider = ({ children }) => {
 // Getting the current User
   const fetchCurrentUser = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:5001/user", {
+      const response = await fetch("http://127.0.0.1:5000/user", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -128,7 +131,7 @@ export const UserProvider = ({ children }) => {
 
   const logoutUser = async () => {
     try {
-      await fetch("http://127.0.0.1:5001/logout", {
+      await fetch("http://127.0.0.1:5000/logout", {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

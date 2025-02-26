@@ -1,36 +1,82 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useUser } from "../context/UserContext";
-import { FaGoogle, FaGithub } from "react-icons/fa";
+import { useState, useContext } from "react";
+import { UserContext } from "../context/UserContext";
+import { Link, useNavigate } from "react-router-dom";
+import { FaGithub, FaGoogle } from "react-icons/fa";
+import signinwithgoogle from "./Google.jsx"; 
+// import signinwithgithub from "./signInWithGithub";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
-  const [showPassword, setShowPassword] = useState(false);
-  
-  const { loginUser } = useUser();
+  const { loginUser } = useContext(UserContext);
   const navigate = useNavigate();
+  const { googleLogin } = signinwithgoogle; 
+  // const { githubLogin } = signinwithgithub;
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = async (e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-
+  
+    // Trim inputs and validate fields
+    const email = form.email.trim();
+    const password = form.password.trim();
+  
+    if (!email || !password) {
+      setError("Please fill in all fields!");
+      return;
+    }
+    setError("");
+  
     try {
-      await loginUser(email, password, navigate);
-    } catch (err) {
-      setError(err.message);
+      // Set loading state (optional)
+      setLoading(true);
+  
+      // Call the loginUser function (which contacts the backend)
+      const response = await loginUser(email, password);
+      // const { role } = response; // role is either 'charity' or 'donor'
+
+      // if (role === "charity") {
+      //   navigate("/charity/dashboard"); // Redirect to charity dashboard
+      // } else if (role === "donor") {
+      //   navigate("/donor/dashboard"); // Redirect to donor dashboard
+      // } else {
+      //   navigate("/"); // Default to home if no role matches
+      // }
+    } catch {
+      setError("Invalid email or password!");
+    } finally {
+      // Reset loading state
+      setLoading(false);
     }
   };
-
-  const togglePassword = () => setShowPassword((prev) => !prev);
-
-  const handleGoogleLogin = () => {
-    console.log("Google login clicked");
+  
+  const togglePassword = () => {
+    setShowPassword(!showPassword);
   };
 
-  const handleGithubLogin = () => {
-    console.log("GitHub login clicked");
+  const handleGoogleLogin = async () => {
+    try {
+      await googleLogin(); // Call the Google login function
+      navigate("/Donor/dashboard"); // Redirect to dashboard upon success
+    } catch (error) {
+      console.error(error);
+      setError("Google login failed!");
+    }
+  };
+  const handleGithubLogin = async () => {
+    try {
+      await githubLogin();
+      navigate("/Donor/dashboard");
+    } catch (error) {
+      console.error(error)
+      setError("GitHub login failed!");
+    }
   };
 
   return (
@@ -42,13 +88,13 @@ const Login = () => {
 
         {error && <p className="text-red-500 text-center">{error}</p>}
 
-        <form onSubmit={handleLogin} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <input
             type="email"
             name="email"
             placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={form.email}
+            onChange={handleChange}
             className="w-full px-4 py-3 border rounded-lg shadow-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 border-gray-300 focus:ring-2 focus:ring-blue-500 transition transform hover:scale-105 duration-300"
             required
           />
@@ -57,8 +103,8 @@ const Login = () => {
               type={showPassword ? "text" : "password"}
               name="password"
               placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={form.password}
+              onChange={handleChange}
               className="w-full px-4 py-3 border rounded-lg shadow-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 border-gray-300 focus:ring-2 focus:ring-blue-500 transition transform hover:scale-105 duration-300"
               required
             />
@@ -67,7 +113,42 @@ const Login = () => {
               onClick={togglePassword}
               className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none"
             >
-              {showPassword ? "Hide" : "Show"}
+              {showPassword ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3.98 8.852a10.477 10.477 0 000 6.296m-.654-7.592a1.5 1.5 0 01.22-.593 11.968 11.968 0 0116.707 0 1.5 1.5 0 01.22.593m.654 7.592a10.477 10.477 0 000-6.296M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3.98 8.852a10.477 10.477 0 000 6.296m-.654-7.592a1.5 1.5 0 01.22-.593 11.968 11.968 0 0116.707 0 1.5 1.5 0 01.22.593m.654 7.592a10.477 10.477 0 000-6.296M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 3v2.25m-9 3.25a3 3 0 100 6h18a3 3 0 100-6H3z"
+                  />
+                </svg>
+              )}
             </button>
           </div>
           <button
@@ -94,7 +175,7 @@ const Login = () => {
             Login with Github
           </button>
         </div>
-       
+
         <p className="text-center dark:text-gray-300 text-gray-700">
           Don&apos;t have an account?{" "}
           <Link to="/register" className="text-blue-400 hover:underline">
