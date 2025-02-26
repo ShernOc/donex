@@ -34,19 +34,10 @@ const Login = () => {
     try {
       // Now we wait for the value, and `response` will not be a Promise
       const response = await loginUser(form);
-      const { role } = response; // role is either 'charity' or 'donor'
-  
-      if (role === "charity") {
-        navigate("/charity/dashboard"); // Redirect to charity dashboard
-      } else if (role === "donor") {
-        navigate("/donor/dashboard"); // Redirect to donor dashboard
-      } else {
-        navigate("/"); // Default to home if no role matches
-      }
     } catch (err) {
       setError("Invalid email or password!");
     }
-  };
+  }; 
   
   
 

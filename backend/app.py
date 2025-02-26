@@ -9,7 +9,7 @@ import os
 
 app = Flask(__name__)
 
-# ✅ Enable CORS for all routes (Allows React frontend requests)
+
 CORS(app, origins="http://localhost:5173", supports_credentials=True)
 
 # Database Configuration
