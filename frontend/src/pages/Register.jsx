@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useUser } from "../context/UserContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Register = () => {
   const { registerUser } = useUser();
@@ -16,7 +16,7 @@ const Register = () => {
   });
 
   const [charityForm, setCharityForm] = useState({
-    full_name: "",
+    charity_name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -33,11 +33,11 @@ const Register = () => {
 
   const handleSubmit = async (e, formType) => {
     e.preventDefault();
+    
     const formData = formType === "user" ? userForm : charityForm;
     setMessage("");
     await registerUser(formData, formType, navigate);
   };
-
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
       <div className="w-full max-w-lg bg-white shadow-xl rounded-xl p-6">
@@ -51,7 +51,7 @@ const Register = () => {
             }`}
             onClick={() => setActiveTab("user")}
           >
-            User
+            Donor
           </button>
           <button
             className={`w-1/2 py-3 text-lg font-semibold ${
@@ -149,6 +149,9 @@ const Register = () => {
           <button type="submit" className="w-full p-3 text-white bg-red-500 hover:bg-red-600 rounded-lg">
             Register
           </button>
+          <p className="text-center text-gray-900">
+          Already have an account? <Link to="/login" className="text-rose-500 hover:underline">Login</Link>
+        </p>
         </form>
 
         {/* Already have an account */}

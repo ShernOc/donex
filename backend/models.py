@@ -40,6 +40,7 @@ class Charity(db.Model):
     charity_name = db.Column(db.String(128), nullable=False, unique=True)
     description= db.Column(db.Text, nullable=True)
     password= db.Column(db.String(512), nullable=False)
+    approved = db.Column(db.String(20), default="pending")
     
     
     #Foreign keys

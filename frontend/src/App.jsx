@@ -22,8 +22,10 @@ function App() {
   // const isAuthenticated = Boolean(localStorage.getItem('token'));
 
   return (
+
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
+
       <main className="flex-1 flex flex-col">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -59,6 +61,7 @@ function App() {
         </Routes>
       </main>
       <Footer />
+
     </div>
   );
 }
