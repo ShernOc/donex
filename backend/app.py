@@ -10,8 +10,11 @@ import os
 app = Flask(__name__)
 CORS(app)
 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///donex.db'
+
 # Database Configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://donex_db_user:takDWY5czIgTlDzsXsOtYqLTfs8ZVsAM@dpg-cuu60slds78s7396gcsg-a.oregon-postgres.render.com/donex_db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://donex_db_user:takDWY5czIgTlDzsXsOtYqLTfs8ZVsAM@dpg-cuu60slds78s7396gcsg-a.oregon-postgres.render.com/donex_db'
+
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
@@ -30,42 +33,9 @@ from views import *
 app.register_blueprint(user_bp)
 app.register_blueprint(charity_bp)
 app.register_blueprint(donation_bp)
-app.register_blueprint(admin_bp)
+# app.register_blueprint(admin_bp)
 app.register_blueprint(auth_bp)
 
-# jwt token
-@jwt.token_in_blocklist_loader
-def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
-    """Check if a JWT is revoked."""
-    jti = jwt_payload["jti"]
-    token = db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
-    return token is not None
-
-
-app = Flask(__name__)
-CORS(app) 
-
-#backend postgresql connection from render 
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://donex_db_user:takDWY5czIgTlDzsXsOtYqLTfs8ZVsAM@dpg-cuu60slds78s7396gcsg-a.oregon-postgres.render.com/donex_db'
-
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-
-print("Database URI:", app.config['SQLALCHEMY_DATABASE_URI'])
-
-# Enable Cross-Origin Resource Sharing (CORS)
-CORS(app, supports_credentials=True)
-
-# Initialize extensions
-db.init_app(app)
-migrate = Migrate(app, db)
-
-# JWT configuration
-app.config["JWT_SECRET_KEY"] = "jiyucfvbkaudhudkvfbt"
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
-
-jwt = JWTManager(app)
 
 @app.errorhandler(404)
 def not_found_error(error):
@@ -83,10 +53,5 @@ def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
     token = db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
     return token is not None
 
-@jwt.token_in_blocklist_loader
-def check_if_token_revoked(jwt_header, jwt_payload):
-    jti = jwt_payload["jti"]
-    token = db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
-
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)  # ✅ Ensure backend runs on port 5000
+    app.run(debug=True, port=5000) 

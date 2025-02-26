@@ -6,7 +6,7 @@ const Register = () => {
   const { registerUser } = useUser();
   const navigate = useNavigate(); 
   const [activeTab, setActiveTab] = useState("user");
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
 
   const [userForm, setUserForm] = useState({
     full_name: "",
@@ -16,11 +16,10 @@ const Register = () => {
   });
 
   const [charityForm, setCharityForm] = useState({
-    charityName: "",
+    full_name: "",
     email: "",
     password: "",
-    confirmPassword: "",
-    description: "",
+    confirmPassword: ""
   });
 
   const handleChange = (e, formType) => {
@@ -36,12 +35,13 @@ const Register = () => {
     e.preventDefault();
     const formData = formType === "user" ? userForm : charityForm;
     console.log(formData);
-    if (!formData.full_name ||!formData.email ||!formData.password ||!formData.confirmPassword) {
-      setError("Please fill in all fields!");
-      return;
-    }
+    // if (!formData.charityName ||!formData.email ||!formData.password ||!formData.confirmPassword) {
+    //   setMessage("Please be patient while the admins are reviewing your charity.");
+
+    //   return;
+    // }
    
-    setError("");
+    setMessage("");
     await registerUser(formData, formType, navigate); 
   };
 
@@ -73,7 +73,7 @@ const Register = () => {
           </button>
         </div>
 
-        {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+        {message && <p className="text-green-500 text-center mt-2">{message}</p>}
 
         {/* Form */}
         <form onSubmit={(e) => handleSubmit(e, activeTab)} className="text-white font-white space-y-4 mt-6">
@@ -120,7 +120,7 @@ const Register = () => {
             <>
               <input
                 type="text"
-                name="charityName"
+                name="full_name"
                 placeholder="Charity Name"
                 value={charityForm.charityName}
                 onChange={(e) => handleChange(e, "charity")}

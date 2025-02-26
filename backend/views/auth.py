@@ -1,7 +1,7 @@
 from flask import jsonify, request, Blueprint, render_template, url_for, redirect
-from models import db, User, TokenBlocklist, Admin
+from models import db, User, TokenBlocklist
 
-from models import *
+# from models import *
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 from datetime import timedelta
@@ -91,7 +91,6 @@ auth_bp = Blueprint("auth_bp", __name__)
 @auth_bp.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
-    
     if not data or "email" not in data or "password" not in data:
         return jsonify({"error":"Email and password required"}), 400
 
@@ -100,9 +99,8 @@ def login():
     
     # check if user exist admin
     user = User.query.filter_by(email=email).first()
-    admin = Admin.query.filter_by(email=email).first()
     
-    if user or admin check_password_hash(user.password, password):
+    if user and check_password_hash(user.password, password):
         access_token = create_access_token(identity=str(user.id),expires_delta=timedelta(hours=1))
         print("Generated Token:", access_token)
         return jsonify({"access_token": access_token}), 200
@@ -110,7 +108,7 @@ def login():
     return jsonify({"msg":"Invalid email or password"}), 401
  
 # Get Current User Info
-@auth_bp.route("current_user", methods=["GET"])
+@auth_bp.route("/current_user", methods=["GET"])
 @jwt_required()
 def get_current_user():
     current_user = get_jwt_identity()
@@ -122,6 +120,7 @@ def get_current_user():
         "id": user.id,
         "email": user.email,
         "full_name": user.full_name,
+        "role": user.role
     }), 200
 
 # Logout (Revoke JWT Token)

@@ -2,15 +2,17 @@ import { useState, useContext } from "react";
 import { UserContext } from "../context/UserContext";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGithub, FaGoogle } from "react-icons/fa";
-import signinwithgoogle from "./Google"; // Adjust path to match your folder structure
-import signinwithgithub from "./Github";
+import signinwithgoogle from "./Google.jsx"; 
+// import signinwithgithub from "./signInWithGithub";
+
 const Login = () => {
   const { loginUser } = useContext(UserContext);
   const navigate = useNavigate();
   const { googleLogin } = signinwithgoogle; 
-  const { githubLogin } = signinwithgithub();
+  // const { githubLogin } = signinwithgithub;
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
@@ -20,49 +22,40 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     // Trim inputs and validate fields
     const email = form.email.trim();
     const password = form.password.trim();
-
+  
     if (!email || !password) {
       setError("Please fill in all fields!");
       return;
     }
     setError("");
   
-//     try {
-//       // Now we wait for the value, and `response` will not be a Promise
-//       const response = await loginUser(form);
-//       const { role } = response; // role is either 'charity' or 'donor'
+    try {
+      // Set loading state (optional)
+      setLoading(true);
   
-//       if (role === "charity") {
-//         navigate("/charity/dashboard"); // Redirect to charity dashboard
-//       } else if (role === "donor") {
-//         navigate("/donor/dashboard"); // Redirect to donor dashboard
-//       } else {
-//         navigate("/"); // Default to home if no role matches
-//       }
-//     } catch (err) {
-//       setError("Invalid email or password!");
-//     }
+      // Call the loginUser function (which contacts the backend)
+      const response = await loginUser(email, password);
+      // const { role } = response; // role is either 'charity' or 'donor'
 
-    // Call the loginUser function (which contacts the backend)
-    loginUser(form)
-      .then((response) => {
-        const { role } = response; // role is either 'charity' or 'donor'
-
-        if (role === "charity") {
-          navigate("/charity/dashboard"); // Redirect to charity dashboard
-        } else if (role === "donor") {
-          navigate("/donor/dashboard"); // Redirect to donor dashboard
-        } else {
-          navigate("/"); // Default to home if no role matches
-        }
-      })
-      .catch(() => setError("Invalid email or password!"));
+      // if (role === "charity") {
+      //   navigate("/charity/dashboard"); // Redirect to charity dashboard
+      // } else if (role === "donor") {
+      //   navigate("/donor/dashboard"); // Redirect to donor dashboard
+      // } else {
+      //   navigate("/"); // Default to home if no role matches
+      // }
+    } catch {
+      setError("Invalid email or password!");
+    } finally {
+      // Reset loading state
+      setLoading(false);
+    }
   };
-
+  
   const togglePassword = () => {
     setShowPassword(!showPassword);
   };
@@ -81,8 +74,8 @@ const Login = () => {
       await githubLogin();
       navigate("/Donor/dashboard");
     } catch (error) {
-      console.error("GitHub Login Error:", error.code, error.message);
-      setError(`GitHub login failed! ${error.message}`);
+      console.error(error)
+      setError("GitHub login failed!");
     }
   };
 
