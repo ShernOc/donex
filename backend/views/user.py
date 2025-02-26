@@ -56,30 +56,54 @@ def get_user_by_id(user_id):
 @jwt_required()
 def update_user_by_id(user_id):
     current_user_id = get_jwt_identity()
+    current_user = User.query.filter_by(id=current_user_id).first()
+    
+    if not current_user:
+        return jsonify({"error": "Not authorized"}),403
+   
+    user = User.query.get(user_id) 
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    
+    #admin and user only
+    if current_user.role != "admin" and current_user.id != user.id:
+        return jsonify({"error": "denied to update user"}), 403
+    
     data = request.get_json()
-    user = User.query.get(user_id = current_user_id)
-
-    user.full_name = data["full_name"]
-    user.email = data["email"]
-    user.role = data["role"]
-
+    # Update fields if provided
+    if "full_name" in data:
+        user.full_name = data["full_name"]
+    if "email" in data:
+        user.email = data["email"]
+    if "role" in data:
+        user.role = data["role"]
     if "password" in data:
         user.password = generate_password_hash(data["password"])
 
     db.session.commit()
-
     return jsonify({"msg": "user updated successfully"})
+
 
 # delete user by id
 @user_bp.route("/user/delete/<int:user_id>", methods=["DELETE"])
 @jwt_required()
 def delete_user_by_id(user_id):
-    current_user_id = get_jwt_identity()
+    current_user_id = get_jwt_identity()  
+    current_user = User.query.filter_by(id=current_user_id).first()
+
+    if not current_user:
+        return jsonify({"error": "Unauthorized. User not found"}), 403
+
     user = User.query.get(user_id)
-    if not current_user_id or user_id:
-        return jsonify({"Error": "User not found"})
-        
+    
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    
+    #allow only the user or admin to delete account
+    if current_user.role != "admin" and current_user.id != user.id:
+        return jsonify({"error": "Permission denied"}), 403
+
     db.session.delete(user)
     db.session.commit()
-    return jsonify({"msg": "User deleted successfully"})
-
+    
+    return jsonify({"msg": "User deleted successfully"}), 200

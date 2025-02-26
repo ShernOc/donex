@@ -240,7 +240,7 @@ const Login = () => {
             Login with Github
           </button>
         </div>
-
+       
         <p className="text-center dark:text-gray-300 text-gray-700">
           Don&apos;t have an account?{" "}
           <Link to="/register" className="text-blue-400 hover:underline">
