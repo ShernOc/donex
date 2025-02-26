@@ -18,7 +18,7 @@ def get_donations():
     
     query = db.session.query(Donation)
     if user_id: 
-        query = query.filter(Donation.user_id == user_id)
+        query = query.filter(Donation.user_id == current_user_id)
     if charity_id: 
         query = query.filter(Donation.charity_id == charity_id)
          
@@ -73,6 +73,27 @@ def get_donations():
         "monthly_donations": monthly_total, # {"YYYY-MM": total}
        
     }), 200
+
+# Post Donation 
+@donation_bp.route('/donations', methods=['POST'])
+def post_donation(donation_id):
+    data = request.json
+    donation = Donation.query.get(donation_id)
+
+    if not donation:
+        return jsonify({"error": "Donation not found"}), 404
+
+    if "amount" in data:
+        donation.amount = data["amount"]
+    if "donation_date" in data:
+        donation.donation_date = data["donation_date"]
+    if "user_id" in data:
+        donation.user_id = data["user_id"]
+    if "charity_id" in data:
+        donation.charity_id = data["charity_id"]
+
+    db.session.commit()
+    return jsonify({"message": "Donation updated successfully"}), 200
 
 # Update a donation
 @donation_bp.route('/donations/<int:donation_id>', methods=['PUT'])
