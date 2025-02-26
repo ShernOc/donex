@@ -31,14 +31,16 @@ class User(db.Model):
     def can_register():
         admin_count = db.session.query(func.count(User.id)).filter_by(role="admin").scalar()
         return admin_count < 3
-    
+     
 class Charity(db.Model):
     __tablename__ = "charities"
     
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(128), nullable=False)
     charity_name = db.Column(db.String(128), nullable=False, unique=True)
+    description= db.Column(db.Text, nullable=True)
     password= db.Column(db.String(512), nullable=False)
+    
     
     #Foreign keys
     user_id= db.Column(db.Integer, db.ForeignKey("users.id"), nullable = False)
@@ -73,19 +75,7 @@ class Donation(db.Model):
     user=relationship("User", back_populates="donations")
     charities= relationship("Charity", back_populates="donations")
 
-# class Admin(db.Model):
-#     __tablename__ ="admins"
-    
-#     id = db.Column(db.Integer, primary_key=True)
-#     full_name = db.Column(db.String(128), nullable=False)
-#     email = db.Column(db.String(128), nullable=False, unique=True)
-#     password = db.Column(db.String(512),nullable=False)
-
-#     # limit to 3 admins
-#     @staticmethod
-#     def can_register():
-#         return Admin.query.count() < 3
-      
+     
 class TokenBlocklist(db.Model):
     __tablename__ = "token_blocklist"
     __table_args__ = {"extend_existing": True}  # Prevents table redefinition error
@@ -93,4 +83,10 @@ class TokenBlocklist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     jti = db.Column(db.String(36), nullable=False, index=True)
     created_at = db.Column(db.DateTime, nullable=False)
+    
+    
+# charity = Charity(charity_name="Test Charity")
+# db.session.add(charity)
+# db.session.commit()
+
     

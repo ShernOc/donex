@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 export const UserContext = createContext();
 export const useUser = () => useContext(UserContext);
 
+// eslint-disable-next-line react/prop-types
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(sessionStorage.getItem("token") || "");
@@ -20,7 +21,7 @@ export const UserProvider = ({ children }) => {
   const registerUser = async (formData, userType) => {
     try {
       toast.loading("Registering...");
-      const response = await fetch("http://127.0.0.1:5555/register", {
+      const response = await fetch("http://127.0.0.1:5001/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...formData, userType }),
@@ -48,7 +49,7 @@ export const UserProvider = ({ children }) => {
     toast.loading("Logging you in ...");
   
     try {
-      const response = await fetch("http://127.0.0.1:5555/login", {
+      const response = await fetch("http://127.0.0.1:5001/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -66,7 +67,7 @@ export const UserProvider = ({ children }) => {
       await new Promise((resolve) => setTimeout(resolve, 500));
   
       // Get User
-      const userResponse = await fetch("http://127.0.0.1:5555/current_user", {
+      const userResponse = await fetch("http://127.0.0.1:5001/current_user", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -100,7 +101,7 @@ export const UserProvider = ({ children }) => {
 // Getting the current User
   const fetchCurrentUser = async () => {
     try {
-      const response = await fetch("https://donex-uq5f.onrender.com/user", {
+      const response = await fetch("http://127.0.0.1:5001/user", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -126,7 +127,7 @@ export const UserProvider = ({ children }) => {
 
   const logoutUser = async () => {
     try {
-      await fetch("https://donex-uq5f.onrender.com/logout", {
+      await fetch("http://127.0.0.1:5001/logout", {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
