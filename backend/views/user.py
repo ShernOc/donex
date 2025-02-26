@@ -7,10 +7,12 @@ user_bp= Blueprint("user_bp", __name__)
 
 # create user
 @user_bp.route("/register", methods=["POST"])
-
 def create_user():
-    
     data = request.get_json()
+    
+    # Validate request payload
+    if not data or "email" not in data or "password" not in data or "full_name" not in data:
+        return jsonify({"msg": "Invalid request"}), 400
     
     if User.query.filter_by(email=data["email"]).first():
         return jsonify({"msg":"Email already registered"}), 400
@@ -19,7 +21,7 @@ def create_user():
     email=data["email"]
     password=generate_password_hash(data["password"])
     
-    new_user = User(full_name=full_name,email=email,password=password)
+    new_user = User(full_name=full_name,email=email,password= generate_password_hash(password))
     db.session.add(new_user)
     db.session.commit()
 
@@ -30,7 +32,7 @@ def create_user():
 @user_bp.route("/user", methods=["GET"])
 def get_users():
     users = User.query.all()
-    return jsonify([{"id": user.id, "full_name": user.full_name, "email": user.email} for user in users])
+    return jsonify([{"id": user.id, "full_name": user.full_name, "email": user.email} for user in users]), 200
 
 
 # get user by id

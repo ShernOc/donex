@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useUser } from "../context/UserContext";
-import { useNavigate } from "react-router-dom";  // ✅ Import here
+import { useNavigate } from "react-router-dom";  
 
 const Register = () => {
   const { registerUser } = useUser();
-  const navigate = useNavigate();  // ✅ Now used inside the component
+  const navigate = useNavigate(); 
   const [activeTab, setActiveTab] = useState("user");
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
 
   const [userForm, setUserForm] = useState({
     full_name: "",
@@ -19,8 +19,7 @@ const Register = () => {
     charityName: "",
     email: "",
     password: "",
-    confirmPassword: "",
-    description: "",
+    confirmPassword: ""
   });
 
   const handleChange = (e, formType) => {
@@ -37,16 +36,13 @@ const Register = () => {
     const formData = formType === "user" ? userForm : charityForm;
     console.log(formData);
     if (!formData.full_name ||!formData.email ||!formData.password ||!formData.confirmPassword) {
-      setError("Please fill in all fields!");
-      return;
-    }
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match!");
-      return;
-    }
+      setMessage("Please be patient while the admins are reviewing your charity.");
 
-    setError("");
-    await registerUser(formData, formType, navigate);  // ✅ Pass navigate
+      return;
+    }
+   
+    setMessage("");
+    await registerUser(formData, formType, navigate); 
   };
 
   return (
@@ -77,7 +73,7 @@ const Register = () => {
           </button>
         </div>
 
-        {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+        {message && <p className="text-green-500 text-center mt-2">{message}</p>}
 
         {/* Form */}
         <form onSubmit={(e) => handleSubmit(e, activeTab)} className="text-white font-white space-y-4 mt-6">

@@ -2,13 +2,13 @@ import { useState, useContext } from "react";
 import { UserContext } from "../context/UserContext";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGithub, FaGoogle } from "react-icons/fa";
-import signinwithgoogle from "./signinwithgoogle"; // Adjust path to match your folder structure
-import signinwithgithub from "./siginwithgithub";
+import signinwithgoogle from "./Google"; // Adjust path to match your folder structure
+import signinwithgithub from "./Github";
 const Login = () => {
   const { loginUser } = useContext(UserContext);
   const navigate = useNavigate();
-  const { googleLogin } = signinwithgoogle; // Access Google Login function
-  const { githubLogin } = signinwithgithub();// Access Github Login function
+  const { googleLogin } = signinwithgoogle; 
+  const { githubLogin } = signinwithgithub;
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -20,26 +20,48 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     // Trim inputs and validate fields
     const email = form.email.trim();
     const password = form.password.trim();
-  
+
     if (!email || !password) {
       setError("Please fill in all fields!");
       return;
     }
     setError("");
   
-    try {
-      // Now we wait for the value, and `response` will not be a Promise
-      const response = await loginUser(form);
-    } catch (err) {
-      setError("Invalid email or password!");
-    }
-  }; 
+//     try {
+//       // Now we wait for the value, and `response` will not be a Promise
+//       const response = await loginUser(form);
+//       const { role } = response; // role is either 'charity' or 'donor'
   
-  
+//       if (role === "charity") {
+//         navigate("/charity/dashboard"); // Redirect to charity dashboard
+//       } else if (role === "donor") {
+//         navigate("/donor/dashboard"); // Redirect to donor dashboard
+//       } else {
+//         navigate("/"); // Default to home if no role matches
+//       }
+//     } catch (err) {
+//       setError("Invalid email or password!");
+//     }
+
+    // Call the loginUser function (which contacts the backend)
+    loginUser(form)
+      .then((response) => {
+        const { role } = response; // role is either 'charity' or 'donor'
+
+        if (role === "charity") {
+          navigate("/charity/dashboard"); // Redirect to charity dashboard
+        } else if (role === "donor") {
+          navigate("/donor/dashboard"); // Redirect to donor dashboard
+        } else {
+          navigate("/"); // Default to home if no role matches
+        }
+      })
+      .catch(() => setError("Invalid email or password!"));
+  };
 
   const togglePassword = () => {
     setShowPassword(!showPassword);
@@ -56,11 +78,11 @@ const Login = () => {
   };
   const handleGithubLogin = async () => {
     try {
-      await githubLogin(); 
-      navigate("/Donor/dashboard"); 
+      await githubLogin();
+      navigate("/Donor/dashboard");
     } catch (error) {
-      console.error("GitHub Login Error:", error.code, error.message);
-      setError(`GitHub login failed! ${error.message}`);
+      console.error(error)
+      setError("GitHub login failed!");
     }
   };
 
@@ -152,11 +174,11 @@ const Login = () => {
             <FaGoogle className="w-5 h-5 mr-2" />
             Login with Google
           </button>
-           <button
+          <button
             onClick={handleGithubLogin}
             className="flex items-center justify-center p-3 text-gray-700 bg-gray-100 rounded-lg shadow hover:scale-105 transition transform duration-300"
           >
-          <FaGithub className="w-5 h-5 mr-2" />
+            <FaGithub className="w-5 h-5 mr-2" />
             Login with Github
           </button>
         </div>

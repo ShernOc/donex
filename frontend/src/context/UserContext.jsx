@@ -16,12 +16,12 @@ export const UserProvider = ({ children }) => {
         }
     }, [token]);
 
-    // ✅ Register User Function
+    // Register User Function
     const registerUser = async (formData, userType, navigate) => {
         try {
-            toast.loading("Registering...");
-    
+            toast.loading("Registering...")
             const response = await fetch("http://127.0.0.1:5000/register", {
+
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ ...formData, userType }),
@@ -32,7 +32,7 @@ export const UserProvider = ({ children }) => {
     
             if (response.ok) {
                 toast.success(data.msg || "Registration successful!");
-                navigate("/login");  // ✅ Now navigate is passed correctly
+                navigate("/login"); 
             } else {
                 toast.error(data.error || "Registration failed.");
             }
@@ -43,62 +43,66 @@ export const UserProvider = ({ children }) => {
         }
     };
     
+     // LOGIN
+const loginUser = async (email, password) => {
+    toast.loading("Logging you in...");
+  
+    try {
+      // Make the login request
+      const response = await fetch("http://127.0.0.1:5000/login", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password })
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok && data.access_token) {
+        // If login successful, process the response
+        toast.dismiss();
+  
+        // Save the access token
+        sessionStorage.setItem("token", data.access_token);
+        setToken(data.access_token);
+  
+        // Fetch the current user data using the access token
+        const userResponse = await fetch('http://127.0.0.1:5000/current_user', {
+          method: "GET",
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${data.access_token}`
+          }
+        });
+  
+        const userData = await userResponse.json();
+        if (userData.email) {
+          setUser(userData);
+        }
+  
+        toast.success("Successfully Logged in");
+        navigate("/");
+  
+      } else if (data.error) {
+        // If an error occurs during login
+        toast.dismiss();
+        toast.error(data.error);
+      } else {
+        toast.dismiss();
+        toast.error("Failed to login");
+      }
+  
+    } catch (error) {
+      // Handle unexpected errors like network issues
+      toast.dismiss();
+      toast.error("An error occurred. Please try again.");
+      console.error("Login error:", error);
+    }
+  };
+  
 
-      // LOGIN
-      const loginUser = (email, password) => 
-        {
-            toast.loading("Logging you in ... ")
-            fetch("http://127.0.0.1:5000/login",{
-                method:"POST",
-                headers: {
-                    'Content-type': 'application/json',
-                  },
-                body: JSON.stringify({
-                    email, password
-                })
-            })
-            .then((resp)=>resp.json())
-            .then((response)=>{
-                if(response.access_token){
-                    toast.dismiss()
-    
-                    sessionStorage.setItem("token", response.access_token);
-    
-                    setToken(response.access_token)
-    
-                    fetch('http://127.0.0.1:5000/current_user',{
-                        method:"GET",
-                        headers: {
-                            'Content-type': 'application/json',
-                            Authorization: `Bearer ${response.access_token}`
-                        }
-                    })
-                    .then((response) => response.json())
-                    .then((response) => {
-                      if(response.email){
-                              setUser(response)
-                            }
-                    });
-    
-                    toast.success("Successfully Logged in")
-                    navigate("/")
-                }
-                else if(response.error){
-                    toast.dismiss()
-                    toast.error(response.error)
-    
-                }
-                else{
-                    toast.dismiss()
-                    toast.error("Failed to login")
-    
-                }
-              
-                
-            })
-        };
-
-    // ✅ Fetch Current User Function
+    // current_user function 
     const fetchCurrentUser = async () => {
         try {
             const response = await fetch("http://127.0.0.1:5000/user", {
@@ -124,7 +128,7 @@ export const UserProvider = ({ children }) => {
         }
     };
 
-    // ✅ Logout User Function
+    // Logout Function
     const logoutUser = async () => {
         try {
             await fetch("http://127.0.0.1:5000/logout", {
