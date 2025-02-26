@@ -13,8 +13,7 @@ import CharityDetail from './pages/CharityDetail';
 import LoginPage from './pages/LoginPage';
 import Register from './pages/Register';
 import Profile from './pages/ProfilePage';
-import Github from './pages/Github';
-import Google from './pages/Google';
+
 
 import ProtectedRoute from './components/ProtectedRoute'; // import the ProtectedRoute compon
 // import Profile from './pages/ProfilePage';
@@ -46,8 +45,7 @@ function App() {
           {/* github/google */}
           <Route path="/profile" element={<ProfilePage />} />
           
-          <Route path="github" element={<Github />} />
-          <Route path="/google" element={<Google />} />
+        
 
 
           {/* Protect Login and Register routes */}

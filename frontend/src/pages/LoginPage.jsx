@@ -2,8 +2,8 @@ import { useState, useContext } from "react";
 import { UserContext } from "../context/UserContext";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGithub, FaGoogle } from "react-icons/fa";
-import signinwithgoogle from "./Google"; // Adjust path to match your folder structure
-import signinwithgithub from "./Github";
+import signinwithgoogle from "./signInWithGoogle"; // Adjust path to match your folder structure
+import signinwithgithub from "./signInWithGithub";
 const Login = () => {
   const { loginUser } = useContext(UserContext);
   const navigate = useNavigate();
