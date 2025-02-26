@@ -1,4 +1,13 @@
-import{ Routes, Route } from 'react-router-dom';
+import{ Routes, Route} from 'react-router-dom';
+// import { ToastContainer } from 'react-toastify';
+import { UserProvider } from './context/UserContext';
+import { CharityProvider } from './context/CharityContext';
+// import {DonorProvider} from './context/DonorContext';
+// import {StoryProvide} from './context/StoryContext'
+
+
+import './App.css'
+
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -19,16 +28,20 @@ import Github from './pages/Github';
 import Google from './pages/Google';
 
 function App() {
-  // You can check if the user is authenticated here, e.g., from localStorage or context
   const isAuthenticated = Boolean(localStorage.getItem('authToken')); 
 
   return (
+
     <div className="min-h-screen flex flex-col bg-gray-50">
+      {/* <BrowserRouter>
+      <ToastContainer> */}
+      <UserProvider>
       <Navbar />
+      <CharityProvider>
+      {/* <DonorProvider> */}
+      {/* <StoryProvide> */}
       <main className="flex-1 flex flex-col">
-       
         <Routes>
-          
           <Route path="/" element={<Home />} />
           <Route path="/donor/dashboard" element={<DonorDashboard />} />
           <Route path="/charity/dashboard" element={<CharityDashboard />} />
@@ -42,8 +55,6 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           {/* github/google */}
           <Route path="/profile" element={<ProfilePage />} />
-
-          
           <Route path="github" element={<Github />} />
           <Route path="/google" element={<Google />} />
 
@@ -61,11 +72,15 @@ function App() {
               <ProtectedRoute element={<Register />} isAuthenticated={isAuthenticated} />
             }
           />
-        </Routes>
-    
-             
+        </Routes>             
       </main>
+      {/* </StoryProvide> */}
+      {/* </DonorProvider> */}
+      </CharityProvider>
       <Footer />
+       </UserProvider>
+      {/* </ToastContainer>
+      </BrowserRouter>  */}
     </div>
 
   );

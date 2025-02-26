@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useUser } from "../context/UserContext";
+import { UserContext, useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";  
 
 const Register = () => {
-  const { registerUser } = useUser();
+  const { registerUser } = useUser(UserContext);
   const navigate = useNavigate(); 
   const [activeTab, setActiveTab] = useState("user");
   const [message, setMessage] = useState("");
@@ -16,10 +16,11 @@ const Register = () => {
   });
 
   const [charityForm, setCharityForm] = useState({
-    full_name: "",
+    charity_name: "",
     email: "",
     password: "",
     confirmPassword: ""
+
   });
 
   const handleChange = (e, formType) => {
@@ -33,20 +34,25 @@ const Register = () => {
 
   const handleSubmit = async (e, formType) => {
     e.preventDefault();
+    
     const formData = formType === "user" ? userForm : charityForm;
-    console.log(formData);
-    // if (!formData.charityName ||!formData.email ||!formData.password ||!formData.confirmPassword) {
-    //   setMessage("Please be patient while the admins are reviewing your charity.");
 
-    //   return;
-    // }
-   
-    setMessage("");
-    await registerUser(formData, formType, navigate); 
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match!");
+      return;
+    }
+    setError("");
+
+    if (formType === "user") {
+      await registerUser(userForm);
+      navigate("/login");
+    } else {
+      await registerCharity(charityForm);
+      setMessage("Your charity application is successful, pending approval.");
+    }
   };
-
   return (
-    // Changed background from a gradient to plain white
+    
     <div className="flex justify-center items-center min-h-screen bg-white p-6">
       <div className="w-full max-w-lg bg-white dark:bg-gray-900 shadow-lg rounded-xl p-6">
         <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-300">
@@ -61,7 +67,7 @@ const Register = () => {
             }`}
             onClick={() => setActiveTab("user")}
           >
-            User
+            Donor
           </button>
           <button
             className={`w-1/2 py-3 text-lg font-semibold ${
@@ -159,6 +165,9 @@ const Register = () => {
           <button type="submit" className="w-full p-3 text-white bg-blue-500 rounded-lg">
             Register
           </button>
+          <p className="text-center text-gray-900">
+          Already have an account? <Link to="/login" className="text-rose-500 hover:underline">Login</Link>
+        </p>
         </form>
       </div>
     </div>
