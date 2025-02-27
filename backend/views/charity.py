@@ -1,6 +1,7 @@
 from flask import jsonify, request, Blueprint
-from models import db, Charity
+from models import db, Charity,User
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from werkzeug.security import generate_password_hash
 
 charity_bp = Blueprint("charity_bp", __name__)
 
@@ -14,8 +15,10 @@ def get_charities():
     for charity in charities:
         charity_list.append({
             "id": charity.id,
-            "charity_name": charity.charity_name,
-            "email": charity.email
+            "charity_name":charity.charity_name,
+            "email":charity.email,
+            "user_id":charity.user_id,
+            "description":charity.description
         })
     return jsonify({"charities": charity_list}), 200
 
@@ -25,21 +28,26 @@ def get_charities():
 def get_charity_by_id(charity_id):
     charity = Charity.query.get(charity_id)
     if not charity:
-        return jsonify({"error": "Charity not found"}), 404
+        return jsonify({"error":"Charity not found"}), 404
     return jsonify({
-        "id": charity.id,
-        "charity_name": charity.charity_name,
-        "email": charity.email
+        # "id": charity.id,
+        "charity_name": charity.charity_name
+        # "email": charity.email
     }), 200
 
 # Post a charity
 @charity_bp.route('/charity', methods=["POST"])
 @jwt_required()
 def post_charity():
+    current_user_id=get_jwt_identity()
+    
     data = request.get_json()
     charity_name = data.get("charity_name")
     password = data.get("password")
-    email = data.get("email")
+    email=data.get("email")
+    description=data.get("description")
+    user_id = data.get("user_id")
+
     
     # Validate required fields
     if not charity_name or not password or not email:
@@ -51,55 +59,70 @@ def post_charity():
         return jsonify({"error": "Charity already exists"}), 406
     
     # Create a new charity record
-    new_charity = Charity(charity_name=charity_name, email=email, password=password)
+    new_charity = Charity(charity_name=charity_name, email=email, password=generate_password_hash(password), description= description, user_id=current_user_id)
     db.session.add(new_charity)
     db.session.commit()
+    
     return jsonify({
         "success": "Charity added successfully",
         "charity_id": new_charity.id
-    }), 201
+    }), 200
 
 # Update a charity
 @charity_bp.route('/charities/update/<int:charity_id>', methods=["PATCH"])
 @jwt_required()
 def update_charity(charity_id):
     # Assume the JWT identity is the charity's email
-    current_identity = get_jwt_identity()
-    charity = Charity.query.get(id=charity_id)
+    current_user_id = get_jwt_identity()
+    charity_user = User.query.get(current_user_id)
+    
+    if not charity_user:
+        return jsonify({"error": "Unauthorized to update"}), 404
+    
+    charity = Charity.query.get(charity_id)
     if not charity:
-        return jsonify({"error": "Charity not found"}), 404
+        return jsonify({"error": "charity not found"})
 
-    # Only allow update if the current charity's email matches the JWT identity
-    if charity and charity.email and charity.user_id != current_identity:
+    if charity_user.role != "admin" and charity.user_id != current_user_id:
         return jsonify({"error": "Unauthorized to update this charity"}), 403
   
     data = request.get_json()
-    new_charity_name = data.get("charity_name", charity.charity_name)
-    new_email = data.get("email", charity.email)
-    new_password = data.get("password", charity.password)  
-    # If charity_name is being updated, ensure uniqueness (exclude current charity)
-    if new_charity_name != charity.charity_name:
-        existing = Charity.query.filter_by(charity_name=new_charity_name).first()
+    if "charity_name" in data:
+        existing = Charity.query.filter(Charity.charity_name == data["charity_name"], Charity.id != charity.id).first()
         if existing:
             return jsonify({"error": "Another charity with that name already exists"}), 409
+        charity.charity_name = data["charity_name"]
 
-    charity.charity_name = new_charity_name
-    charity.email = new_email
-    charity.password = new_password
+    if "email" in data:
+        charity.email = data["email"]
+    
+    if "description" in data:
+        charity.description = data["description"]
+
+    if "password" in data:
+        charity.password = generate_password_hash(data["password"])
 
     db.session.commit()
     return jsonify({"success": "Charity updated successfully"}), 200
-
+    
+    
 # Delete a charity
 @charity_bp.route('/charity/delete/<int:charity_id>', methods=['DELETE'])
 @jwt_required()
 def delete_charity(charity_id):
+    current_user_id=get_jwt_identity()
+    current_user = User.query.get(current_user_id)
+    
+    if not current_user:
+        return jsonify({"Error": "Unauthorized"}),403
 
-    current_user_identity = get_jwt_identity()
-    charity = Charity.query.filter_by(id=charity_id, user_id=current_identity).first()
+    charity = Charity.query.get(charity_id)
     
     if not charity:
-        return jsonify({"error": "Charity not found/Unauthorized to delete this charity "}), 404
+        return jsonify({"error": "Charity not found"}), 404
+    
+    if current_user.role !="admin" and charity.user_id != current_user_id:
+        return jsonify({"Error": "Unauthorized to delete the charity"}),403
     
     db.session.delete(charity)
     db.session.commit()

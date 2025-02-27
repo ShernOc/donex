@@ -12,7 +12,11 @@ import AboutPage from './pages/AboutPage';
 import CharityDetail from './pages/CharityDetail';
 import LoginPage from './pages/LoginPage';
 import Register from './pages/Register';
+import ProfilePage from './pages/ProfilePage';
+import ProtectedRoute from './components/ProtectedRoute'; 
 import Profile from './pages/ProfilePage';
+import Github from './pages/Github';
+import Google from './pages/Google';
 
 
 import ProtectedRoute from './components/ProtectedRoute'; // import the ProtectedRoute compon
@@ -22,7 +26,7 @@ import ProfilePage from './pages/ProfilePage';
 
 function App() {
   // You can check if the user is authenticated here, e.g., from localStorage or context
-  const isAuthenticated = Boolean(localStorage.getItem('authToken')); // Example authentication check
+  const isAuthenticated = Boolean(localStorage.getItem('authToken')); 
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -44,6 +48,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           {/* github/google */}
           <Route path="/profile" element={<ProfilePage />} />
+
           
         
 
@@ -61,7 +66,6 @@ function App() {
               <ProtectedRoute element={<Register />} isAuthenticated={isAuthenticated} />
             }
           />
-         
         </Routes>
     
              

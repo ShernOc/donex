@@ -16,7 +16,7 @@ const Register = () => {
   });
 
   const [charityForm, setCharityForm] = useState({
-    charityName: "",
+    full_name: "",
     email: "",
     password: "",
     confirmPassword: ""
@@ -35,11 +35,11 @@ const Register = () => {
     e.preventDefault();
     const formData = formType === "user" ? userForm : charityForm;
     console.log(formData);
-    if (!formData.full_name ||!formData.email ||!formData.password ||!formData.confirmPassword) {
-      setMessage("Please be patient while the admins are reviewing your charity.");
+    // if (!formData.charityName ||!formData.email ||!formData.password ||!formData.confirmPassword) {
+    //   setMessage("Please be patient while the admins are reviewing your charity.");
 
-      return;
-    }
+    //   return;
+    // }
    
     setMessage("");
     await registerUser(formData, formType, navigate); 
@@ -120,7 +120,7 @@ const Register = () => {
             <>
               <input
                 type="text"
-                name="charityName"
+                name="full_name"
                 placeholder="Charity Name"
                 value={charityForm.charityName}
                 onChange={(e) => handleChange(e, "charity")}
