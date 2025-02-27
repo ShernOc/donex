@@ -14,10 +14,17 @@ def get_story():
             "content":story.content,
             "user_id":story.user_id
             }for story in stories]), 200
- 
-       
+    
+    
+# get story by id
+@story_bp.route("/stories/<int:user_id>", methods=["GET"])
+def story_by_id(user_id):
+    story = Story.query.get_or_404(user_id)
+    return jsonify({"id": story.id, "title": story.title, "content": story.content,"user_id":story.user_id})
+
+
 #Create a story by admin
-@story_bp.route('/story', methods =["POST"])
+@story_bp.route('/stories', methods =["POST"])
 @jwt_required()
 def post_story():
     current_user_id = get_jwt_identity()
@@ -97,6 +104,19 @@ def delete_story(story_id):
     db.session.commit()
     
     return jsonify({"Success":f"Story deleted Successfully"})
+
+
+# @story_bp.route('/stories/delete_all', methods=['DELETE'])
+# @jwt_required()
+# def delete_all_stories():
+#     current_user_id =get_jwt_identity()
+    
+#     if not current_user_id:
+#         return jsonify({"error": "Not authorized to delete this donation"}), 403
+    
+#     Story.query.delete()
+#     db.session.commit()
+#     return jsonify({"message": "All stories deleted successfully"}), 200
 
 
 

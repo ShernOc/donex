@@ -13,6 +13,8 @@ flask-bcrypt = "*"
 psycopg2-binary = "*"
 flask-oauthlib = "*"
 gunicorn = "*"
+requests = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
