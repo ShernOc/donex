@@ -45,7 +45,6 @@ export const UserProvider = ({ children }) => {
   };
 
   // Login User/Admin
-
   const loginUser = async (email, password ) => {
     toast.loading("Logging you in ...");
   
@@ -89,12 +88,11 @@ export const UserProvider = ({ children }) => {
         navigate("/admin/dashboard");
       } else if (userData.role === "user") {
         navigate("donor/dashboard");
-      } else if (userData.role === "charity") {
-        navigate("charity/dashboard");
-        }
+      } 
       else {
         navigate("/");
       }
+
     } catch (error) {
       toast.dismiss();
       toast.error(error.message || "Login failed!");
@@ -103,9 +101,34 @@ export const UserProvider = ({ children }) => {
   };
   
 // Getting the current User
+  const fetchUser_ById= async (id) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/users/${id}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setUser(data);
+        sessionStorage.setItem("user", JSON.stringify(data));
+      } else {
+        console.error("Failed to fetch user:", data.msg);
+        logoutUser();
+      }
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      logoutUser();
+    }
+  };
+
+  // Getting the current User
   const fetchCurrentUser = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:5000/user", {
+      const response = await fetch("http://127.0.0.1:5000/users", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -128,7 +151,6 @@ export const UserProvider = ({ children }) => {
   };
 
 //   Logout User
-
   const logoutUser = async () => {
     try {
       await fetch("http://127.0.0.1:5000/logout", {
@@ -146,8 +168,28 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  // admin to delete or user themselves
+  const deleteUser = async (id) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/users/delete/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setUser((prev) => prev.filter((charity) => charity.id !== id));
+      }
+      return data;
+    } catch (error) {
+      console.error("Error deleting User:", error);
+    }
+  };
+
+
   return (
-    <UserContext.Provider value={{ user, registerUser, loginUser, logoutUser }}>
+    <UserContext.Provider value={{ user, registerUser, loginUser, logoutUser, deleteUser, fetchUser_ById}}>
       {children}
     </UserContext.Provider>
   );

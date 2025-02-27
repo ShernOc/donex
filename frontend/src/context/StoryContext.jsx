@@ -8,10 +8,10 @@ export const StoryProvider = ({ children }) => {
   const [stories, setStories] = useState([]);
 
   // get the stories from the backend 
-  useEffect(() => {
+  
     const fetchStories = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:5001/stories");
+        const response = await fetch("http://127.0.0.1:5000/stories");
         const data = await response.json();
         setStories(data["All stories"] || []);
       } catch (error) {
@@ -19,13 +19,29 @@ export const StoryProvider = ({ children }) => {
       }
     };
 
+  useEffect(() => {
     fetchStories();
   }, []);
+
+
+  // get the stories from the backend by id
+    const fetchStoryById = async (id) => {
+      try {
+        const response = await fetch(`http://127.0.0.1:5000/stories/${id}`);
+        const data = await response.json();
+        return data; // Return the fetched story
+
+      } catch (error) {
+        console.error("Error fetching story", error);
+        return null;
+      }
+    };
+
 
   // Create a new story
   const createStory = async (storyData, token) => {
     try {
-      const response = await fetch("http://127.0.0.1:5001/stories", {
+      const response = await fetch("http://127.0.0.1:5000/stories", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -47,7 +63,7 @@ export const StoryProvider = ({ children }) => {
   // Update an existing story
   const updateStory = async (id, updateData, token) => {
     try {
-      const response = await fetch(`http://127.0.0.1:5001/stories/update/${id}`, {
+      const response = await fetch(`http://127.0.0.1:5000/stories/update/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -71,18 +87,17 @@ export const StoryProvider = ({ children }) => {
   // Delete a story
   const deleteStory = async (id, token) => {
     try {
-      const response = await fetch(`http://127.0.0.1:5001/story/delete/${id}`, {
+      const response = await fetch(`http://127.0.0.1:5000/stories/delete/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      const data = await response.json();
       if (response.ok) {
         setStories((prev) => prev.filter((story) => story.id !== id));
       }
-      return data;
+      return await response.json();
     } catch (error) {
       console.error("Error deleting story:", error);
     }
@@ -93,6 +108,8 @@ export const StoryProvider = ({ children }) => {
       value={{
         stories,
         createStory,
+        fetchStories,
+        fetchStoryById,
         updateStory,
         deleteStory,
       }}

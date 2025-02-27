@@ -38,13 +38,12 @@ class Charity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(128), nullable=False)
     charity_name = db.Column(db.String(128), nullable=False, unique=True)
-    description= db.Column(db.Text, nullable=True)
     password= db.Column(db.String(512), nullable=False)
-    approved = db.Column(db.String(20), default="pending")
-    
+    # description= db.Column(db.Text, nullable=True)
+    # approved = db.Column(db.String(20), default="pending")
     
     #Foreign keys
-    user_id= db.Column(db.Integer, db.ForeignKey("users.id"), nullable = False)
+    user_id= db.Column(db.Integer, db.ForeignKey("users.id"), nullable = True)
     
     # Relationships
     user= relationship("User", back_populates="charities")
