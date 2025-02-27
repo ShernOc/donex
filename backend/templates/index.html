@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donex Dashboard</title>
+    <script>
+        async function fetchUsers(endpoint, elementId, fields) {
+            let response = await fetch(endpoint);
+            let data = await response.json();
+            document.getElementById(elementId).innerHTML =
+            data.length > 0 
+            ? data.map(item => `<li>${fields.map(f => item[f]).join(" - ")}</li>`).join('')
+            : "<li>No data available</li>";
+    }
+    window.onload = function() {
+        fetchData('/users', 'users', ['full_name', 'email']);
+        fetchData('/charities', 'charities', ['organization', 'type']);
+        fetchData('/donations', 'donations', ['amount', 'donation_date']);
+        fetchData('/stories', 'stories', ['title', 'content']);
+    };
+</script>
+</head>
+<body>
+<h1>Donex Dashboard</h1>
+
+<h2>Users</h2>
+<ul id="users"></ul>
+
+<h2>Charities</h2>
+<ul id="charity"></ul>
+
+<h2>Donations</h2>
+<ul id="donations"></ul>
+
+<h2>Stories</h2>
+<ul id="story"></ul>
+</body>
+</html>
+
+
+            
