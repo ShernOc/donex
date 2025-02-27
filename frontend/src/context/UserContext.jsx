@@ -61,7 +61,7 @@ export const UserProvider = ({ children }) => {
   
       if (!response.ok) throw new Error(data.error || "Login failed!");
   
-      sessionStorage.setItem("token", data.access_token);
+      localStorage.setItem("token", data.access_token);
       setToken(data.access_token);
   
       // Wait before fetching user
