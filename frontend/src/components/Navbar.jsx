@@ -1,20 +1,43 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Heart, LogIn, UserPlus, Menu, LogOut } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
 
-  // Check authentication on mount
-  useEffect(() => {
-    setIsAuthenticated(Boolean(localStorage.getItem('authToken')));
+  // Function to check authentication status
+  const checkAuth = useCallback(() => {
+    setIsAuthenticated(Boolean(localStorage.getItem('token')));
   }, []);
+
+  // Check authentication on mount & listen for changes
+  useEffect(() => {
+    checkAuth();
+    window.addEventListener('storage', checkAuth);
+    
+    const syncLogout = (event) => {
+      if (event.key === 'logout') {
+        setIsAuthenticated(false);
+        navigate('/login');
+      }
+    };
+
+    window.addEventListener('storage', syncLogout);
+
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+      window.removeEventListener('storage', syncLogout);
+    };
+  }, [checkAuth, navigate]);
 
   // Handle logout
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
+    localStorage.removeItem('token');
+    window.localStorage.setItem('logout', Date.now()); // Sync logout across tabs
     setIsAuthenticated(false);
+    navigate('/login');
   };
 
   return (
@@ -37,18 +60,21 @@ const Navbar = () => {
           <Link to="/stories" className="text-gray-600 hover:text-gray-900 text-lg font-medium">
             Impact Stories
           </Link>
+          <Link to="/donate/:charityId?" className="text-gray-600 hover:text-gray-900 text-lg font-medium">
+           Donate
+          </Link>
 
-          {/* Show Login/Register only if user is NOT authenticated */}
+          {/* Authentication Links */}
           {!isAuthenticated ? (
             <>
-              <Link to="/login" className="flex items-center space-x-1 text-gray-600 hover:text-gray-900 text-lg font-medium">
+              <Link to="/login" className="flex items-center space-x-1 bg-rose-500 !text-white px-6 py-2 rounded-md hover:bg-rose-600 transition">
                 <LogIn className="h-5 w-5" />
                 <span>Login</span>
               </Link>
-              <Link to="/register" className="flex items-center space-x-1 bg-rose-500 text-white px-6 py-2 rounded-md hover:bg-rose-600 transition">
+              {/* <Link to="/register" className="flex items-center space-x-1 bg-rose-500 text-white px-6 py-2 rounded-md hover:bg-rose-600 transition">
                 <UserPlus className="h-5 w-5" />
                 <span>Register</span>
-              </Link>
+              </Link> */}
             </>
           ) : (
             <button onClick={handleLogout} className="flex items-center space-x-1 text-red-600 hover:text-red-800 text-lg font-medium">
@@ -67,26 +93,27 @@ const Navbar = () => {
       {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="md:hidden flex flex-col items-center space-y-4 py-4">
-          <Link to="/charities" className="text-gray-600 hover:text-gray-900 text-lg font-medium">
+          <Link to="/charities" onClick={() => setIsMenuOpen(false)} className="text-gray-600 hover:text-gray-900 text-lg font-medium">
             Charities
           </Link>
-          <Link to="/stories" className="text-gray-600 hover:text-gray-900 text-lg font-medium">
+          <Link to="/stories" onClick={() => setIsMenuOpen(false)} className="text-gray-600 hover:text-gray-900 text-lg font-medium">
             Impact Stories
           </Link>
 
+          {/* Authentication Links in Mobile Menu */}
           {!isAuthenticated ? (
             <>
-              <Link to="/login" className="flex items-center space-x-1 text-gray-600 hover:text-gray-900 text-lg font-medium">
+              <Link to="/login" onClick={() => setIsMenuOpen(false)} className="flex items-center space-x-1 text-gray-600 hover:text-gray-900 text-lg font-medium">
                 <LogIn className="h-5 w-5" />
                 <span>Login</span>
               </Link>
-              <Link to="/register" className="flex items-center space-x-1 bg-rose-500 text-white px-6 py-2 rounded-md hover:bg-rose-600 transition">
+              <Link to="/register" onClick={() => setIsMenuOpen(false)} className="flex items-center space-x-1 bg-rose-500 text-white px-6 py-2 rounded-md hover:bg-rose-600 transition">
                 <UserPlus className="h-5 w-5" />
                 <span>Register</span>
               </Link>
             </>
           ) : (
-            <button onClick={handleLogout} className="flex items-center space-x-1 text-red-600 hover:text-red-800 text-lg font-medium">
+            <button onClick={() => { handleLogout(); setIsMenuOpen(false); }} className="flex items-center space-x-1 text-red-600 hover:text-red-800 text-lg font-medium">
               <LogOut className="h-5 w-5" />
               <span>Logout</span>
             </button>

@@ -1,95 +1,103 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-const AdminContext = createContext();
+const StoryContext = createContext();
 
-export const useAdminContext = () => {
-  return useContext(AdminContext);
-};
+export const useStoryContext = () => useContext(StoryContext);
 
-export const AdminProvider = ({ children }) => {
-  const [maintenanceMode, setMaintenanceMode] = useState(false);
-  const [newRegistrations, setNewRegistrations] = useState(true);
-  const [admins, setAdmins] = useState([]);
+export const StoryProvider = ({ children }) => {
+  const [stories, setStories] = useState([]);
 
+  // get the stories from the backend 
   useEffect(() => {
-    const fetchAdmins = async () => {
+    const fetchStories = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:5000/admin");
+        const response = await fetch("http://127.0.0.1:5001/stories");
         const data = await response.json();
-        setAdmins(data.Admins);
+        setStories(data["All stories"] || []);
       } catch (error) {
-        console.error("Error fetching admin data:", error);
+        console.error("Error fetching stories:", error);
       }
     };
 
-    fetchAdmins();
+    fetchStories();
   }, []);
 
-  const registerAdmin = async (adminData) => {
+  // Create a new story
+  const createStory = async (storyData, token) => {
     try {
-      const response = await fetch("http://127.0.0.1:5000/admin", {
+      const response = await fetch("http://127.0.0.1:5001/stories", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(adminData),
+        body: JSON.stringify(storyData),
       });
+
       const data = await response.json();
       if (response.ok) {
-        setAdmins((prev) => [...prev, data]);
+        setStories((prev) => [...prev, { id: data.id, ...storyData }]);
       }
       return data;
     } catch (error) {
-      console.error("Error registering admin:", error);
+      console.error("Error creating story:", error);
     }
   };
 
-  const updateAdmin = async (id, updateData) => {
+  // Update an existing story
+  const updateStory = async (id, updateData, token) => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/admin/${id}`, {
+      const response = await fetch(`http://127.0.0.1:5001/stories/update/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(updateData),
       });
+
       const data = await response.json();
       if (response.ok) {
-        setAdmins((prev) => prev.map((admin) => (admin.id === id ? { ...admin, ...updateData } : admin)));
+        setStories((prev) =>
+          prev.map((story) => (story.id === id ? { ...story, ...updateData } : story))
+        );
       }
       return data;
     } catch (error) {
-      console.error("Error updating admin:", error);
+      console.error("Error updating story:", error);
     }
   };
 
-  const deleteAdmin = async (id) => {
+  // Delete a story
+  const deleteStory = async (id, token) => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/admin/delete/${id}`, {
+      const response = await fetch(`http://127.0.0.1:5001/story/delete/${id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+
       const data = await response.json();
       if (response.ok) {
-        setAdmins((prev) => prev.filter((admin) => admin.id !== id));
+        setStories((prev) => prev.filter((story) => story.id !== id));
       }
       return data;
     } catch (error) {
-      console.error("Error deleting admin:", error);
+      console.error("Error deleting story:", error);
     }
   };
 
   return (
-    <AdminContext.Provider
+    <StoryContext.Provider
       value={{
-        maintenanceMode,
-        newRegistrations,
-        admins,
-        registerAdmin,
-        updateAdmin,
-        deleteAdmin,
+        stories,
+        createStory,
+        updateStory,
+        deleteStory,
       }}
     >
       {children}
-    </AdminContext.Provider>
+    </StoryContext.Provider>
   );
 };
