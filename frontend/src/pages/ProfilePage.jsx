@@ -1,7 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
 import Cropper from "react-easy-crop";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
+import { toast } from "react-toastify";
+
+const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dvqgo17cz/upload";
+const UPLOAD_PRESET = "donex_proj"; 
 
 export default function ProfilePage() {
+  const { user, updateUser } = useUser();
+  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -70,34 +79,48 @@ export default function ProfilePage() {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
+  const createImage = (url) =>
+    new Promise((resolve, reject) => {
+      const image = new Image();
+      image.crossOrigin = "anonymous";
+      image.src = url;
+      image.onload = () => resolve(image);
+      image.onerror = reject;
+    });
+
   const getCroppedImg = async () => {
     if (!imageSrc || !croppedAreaPixels) return null;
 
-    const image = await createImage(imageSrc);
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
+    try {
+      const image = await createImage(imageSrc);
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
 
-    canvas.width = croppedAreaPixels.width;
-    canvas.height = croppedAreaPixels.height;
+      canvas.width = croppedAreaPixels.width;
+      canvas.height = croppedAreaPixels.height;
 
-    ctx.drawImage(
-      image,
-      croppedAreaPixels.x,
-      croppedAreaPixels.y,
-      croppedAreaPixels.width,
-      croppedAreaPixels.height,
-      0,
-      0,
-      croppedAreaPixels.width,
-      croppedAreaPixels.height
-    );
+      ctx.drawImage(
+        image,
+        croppedAreaPixels.x,
+        croppedAreaPixels.y,
+        croppedAreaPixels.width,
+        croppedAreaPixels.height,
+        0,
+        0,
+        croppedAreaPixels.width,
+        croppedAreaPixels.height
+      );
 
-    return new Promise((resolve) => {
-      canvas.toBlob((blob) => {
-        const croppedImageUrl = URL.createObjectURL(blob);
-        resolve(croppedImageUrl);
-      }, "image/jpeg");
-    });
+      return new Promise((resolve, reject) => {
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error("Canvas to Blob conversion failed"));
+        }, "image/jpeg");
+      });
+    } catch (error) {
+      console.error("Error cropping image:", error);
+      return null;
+    }
   };
 
   const handleCropSave = async () => {
@@ -136,6 +159,7 @@ export default function ProfilePage() {
       alert("An error occurred while saving the profile.");
     }
   };
+  
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">

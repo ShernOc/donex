@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Clock, History, Settings } from 'lucide-react';
+import { Heart, Clock, Settings } from 'lucide-react';
 
 const DonorDashboard = () => {
   const [donations, setDonations] = useState([]);

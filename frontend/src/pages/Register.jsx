@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useUser } from "../context/UserContext";
 import { useNavigate, Link } from "react-router-dom";
-
+import { signInWithGoogle } from "../firebase";
 const Register = () => {
   const { registerUser } = useUser();
   const navigate = useNavigate();
@@ -13,6 +13,7 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    profile_picture:"",
   });
 
   const [charityForm, setCharityForm] = useState({
@@ -20,7 +21,16 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    profile_picture: "",
   });
+  const handleGoogleSignIn = async () => {
+    try {
+      const user = await signInWithGoogle();
+      navigate("/dashboard"); // Redirect to dashboard after login
+    } catch (error) {
+      console.error("Google Sign-In Error:", error.message);
+    }
+  };
 
   const handleChange = (e, formType) => {
     const { name, value } = e.target;
@@ -105,6 +115,12 @@ const Register = () => {
                 required
                 className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
               />
+              <input
+                type="file"
+                name="profile_picture"
+                value={userForm.profile_picture}
+                accept="image/png, image/jpeg"
+                onChange={(e) => handleChange(e, "user")}/>
             </>
           ) : (
             <>
@@ -144,11 +160,25 @@ const Register = () => {
                 required
                 className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
               />
+              <input
+                type="file"
+                name="profile_picture"
+                value={charityForm.profile_picture}
+                accept="image/png, image/jpeg"
+                onChange={(e) => handleChange(e, "charity")}
+                />
             </>
           )}
           <button type="submit" className="w-full p-3 text-white bg-red-500 hover:bg-red-600 rounded-lg">
             Register
           </button>
+          <button
+          onClick={handleGoogleSignIn}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"
+          
+        >
+          sign in with Google
+        </button>
           <p className="text-center text-gray-900">
           Already have an account? <Link to="/login" className="text-rose-500 hover:underline">Login</Link>
         </p>

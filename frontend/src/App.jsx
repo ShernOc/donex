@@ -23,20 +23,22 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <UserProvider>
-        <Navbar />
-        <main className="flex-1 flex flex-col">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/donate/:charityId?" element={<DonationPage />} />
-            <Route path="/charities" element={<CharityList />} />
-            <Route path="/stories" element={<BeneficiaryStories />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/charity/:id" element={<CharityDetail />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/github" element={<Github />} />
-            <Route path="/google" element={<Google />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<Register />} />
+      <Navbar />
+      <CharityProvider>
+      <StoryProvider>
+      <main className="flex-1 flex flex-col">
+        
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/donate/:charityId?" element={<DonationPage />} />
+          <Route path="/charities" element={<CharityList />} />
+          <Route path="/stories" element={<BeneficiaryStories />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/charity/:id" element={<CharityDetail />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/google" element={<Google />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<Register />} />
 
             <Route
               path="/donor/dashboard"

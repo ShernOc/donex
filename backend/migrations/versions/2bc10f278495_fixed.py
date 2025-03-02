@@ -1,8 +1,16 @@
-"""Recreate all tables
+<<<<<<< HEAD:backend/migrations/versions/2bc10f278495_fixed.py
+"""fixed.
 
-Revision ID: e50c45656bc1
+Revision ID: 2bc10f278495
 Revises: 
-Create Date: 2025-03-02 13:40:34.503583
+Create Date: 2025-03-01 11:55:36.642076
+=======
+"""initial migration
+
+Revision ID: fd41eb5ee1e2
+Revises: 
+Create Date: 2025-02-27 10:41:04.996460
+>>>>>>> origin/development:backend/migrations/versions/fd41eb5ee1e2_initial_migration.py
 
 """
 from alembic import op
@@ -10,7 +18,11 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'e50c45656bc1'
+<<<<<<< HEAD:backend/migrations/versions/2bc10f278495_fixed.py
+revision = '2bc10f278495'
+=======
+revision = 'fd41eb5ee1e2'
+>>>>>>> origin/development:backend/migrations/versions/fd41eb5ee1e2_initial_migration.py
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -37,7 +49,7 @@ def upgrade():
 =======
 >>>>>>> origin/development:backend/migrations/versions/fd41eb5ee1e2_initial_migration.py
     sa.Column('role', sa.String(length=100), nullable=False),
-    sa.CheckConstraint("role IN ('user', 'admin', 'charity')", name='valid_role'),
+    sa.CheckConstraint("role IN ('user', 'admin')", name='valid_role'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
@@ -49,7 +61,7 @@ def upgrade():
     sa.Column('password', sa.String(length=512), nullable=False),
     sa.Column('profile_picture', sa.String(length=1024), nullable=False),
     sa.Column('approved', sa.String(length=20), nullable=True),
-    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('user_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('charity_name')
