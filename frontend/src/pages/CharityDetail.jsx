@@ -6,7 +6,7 @@ const CharityDetail = () => {
   const [charity, setCharity] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken'); // Get the token from localStorage (or other storage)
+    const token = localStorage.getItem('token'); // Get the token from localStorage (or other storage)
     
     fetch(`http://localhost:5000/charities/${id}`, {
       method: 'GET',

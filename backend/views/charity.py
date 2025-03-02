@@ -7,7 +7,6 @@ charity_bp = Blueprint("charity_bp", __name__)
 
 # Get all charities
 @charity_bp.route('/charities', methods=['GET'])
-@jwt_required()
 def get_charities():
     # Get all charities regardless of the current user.
     charities = Charity.query.all()
