@@ -3,9 +3,9 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 export const UserContext = createContext();
+
 export const useUser = () => useContext(UserContext);
 
-// eslint-disable-next-line react/prop-types
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(sessionStorage.getItem("token") || "");
@@ -17,7 +17,7 @@ export const UserProvider = ({ children }) => {
     }
   }, [token]);
 
-// register user
+  // Register user
   const registerUser = async (formData, userType) => {
     try {
       toast.loading("Registering...");
@@ -43,29 +43,27 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // Login User/Admin
-
-  const loginUser = async (email, password ) => {
-    toast.loading("Logging you in ...");
-  
+  // Login user
+  const loginUser = async (email, password) => {
     try {
+      toast.loading("Logging you in ...");
       const response = await fetch("http://127.0.0.1:5000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-  
+
       const data = await response.json();
       toast.dismiss();
-  
+
       if (!response.ok) throw new Error(data.error || "Login failed!");
-  
-      sessionStorage.setItem("token", data.access_token);
+
+      localStorage.setItem("token", data.access_token);
       setToken(data.access_token);
-  
+
       // Wait before fetching user
       await new Promise((resolve) => setTimeout(resolve, 500));
-  
+
       // Get User
       const userResponse = await fetch("http://127.0.0.1:5000/current_user", {
         method: "GET",
@@ -74,24 +72,23 @@ export const UserProvider = ({ children }) => {
           Authorization: `Bearer ${data.access_token}`,
         },
       });
-  
+
       const userData = await userResponse.json();
       if (!userResponse.ok) throw new Error("User data retrieval failed");
-  
+
       setUser(userData);
       sessionStorage.setItem("user", JSON.stringify(userData));
-  
+
       console.log("User Role:", userData.role);
-  
+
       // Ensure navigation happens only when userData is set
-      if (userData.role ==="admin") {
+      if (userData.role === "admin") {
         navigate("/admin/dashboard");
       } else if (userData.role === "user") {
         navigate("donor/dashboard");
       } else if (userData.role === "charity") {
         navigate("charity/dashboard");
-        }
-      else {
+      } else {
         navigate("/");
       }
     } catch (error) {
@@ -100,8 +97,8 @@ export const UserProvider = ({ children }) => {
       console.error("Login error:", error);
     }
   };
-  
-// Getting the current User
+
+  // Fetch current user data
   const fetchCurrentUser = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/user", {
@@ -126,8 +123,35 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-//   Logout User
+  const updateUser = async (userId, updatedData) => {
+    if (!userId) {
+      console.error("User ID is undefined. Cannot update profile.");
+      return Promise.reject("User ID is required.");
+    }
+  
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/user/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP Error: ${response.status}`);
+      }
+  
+      return await response.json();
+    } catch (error) {
+      console.error("Profile update failed:", error);
+      throw error;
+    }
+  };
+  
+  
 
+  // Logout user
   const logoutUser = async () => {
     try {
       await fetch("http://127.0.0.1:5000/logout", {
@@ -146,7 +170,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, registerUser, loginUser, logoutUser }}>
+    <UserContext.Provider value={{ user, registerUser, loginUser, logoutUser, updateUser }}>
       {children}
     </UserContext.Provider>
   );

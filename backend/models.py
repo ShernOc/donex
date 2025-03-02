@@ -15,6 +15,8 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)
     full_name = db.Column(db.String(100))
+    profile_picture = db.Column(db.String(512),nullable=False)
+
     role = db.Column(db.String(100), nullable=False,default="user")
     
     # Relationships
@@ -38,10 +40,10 @@ class Charity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(128), nullable=False)
     charity_name = db.Column(db.String(128), nullable=False, unique=True)
-    description= db.Column(db.Text, nullable=True)
-    password= db.Column(db.String(512), nullable=False)
-    
-    
+    description = db.Column(db.Text, nullable=True)
+    password = db.Column(db.String(512), nullable=False)
+    profile_picture = db.Column(db.String(1024), nullable=False)
+    approved = db.Column(db.String(20), default="pending")
     #Foreign keys
     user_id= db.Column(db.Integer, db.ForeignKey("users.id"), nullable = False)
     

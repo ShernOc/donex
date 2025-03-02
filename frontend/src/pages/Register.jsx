@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useUser } from "../context/UserContext";
-import { useNavigate } from "react-router-dom";  
-
+import { useNavigate, Link } from "react-router-dom";
+import { signInWithGoogle } from "../firebase";
 const Register = () => {
   const { registerUser } = useUser();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("user");
   const [message, setMessage] = useState("");
 
@@ -13,14 +13,24 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    profile_picture:"",
   });
 
   const [charityForm, setCharityForm] = useState({
-    full_name: "",
+    charity_name: "",
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
+    profile_picture: "",
   });
+  const handleGoogleSignIn = async () => {
+    try {
+      const user = await signInWithGoogle();
+      navigate("/dashboard"); // Redirect to dashboard after login
+    } catch (error) {
+      console.error("Google Sign-In Error:", error.message);
+    }
+  };
 
   const handleChange = (e, formType) => {
     const { name, value } = e.target;
@@ -33,39 +43,29 @@ const Register = () => {
 
   const handleSubmit = async (e, formType) => {
     e.preventDefault();
+    
     const formData = formType === "user" ? userForm : charityForm;
-    console.log(formData);
-    // if (!formData.charityName ||!formData.email ||!formData.password ||!formData.confirmPassword) {
-    //   setMessage("Please be patient while the admins are reviewing your charity.");
-
-    //   return;
-    // }
-   
     setMessage("");
-    await registerUser(formData, formType, navigate); 
+    await registerUser(formData, formType, navigate);
   };
-
   return (
-    // Changed background from a gradient to plain white
-    <div className="flex justify-center items-center min-h-screen bg-white p-6">
-      <div className="w-full max-w-lg bg-white dark:bg-gray-900 shadow-lg rounded-xl p-6">
-        <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-300">
-          Register
-        </h2>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
+      <div className="w-full max-w-lg bg-white shadow-xl rounded-xl p-6">
+        <h2 className="text-3xl font-bold text-center text-gray-800">Register</h2>
 
         {/* Tab Switcher */}
         <div className="flex mt-4 border-b">
           <button
             className={`w-1/2 py-3 text-lg font-semibold ${
-              activeTab === "user" ? "border-b-4 border-blue-500 text-blue-500" : "text-gray-500"
+              activeTab === "user" ? "border-b-4 border-red-500 text-red-500" : "text-gray-500"
             }`}
             onClick={() => setActiveTab("user")}
           >
-            User
+            Donor
           </button>
           <button
             className={`w-1/2 py-3 text-lg font-semibold ${
-              activeTab === "charity" ? "border-b-4 border-blue-500 text-blue-500" : "text-gray-500"
+              activeTab === "charity" ? "border-b-4 border-red-500 text-red-500" : "text-gray-500"
             }`}
             onClick={() => setActiveTab("charity")}
           >
@@ -76,7 +76,7 @@ const Register = () => {
         {message && <p className="text-green-500 text-center mt-2">{message}</p>}
 
         {/* Form */}
-        <form onSubmit={(e) => handleSubmit(e, activeTab)} className="text-white font-white space-y-4 mt-6">
+        <form onSubmit={(e) => handleSubmit(e, activeTab)} className="space-y-4 mt-6">
           {activeTab === "user" ? (
             <>
               <input
@@ -86,7 +86,7 @@ const Register = () => {
                 value={userForm.full_name}
                 onChange={(e) => handleChange(e, "user")}
                 required
-                className="w-full p-3 border rounded-lg"
+                className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
               />
               <input
                 type="email"
@@ -95,7 +95,7 @@ const Register = () => {
                 value={userForm.email}
                 onChange={(e) => handleChange(e, "user")}
                 required
-                className="w-full p-3 border rounded-lg"
+                className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
               />
               <input
                 type="password"
@@ -104,7 +104,7 @@ const Register = () => {
                 value={userForm.password}
                 onChange={(e) => handleChange(e, "user")}
                 required
-                className="w-full p-3 border rounded-lg"
+                className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
               />
               <input
                 type="password"
@@ -113,8 +113,14 @@ const Register = () => {
                 value={userForm.confirmPassword}
                 onChange={(e) => handleChange(e, "user")}
                 required
-                className="w-full p-3 border rounded-lg"
+                className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
               />
+              <input
+                type="file"
+                name="profile_picture"
+                value={userForm.profile_picture}
+                accept="image/png, image/jpeg"
+                onChange={(e) => handleChange(e, "user")}/>
             </>
           ) : (
             <>
@@ -122,10 +128,10 @@ const Register = () => {
                 type="text"
                 name="full_name"
                 placeholder="Charity Name"
-                value={charityForm.charityName}
+                value={charityForm.full_name}
                 onChange={(e) => handleChange(e, "charity")}
                 required
-                className="w-full p-3 border rounded-lg"
+                className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
               />
               <input
                 type="email"
@@ -134,7 +140,7 @@ const Register = () => {
                 value={charityForm.email}
                 onChange={(e) => handleChange(e, "charity")}
                 required
-                className="w-full p-3 border rounded-lg"
+                className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
               />
               <input
                 type="password"
@@ -143,7 +149,7 @@ const Register = () => {
                 value={charityForm.password}
                 onChange={(e) => handleChange(e, "charity")}
                 required
-                className="w-full p-3 border rounded-lg"
+                className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
               />
               <input
                 type="password"
@@ -152,13 +158,30 @@ const Register = () => {
                 value={charityForm.confirmPassword}
                 onChange={(e) => handleChange(e, "charity")}
                 required
-                className="w-full p-3 border rounded-lg"
+                className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
               />
+              <input
+                type="file"
+                name="profile_picture"
+                value={charityForm.profile_picture}
+                accept="image/png, image/jpeg"
+                onChange={(e) => handleChange(e, "charity")}
+                />
             </>
           )}
-          <button type="submit" className="w-full p-3 text-white bg-blue-500 rounded-lg">
+          <button type="submit" className="w-full p-3 text-white bg-red-500 hover:bg-red-600 rounded-lg">
             Register
           </button>
+          <button
+          onClick={handleGoogleSignIn}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"
+          
+        >
+          sign in with Google
+        </button>
+          <p className="text-center text-gray-900">
+          Already have an account? <Link to="/login" className="text-rose-500 hover:underline">Login</Link>
+        </p>
         </form>
       </div>
     </div>

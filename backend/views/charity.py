@@ -18,7 +18,9 @@ def get_charities():
             "charity_name":charity.charity_name,
             "email":charity.email,
             "user_id":charity.user_id,
-            "description":charity.description
+            "description":charity.description,
+            "profile_picture":charity.profile_picture,
+            "approved":charity.approved
         })
     return jsonify({"charities": charity_list}), 200
 
@@ -30,25 +32,29 @@ def get_charity_by_id(charity_id):
     if not charity:
         return jsonify({"error":"Charity not found"}), 404
     return jsonify({
-        # "id": charity.id,
-        "charity_name": charity.charity_name
-        # "email": charity.email
+        "id": charity.id,
+        "charity_name": charity.charity_name,
+        "email": charity.email,
+        "description":charity.description,
+        "profile_picture": charity.profile_picture,
+        "approved":charity.approved
     }), 200
 
-# Post a charity
+
+# Post a charity no need to be login 
 @charity_bp.route('/charity', methods=["POST"])
-@jwt_required()
 def post_charity():
-    current_user_id=get_jwt_identity()
+    # current_user_id=get_jwt_identity()
     
     data = request.get_json()
     charity_name = data.get("charity_name")
     password = data.get("password")
     email=data.get("email")
+    profile_picture = data.get("profile_picture")
     description=data.get("description")
+    # approved="pending"
     user_id = data.get("user_id")
 
-    
     # Validate required fields
     if not charity_name or not password or not email:
         return jsonify({"error": "Missing required fields"}), 400
@@ -59,7 +65,8 @@ def post_charity():
         return jsonify({"error": "Charity already exists"}), 406
     
     # Create a new charity record
-    new_charity = Charity(charity_name=charity_name, email=email, password=generate_password_hash(password), description= description, user_id=current_user_id)
+    new_charity = Charity(charity_name=charity_name, email=email, password=password,profile_picture=profile_picture ,description= description, user_id=user_id)
+    
     db.session.add(new_charity)
     db.session.commit()
     
@@ -67,6 +74,7 @@ def post_charity():
         "success": "Charity added successfully",
         "charity_id": new_charity.id
     }), 200
+    
 
 # Update a charity
 @charity_bp.route('/charities/update/<int:charity_id>', methods=["PATCH"])
@@ -95,6 +103,9 @@ def update_charity(charity_id):
 
     if "email" in data:
         charity.email = data["email"]
+
+    if "profile_picture" in data:
+        charity.profile_picture = data["profile_picture"]
     
     if "description" in data:
         charity.description = data["description"]

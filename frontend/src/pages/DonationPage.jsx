@@ -1,10 +1,8 @@
-
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { CreditCard, Calendar, Heart } from 'lucide-react';
 
 const DonationPage = () => {
-  const { charityId } = useParams();
+  const [charityId, setCharityId] = useState('');
   const [amount, setAmount] = useState('');
   const [donationType, setDonationType] = useState('one-time');
   const [frequency, setFrequency] = useState('monthly');
@@ -14,33 +12,15 @@ const DonationPage = () => {
 
   const predefinedAmounts = [10, 25, 50, 100];
 
-  const handleAmountChange = (e) => {
-    setAmount(e.target.value);
-  };
-
-  const handleDonationTypeChange = (type) => {
-    setDonationType(type);
-  };
-
-  const handleFrequencyChange = (e) => {
-    setFrequency(e.target.value);
-  };
-
-  const handleCardNumberChange = (e) => {
-    setCardNumber(e.target.value);
-  };
-
-  const handleExpiryChange = (e) => {
-    setExpiry(e.target.value);
-  };
-
-  const handleCvcChange = (e) => {
-    setCvc(e.target.value);
-  };
+  const charities = [
+    { id: '1', name: 'Save the Children' },
+    { id: '2', name: 'Red Cross' },
+    { id: '3', name: 'WWF' },
+    { id: '4', name: 'UNICEF' },
+  ];
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add your submission logic here
     console.log({
       charityId,
       amount,
@@ -63,6 +43,25 @@ const DonationPage = () => {
 
           <div className="p-6">
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Charity Selection */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-4">
+                  Select Charity
+                </label>
+                <select
+                  value={charityId}
+                  onChange={(e) => setCharityId(e.target.value)}
+                  className="w-full p-2 border rounded-md text-gray-900 bg-white focus:border-rose-500 focus:ring-rose-500"
+                >
+                  <option value="" disabled>Select a charity</option>
+                  {charities.map((charity) => (
+                    <option key={charity.id} value={charity.id}>
+                      {charity.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               {/* Donation Amount */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-4">
@@ -84,15 +83,13 @@ const DonationPage = () => {
                     </button>
                   ))}
                 </div>
-                <div className="mt-2">
-                  <input
-                    type="number"
-                    value={amount}
-                    onChange={handleAmountChange}
-                    placeholder="Enter custom amount"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-white text-black placeholder-white focus:border-rose-500 focus:ring-rose-500 px-3 py-2"
-                  />
-                </div>
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="Enter custom amount"
+                  className="w-full p-2 border rounded-md text-gray-900 bg-white focus:border-rose-500 focus:ring-rose-500"
+                />
               </div>
 
               {/* Donation Type */}
@@ -103,24 +100,24 @@ const DonationPage = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <button
                     type="button"
-                    className={`py-3 px-4 border rounded-md text-center flex items-center justify-center ${
+                    className={`py-3 px-4 border rounded-md text-center ${
                       donationType === 'one-time'
-                        ? 'border-rose-500 bg-white text-white'
-                        : 'border-gray-300 bg-white text-white hover:border-rose-500'
+                        ? 'border-rose-500 bg-rose-50 text-rose-700'
+                        : 'border-gray-300 bg-white text-gray-900 hover:border-rose-500'
                     }`}
-                    onClick={() => handleDonationTypeChange('one-time')}
+                    onClick={() => setDonationType('one-time')}
                   >
                     <CreditCard className="h-5 w-5 mr-2" />
                     One-time
                   </button>
                   <button
                     type="button"
-                    className={`py-3 px-4 border rounded-md text-center flex items-center justify-center ${
+                    className={`py-3 px-4 border rounded-md text-center ${
                       donationType === 'recurring'
                         ? 'border-rose-500 bg-rose-50 text-rose-700'
-                        : 'border-gray-300 bg-white text-white hover:border-rose-500'
+                        : 'border-gray-300 bg-white text-gray-900 hover:border-rose-500'
                     }`}
-                    onClick={() => handleDonationTypeChange('recurring')}
+                    onClick={() => setDonationType('recurring')}
                   >
                     <Calendar className="h-5 w-5 mr-2" />
                     Recurring
@@ -128,7 +125,7 @@ const DonationPage = () => {
                 </div>
               </div>
 
-              {/* Frequency Selection (only shown for recurring donations) */}
+              {/* Frequency Selection */}
               {donationType === 'recurring' && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-4">
@@ -136,8 +133,8 @@ const DonationPage = () => {
                   </label>
                   <select
                     value={frequency}
-                    onChange={handleFrequencyChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-white text-gray-900 placeholder-white focus:border-rose-500 focus:ring-rose-500 px-3 py-2"
+                    onChange={(e) => setFrequency(e.target.value)}
+                    className="w-full p-2 border rounded-md text-gray-900 bg-white focus:border-rose-500 focus:ring-rose-500"
                   >
                     <option value="weekly">Weekly</option>
                     <option value="monthly">Monthly</option>
@@ -152,43 +149,40 @@ const DonationPage = () => {
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Payment Information</h3>
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="card-number" className="block text-sm font-medium text-gray-700">
+                    <label className="block text-sm font-medium text-gray-700">
                       Card Number
                     </label>
                     <input
                       type="text"
-                      id="card-number"
                       value={cardNumber}
-                      onChange={handleCardNumberChange}
+                      onChange={(e) => setCardNumber(e.target.value)}
                       placeholder="1234 5678 9012 3456"
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-white text-gray-900 placeholder-white focus:border-rose-500 focus:ring-rose-500 px-3 py-2"
+                      className="w-full p-2 border rounded-md text-gray-900 bg-white focus:border-rose-500 focus:ring-rose-500"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="expiry" className="block text-sm font-medium text-gray-700">
+                      <label className="block text-sm font-medium text-gray-700">
                         Expiry Date
                       </label>
                       <input
                         type="text"
-                        id="expiry"
                         value={expiry}
-                        onChange={handleExpiryChange}
+                        onChange={(e) => setExpiry(e.target.value)}
                         placeholder="MM/YY"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-white text-gray-900 placeholder-white focus:border-rose-500 focus:ring-rose-500 px-3 py-2"
+                        className="w-full p-2 border rounded-md text-gray-900 bg-white focus:border-rose-500 focus:ring-rose-500"
                       />
                     </div>
                     <div>
-                      <label htmlFor="cvc" className="block text-sm font-medium text-gray-700">
+                      <label className="block text-sm font-medium text-gray-700">
                         CVC
                       </label>
                       <input
                         type="text"
-                        id="cvc"
                         value={cvc}
-                        onChange={handleCvcChange}
+                        onChange={(e) => setCvc(e.target.value)}
                         placeholder="123"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-white text-gray-900 placeholder-white focus:border-rose-500 focus:ring-rose-500 px-3 py-2"
+                        className="w-full p-2 border rounded-md text-gray-900 bg-white focus:border-rose-500 focus:ring-rose-500"
                       />
                     </div>
                   </div>
