@@ -1,6 +1,9 @@
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import { UserProvider } from './context/UserContext';
+import { CharityProvider } from './context/CharityContext';
+import {StoryProvider} from './context/StoryContext'
 import Home from './pages/Home';
 import DonorDashboard from './pages/DonorDashboard';
 import CharityDashboard from './pages/CharityDashboard';
@@ -16,15 +19,20 @@ import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './components/ProtectedRoute'; 
 import Google from './pages/Google';
 
+
 function App() {
   // const isAuthenticated = Boolean(localStorage.getItem('token'));
 
   return (
 
     <div className="min-h-screen flex flex-col bg-gray-50">
+      {/* <BrowserRouter> */}
+      <UserProvider>
       <Navbar />
-
+      <CharityProvider>
+      <StoryProvider>
       <main className="flex-1 flex flex-col">
+        
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/donate/:charityId?" element={<DonationPage />} />
@@ -56,9 +64,13 @@ function App() {
             }
           />
         </Routes>
-      </main>
-      <Footer />
-
+      </main> 
+    
+    </StoryProvider>
+    </CharityProvider>
+    <Footer />
+  </UserProvider>
+{/* </BrowserRouter> */}
     </div>
   );
 }

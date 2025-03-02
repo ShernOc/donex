@@ -9,8 +9,7 @@ user_bp= Blueprint("user_bp", __name__)
 @user_bp.route("/register", methods=["POST"])
 def create_user():
     data = request.get_json()
-    print(data)
-    
+
     # Validate request payload
     if not data or "email" not in data or "password" not in data or "full_name" not in data or "profile_picture" not in data:
         return jsonify({"msg": "Invalid request"}), 400
@@ -41,14 +40,14 @@ def create_user():
 
 
 # get all users
-@user_bp.route("/user", methods=["GET"])
+@user_bp.route("/users", methods=["GET"])
 def get_users():
     users = User.query.all()
     return jsonify([{"id": user.id, "full_name": user.full_name, "email": user.email,"profile_picture":user.profile_picture,"role":user.role} for user in users]), 200
 
 
 # get user by id
-@user_bp.route("/user/<int:user_id>", methods=["GET"])
+@user_bp.route("/users/<int:user_id>", methods=["GET"])
 def get_user_by_id(user_id):
     user = User.query.get_or_404(user_id)
     return jsonify({"id": user.id, "full_name": user.full_name, "email": user.email,"profile_picture":user.profile_picture,"role":user.role})
@@ -91,7 +90,7 @@ def update_user_by_id(user_id):
 
 
 # delete user by id
-@user_bp.route("/user/delete/<int:user_id>", methods=["DELETE"])
+@user_bp.route("/users/delete/<int:user_id>", methods=["DELETE"])
 @jwt_required()
 def delete_user_by_id(user_id):
     current_user_id = get_jwt_identity()  
@@ -113,3 +112,17 @@ def delete_user_by_id(user_id):
     db.session.commit()
     
     return jsonify({"msg": "User deleted successfully"}), 200
+
+
+# ## only admins can delete the 
+# @user_bp.route('/users/delete_all', methods=['DELETE'])
+# @jwt_required()
+# def delete_all_donations():
+#     current_user_id =get_jwt_identity()
+    
+#     if not current_user_id:
+#         return jsonify({"error": "Not authorized to delete this donation"}), 403
+    
+#     User.query.delete()
+#     db.session.commit()
+#     return jsonify({"message": "All users deleted successfully"}), 200

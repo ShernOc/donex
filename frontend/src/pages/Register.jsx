@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { useUser } from "../context/UserContext";
+import { useCharity } from "../context/CharityContext";
 import { useNavigate, Link } from "react-router-dom";
 import { signInWithGoogle } from "../firebase";
 const Register = () => {
-  const { registerUser } = useUser();
+  const { registerUser} = useUser();
+  const { registerCharity } = useCharity();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("user");
   const [message, setMessage] = useState("");
+  const {user} = useUser();
 
   const [userForm, setUserForm] = useState({
     full_name: "",
@@ -44,17 +47,41 @@ const Register = () => {
   const handleSubmit = async (e, formType) => {
     e.preventDefault();
     
-    const formData = formType === "user" ? userForm : charityForm;
     setMessage("");
-    await registerUser(formData, formType, navigate);
+
+    if (formType === "charity") {
+      if (charityForm.password !== charityForm.confirmPassword) {
+        setMessage("Passwords do not match");
+        return;
+      }
+      await registerCharity({
+        charity_name: charityForm.charity_name,
+        email: charityForm.email,
+        password: charityForm.password,
+        user_id:user?.id ||null,
+      
+      });
+    } else {
+      if (userForm.password !== userForm.confirmPassword) {
+        setMessage("Passwords do not match");
+        return;
+      }
+      await registerUser({
+        full_name: userForm.full_name,
+        email: userForm.email,
+        password: userForm.password,
+      });
+    }
   };
+
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
       <div className="w-full max-w-lg bg-white shadow-xl rounded-xl p-6">
         <h2 className="text-3xl font-bold text-center text-gray-800">Register</h2>
 
-        {/* Tab Switcher */}
-        <div className="flex mt-4 border-b">
+     {/* Tab Switcher  */}
+       <div className="flex mt-4 border-b">
           <button
             className={`w-1/2 py-3 text-lg font-semibold ${
               activeTab === "user" ? "border-b-4 border-red-500 text-red-500" : "text-gray-500"
@@ -126,9 +153,9 @@ const Register = () => {
             <>
               <input
                 type="text"
-                name="full_name"
+                name="charity_name"
                 placeholder="Charity Name"
-                value={charityForm.full_name}
+                value={charityForm.charity_name}
                 onChange={(e) => handleChange(e, "charity")}
                 required
                 className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
@@ -189,3 +216,5 @@ const Register = () => {
 };
 
 export default Register;
+
+

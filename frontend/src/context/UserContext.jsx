@@ -91,6 +91,7 @@ export const UserProvider = ({ children }) => {
       } else {
         navigate("/");
       }
+
     } catch (error) {
       toast.dismiss();
       toast.error(error.message || "Login failed!");
@@ -101,7 +102,7 @@ export const UserProvider = ({ children }) => {
   // Fetch current user data
   const fetchCurrentUser = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:5000/user", {
+      const response = await fetch("http://127.0.0.1:5000/users", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -168,6 +169,26 @@ export const UserProvider = ({ children }) => {
       console.error("Error during logout:", error);
     }
   };
+
+  // admin to delete or user themselves
+  const deleteUser = async (id) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/users/delete/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setUser((prev) => prev.filter((charity) => charity.id !== id));
+      }
+      return data;
+    } catch (error) {
+      console.error("Error deleting User:", error);
+    }
+  };
+
 
   return (
     <UserContext.Provider value={{ user, registerUser, loginUser, logoutUser, updateUser }}>

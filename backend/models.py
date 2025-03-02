@@ -40,12 +40,19 @@ class Charity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(128), nullable=False)
     charity_name = db.Column(db.String(128), nullable=False, unique=True)
+<<<<<<< HEAD
     description = db.Column(db.Text, nullable=True)
     password = db.Column(db.String(512), nullable=False)
     profile_picture = db.Column(db.String(1024), nullable=False)
     approved = db.Column(db.String(20), default="pending")
+=======
+    password= db.Column(db.String(512), nullable=False)
+    # description= db.Column(db.Text, nullable=True)
+    # approved = db.Column(db.String(20), default="pending")
+    
+>>>>>>> origin/development
     #Foreign keys
-    user_id= db.Column(db.Integer, db.ForeignKey("users.id"), nullable = False)
+    user_id= db.Column(db.Integer, db.ForeignKey("users.id"), nullable = True)
     
     # Relationships
     user= relationship("User", back_populates="charities")

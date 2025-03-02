@@ -58,5 +58,18 @@ def create_app():
 
     return app
 
+# load_dotenv()
+
+# PAYPAL Payments:
+PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
+PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET")
+PAYPAL_BASE_URL = os.getenv("PAYPAL_BASE_URL")
+
+
+
 if __name__ == '__main__':
+<<<<<<< HEAD
     app.run(debug=True, port=5000) 
+=======
+    app.run(debug=True, port=5001) 
+>>>>>>> origin/development
