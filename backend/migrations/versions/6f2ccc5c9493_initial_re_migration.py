@@ -1,8 +1,8 @@
-"""Recreate all tables
+"""Initial re-migration
 
-Revision ID: e50c45656bc1
+Revision ID: 6f2ccc5c9493
 Revises: 
-Create Date: 2025-03-02 13:40:34.503583
+Create Date: 2025-03-02 17:36:29.948740
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'e50c45656bc1'
+revision = '6f2ccc5c9493'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -32,10 +32,7 @@ def upgrade():
     sa.Column('email', sa.String(length=120), nullable=False),
     sa.Column('password', sa.String(length=256), nullable=False),
     sa.Column('full_name', sa.String(length=100), nullable=True),
-<<<<<<< HEAD:backend/migrations/versions/2bc10f278495_fixed.py
     sa.Column('profile_picture', sa.String(length=512), nullable=False),
-=======
->>>>>>> origin/development:backend/migrations/versions/fd41eb5ee1e2_initial_migration.py
     sa.Column('role', sa.String(length=100), nullable=False),
     sa.CheckConstraint("role IN ('user', 'admin', 'charity')", name='valid_role'),
     sa.PrimaryKeyConstraint('id'),

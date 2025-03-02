@@ -5,7 +5,6 @@ from werkzeug.security import generate_password_hash
 
 charity_bp = Blueprint("charity_bp", __name__)
 
-<<<<<<< HEAD
 # Get all charities
 @charity_bp.route('/charities', methods=['GET'])
 @jwt_required()
@@ -41,8 +40,6 @@ def get_charity_by_id(charity_id):
         "approved":charity.approved
     }), 200
 
-=======
->>>>>>> origin/development
 
 # Post a charity no need to be login 
 @charity_bp.route('/charities', methods=["POST"])
@@ -51,13 +48,8 @@ def post_charity():
     charity_name = data.get("charity_name")
     password =generate_password_hash(data.get("password")) 
     email=data.get("email")
-<<<<<<< HEAD
     profile_picture = data.get("profile_picture")
     description=data.get("description")
-=======
-    
-    # description=data.get("description")
->>>>>>> origin/development
     # approved="pending"
   
     # Validate required fields
@@ -69,45 +61,39 @@ def post_charity():
         return jsonify({"error":"Charity already exists"}), 406
     
     # Create a new charity record
-<<<<<<< HEAD
     new_charity = Charity(charity_name=charity_name, email=email, password=password,profile_picture=profile_picture ,description= description, user_id=user_id)
-=======
-    new_charity = Charity(charity_name=charity_name, email=email, password=password, user_id=None)
-                                    
-    # description= description, user_id=user_id)
->>>>>>> origin/development
     
     db.session.add(new_charity)
     db.session.commit()
     return jsonify({"success": "Charity added successfully", "charity_id": new_charity.id}), 200
 
-# Get all charities
-@charity_bp.route('/charities', methods=['GET'])
-@jwt_required()
-def get_charities():
-    charities = Charity.query.all()
-    return jsonify({
-        "charities": [{
-            "id": charity.id,
-            "charity_name": charity.charity_name,
-            "email": charity.email,
-            "user_id": charity.user_id
-        } for charity in charities]
-    }), 200
+# # Get all charities
+# @charity_bp.route('/charities', methods=['GET'])
+# @jwt_required()
+# def get_charities():
+#     charities = Charity.query.all()
+#     return jsonify({
+#         "charities": [{
+#             "id": charity.id,
+#             "charity_name": charity.charity_name,
+#             "email": charity.email,
+#             "user_id": charity.user_id
+#         } for charity in charities]
+#     }), 200
 
-# Get a charity by ID
-@charity_bp.route('/charities/<int:charity_id>', methods=['GET'])
-@jwt_required()
-def get_charity_by_id(charity_id):
-    charity = Charity.query.get(charity_id)
-    if not charity:
-        return jsonify({"error": "Charity not found"}), 404
-    return jsonify({
-        "id": charity.id,
-        "charity_name": charity.charity_name,
-        "email": charity.email,
-        "user_id": charity.user_id
-    }), 200
+# # Get a charity by ID
+# @charity_bp.route('/charities/<int:charity_id>', methods=['GET'])
+# @jwt_required()
+# def get_charity_by_id(charity_id):
+#     charity = Charity.query.get(charity_id)
+#     if not charity:
+#         return jsonify({"error": "Charity not found"}), 404
+#     return jsonify({
+#         "id": charity.id,
+#         "charity_name": charity.charity_name,
+#         "email": charity.email,
+#         "user_id": charity.user_id
+#     }), 200
 
 # Update a charity
 @charity_bp.route('/charities/update/<int:charity_id>', methods=["PATCH"])
