@@ -25,7 +25,7 @@ class User(db.Model):
     stories = relationship("Story", back_populates="user")
     
     __table_args__ = (
-        CheckConstraint(role.in_(["user", "admin", "charity"]), name="valid_role"),
+        CheckConstraint(role.in_(['user', 'admin', 'charity']), name="valid_role"),
     )
     
      # limit admin to 3 users
@@ -36,19 +36,27 @@ class User(db.Model):
      
 class Charity(db.Model):
     __tablename__ = "charities"
-    
+
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(128), nullable=False)
+    email = db.Column(db.String(128), nullable=False, unique=True)
     charity_name = db.Column(db.String(128), nullable=False, unique=True)
     description = db.Column(db.Text, nullable=True)
     password = db.Column(db.String(512), nullable=False)
     profile_picture = db.Column(db.String(1024), nullable=False)
     approved = db.Column(db.String(20), default="pending")
-    #Foreign keys
-    user_id= db.Column(db.Integer, db.ForeignKey("users.id"), nullable = True)
-    
+
+    # Verification fields
+    phone_number = db.Column(db.String(20), nullable=False)
+    bank_name = db.Column(db.String(255), nullable=True)
+    account_number = db.Column(db.String(50), nullable=True, unique=True)
+    account_holder = db.Column(db.String(255), nullable=True)
+    targeted_amount = db.Column(db.Float, nullable=False)
+
+    # Foreign keys
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+
     # Relationships
-    user= relationship("User", back_populates="charities")
+    user = relationship("User", back_populates="charities")
     donations = relationship("Donation", back_populates="charities")
     
     
@@ -85,10 +93,3 @@ class TokenBlocklist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     jti = db.Column(db.String(36), nullable=False, index=True)
     created_at = db.Column(db.DateTime, nullable=False)
-    
-    
-# charity = Charity(charity_name="Test Charity")
-# db.session.add(charity)
-# db.session.commit()
-
-    

@@ -35,6 +35,7 @@ app.register_blueprint(donation_bp)
 app.register_blueprint(story_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(dashboard_bp)
+app.register_blueprint(target_bp)
 
 
 @app.errorhandler(404)

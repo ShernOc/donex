@@ -16,6 +16,7 @@ import Register from './pages/Register';
 import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './components/ProtectedRoute';
 import Google from './pages/Google';
+import CharityVerificationForm from './pages/CharityVerification';
 
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
                 <Route path="/google" element={<Google />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/charity/verification" element={<CharityVerificationForm />} />
                 <Route
                   path="/donor/dashboard"
                   element={<ProtectedRoute element={<DonorDashboard />} />}
