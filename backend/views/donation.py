@@ -33,7 +33,7 @@ def get_donations():
     user_total = {user: total for user, total in user_donations}
     
     # Calculate total donations per charity
-    charity_donations = db.query(Donation.charity_id, func.sum(Donation.amount).label("total_received")).group_by(Donation.charity_id).all()
+    charity_donations = db.session.query(Donation.charity_id, func.sum(Donation.amount).label("total_received")).group_by(Donation.charity_id).all()
     charity_total = {charity: total for charity, total in charity_donations}
     
      # Calculate total monthly donations

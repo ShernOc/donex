@@ -1,8 +1,29 @@
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 const CharityDetail = () => {
   const { id } = useParams();
-  const charity = charities.find(char => char.id === parseInt(id));
+  const [charity, setCharity] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken'); // Get the token from localStorage (or other storage)
+    
+    fetch(`http://localhost:5000/charities/${id}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch charity details');
+        }
+        return response.json();
+      })
+      .then((data) => setCharity(data))
+      .catch((error) => console.error(error));
+  }, [id]);
 
   if (!charity) {
     return <p>Charity not found!</p>;

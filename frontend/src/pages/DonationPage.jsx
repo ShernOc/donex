@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CreditCard, Calendar, Heart } from 'lucide-react';
 
 const DonationPage = () => {
@@ -9,6 +9,7 @@ const DonationPage = () => {
   const [cardNumber, setCardNumber] = useState('');
   const [expiry, setExpiry] = useState('');
   const [cvc, setCvc] = useState('');
+  const [donationData, setDonationData] = useState({});
 
   const predefinedAmounts = [10, 25, 50, 100];
 
@@ -21,7 +22,7 @@ const DonationPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({
+    setDonationData({
       charityId,
       amount,
       donationType,
@@ -31,6 +32,37 @@ const DonationPage = () => {
       cvc,
     });
   };
+
+  useEffect(() => {
+    if (Object.keys(donationData).length > 0) {
+      fetch('http://127.0.0.1:5000/donations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(donationData),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error('Failed to create donation');
+          }
+          return res.json();
+        })
+        .then((data) => {
+          console.log('Donation successful:', data);
+          // Optionally reset form
+          setCharityId('');
+          setAmount('');
+          setDonationType('one-time');
+          setFrequency('monthly');
+          setCardNumber('');
+          setExpiry('');
+          setCvc('');
+          setDonationData({});
+        })
+        .catch((error) => console.error('Error creating donation:', error));
+    }
+  }, [donationData]);
 
   return (
     <div className="flex-1 bg-gray-50">

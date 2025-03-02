@@ -23,7 +23,7 @@ class User(db.Model):
     stories = relationship("Story", back_populates="user")
     
     __table_args__ = (
-        CheckConstraint(role.in_(["user", "admin"]), name="valid_role"),
+        CheckConstraint(role.in_(["user", "admin", "charity"]), name="valid_role"),
     )
     
      # limit admin to 3 users
