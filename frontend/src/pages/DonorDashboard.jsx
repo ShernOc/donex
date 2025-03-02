@@ -1,14 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Clock, History, Settings } from 'lucide-react';
+import { Heart, Clock, Settings } from 'lucide-react';
 
 const DonorDashboard = () => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // Declare loading state
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    setUser(storedUser);
+    setLoading(false); // Set loading to false once the user data is fetched
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>; // Display a loading indicator
+  }
+
+  // Sample data for donations
   const donations = [
     { id: 1, charity: 'Save the Children', amount: 50, date: '2024-03-15', status: 'Completed' },
     { id: 2, charity: 'Red Cross', amount: 100, date: '2024-03-10', status: 'Completed' },
     { id: 3, charity: 'UNICEF', amount: 75, date: '2024-03-05', status: 'Processing' },
   ];
 
+  // Sample data for recurring donations
   const recurringDonations = [
     { id: 1, charity: 'Doctors Without Borders', amount: 25, frequency: 'Monthly', nextDate: '2024-04-01' },
     { id: 2, charity: 'WWF', amount: 50, frequency: 'Monthly', nextDate: '2024-04-05' },
@@ -17,17 +32,18 @@ const DonorDashboard = () => {
   return (
     <div className="flex-1 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
-
         {/* Profile Section */}
         <div className="mb-8 flex items-center justify-between bg-white p-6 rounded-lg shadow-sm">
           <div className="flex items-center space-x-4">
             <img 
-              src="/profile-placeholder.png" 
+              src={user ? user.profile_picture : "/profile-placeholder.png"} 
               alt="Profile" 
               className="h-16 w-16 rounded-full border border-gray-300"
             />
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">Welcome back, User!</h2>
+              <h2 className="text-xl font-semibold text-gray-900">
+                {user ? `Welcome back, ${user.name}!` : "Welcome back!"}
+              </h2>
               <p className="text-gray-600">Manage your donations and impact.</p>
             </div>
           </div>

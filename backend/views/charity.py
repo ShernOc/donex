@@ -6,6 +6,44 @@ from datetime import timedelta
 
 charity_bp = Blueprint("charity_bp", __name__)
 
+<<<<<<< HEAD
+# Get all charities
+@charity_bp.route('/charities', methods=['GET'])
+@jwt_required()
+def get_charities():
+    # Get all charities regardless of the current user.
+    charities = Charity.query.all()
+    charity_list = []
+    for charity in charities:
+        charity_list.append({
+            "id": charity.id,
+            "charity_name":charity.charity_name,
+            "email":charity.email,
+            "user_id":charity.user_id,
+            "description":charity.description,
+            "profile_picture":charity.profile_picture,
+            "approved":charity.approved
+        })
+    return jsonify({"charities": charity_list}), 200
+
+# Get a charity by id
+@charity_bp.route('/charities/<int:charity_id>', methods=['GET'])
+@jwt_required()
+def get_charity_by_id(charity_id):
+    charity = Charity.query.get(charity_id)
+    if not charity:
+        return jsonify({"error":"Charity not found"}), 404
+    return jsonify({
+        "id": charity.id,
+        "charity_name": charity.charity_name,
+        "email": charity.email,
+        "description":charity.description,
+        "profile_picture": charity.profile_picture,
+        "approved":charity.approved
+    }), 200
+
+=======
+>>>>>>> origin/development
 
 # Post a charity no need to be login 
 @charity_bp.route('/charities', methods=["POST"])
@@ -14,8 +52,13 @@ def post_charity():
     charity_name = data.get("charity_name")
     password =generate_password_hash(data.get("password")) 
     email=data.get("email")
+<<<<<<< HEAD
+    profile_picture = data.get("profile_picture")
+    description=data.get("description")
+=======
     
     # description=data.get("description")
+>>>>>>> origin/development
     # approved="pending"
   
     # Validate required fields
@@ -28,9 +71,13 @@ def post_charity():
         return jsonify({"error":"Charity already exists"}), 406
     
     # Create a new charity record
+<<<<<<< HEAD
+    new_charity = Charity(charity_name=charity_name, email=email, password=password,profile_picture=profile_picture ,description= description, user_id=user_id)
+=======
     new_charity = Charity(charity_name=charity_name, email=email, password=password, user_id=None)
                                     
     # description= description, user_id=user_id)
+>>>>>>> origin/development
     
     db.session.add(new_charity)
     db.session.commit()
@@ -108,6 +155,9 @@ def update_charity(charity_id):
 
     if "email" in data:
         charity.email = data["email"]
+
+    if "profile_picture" in data:
+        charity.profile_picture = data["profile_picture"]
     
     if "description" in data:
         charity.description = data["description"]

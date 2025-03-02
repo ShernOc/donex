@@ -1,5 +1,4 @@
-
-import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import { UserProvider } from './context/UserContext';
@@ -18,7 +17,6 @@ import LoginPage from './pages/LoginPage';
 import Register from './pages/Register';
 import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './components/ProtectedRoute'; 
-import Github from './pages/Github';
 import Google from './pages/Google';
 
 
@@ -43,7 +41,6 @@ function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/charity/:id" element={<CharityDetail />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/github" element={<Github />} />
           <Route path="/google" element={<Google />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<Register />} />

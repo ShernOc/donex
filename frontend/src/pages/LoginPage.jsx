@@ -7,7 +7,7 @@ import signinwithgoogle from "./Google.jsx";
 
 const Login = () => {
   const { loginUser } = useContext(UserContext);
-  const {loginCharity}=useContext(CharityContext)
+  // const {loginCharity}=useContext(CharityContext)
   const navigate = useNavigate();
   const { googleLogin } = signinwithgoogle; 
 
