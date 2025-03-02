@@ -14,28 +14,63 @@ export default function ProfilePage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone: "",
-    profile_picture: "",
+    about: "",
+    profilePhoto: "",
+    description: "",
+    donationGoal: "",
+    impactStories: "",
     role: "user",
   });
 
   const [imageSrc, setImageSrc] = useState(null);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
+  const [croppedImage, setCroppedImage] = useState(null);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-  const [isUpdating, setIsUpdating] = useState(false);
+  const [zoom, setZoom] = useState(1);
+  const [userId, setUserId] = useState(null);
+  const [showCropper, setShowCropper] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      setFormData((prev) => ({ ...prev, ...user }));
-    }
-  }, [user]);
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:5000/current_user", {
+          method: "GET",
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUserId(data.id);
+          setFormData({
+            name: data.name || "",
+            email: data.email || "",
+            about: data.about || "",
+            profilePhoto: data.profile_photo || "",
+            description: data.description || "",
+            donationGoal: data.donation_goal || "",
+            impactStories: data.impact_stories || "",
+            role: data.role || "user",
+          });
+        } else {
+          console.error("Failed to fetch user profile");
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
+  const isCharity = formData.role === "charity";
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = () => setImageSrc(reader.result);
+      reader.onload = () => {
+        setImageSrc(reader.result);
+        setShowCropper(true);
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -89,166 +124,101 @@ export default function ProfilePage() {
   };
 
   const handleCropSave = async () => {
-    try {
-      const croppedImg = await getCroppedImg();
-      if (!croppedImg) {
-        toast.error("Failed to crop image.");
-        return;
-      }
-
-      const cloudinaryFormData = new FormData();
-      cloudinaryFormData.append("file", croppedImg, "cropped-image.jpg");
-      cloudinaryFormData.append("upload_preset", UPLOAD_PRESET);
-
-      const uploadResponse = await fetch(CLOUDINARY_URL, {
-        method: "POST",
-        body: cloudinaryFormData,
-      });
-
-      const data = await uploadResponse.json();
-
-      if (data.secure_url) {
-        setFormData((prev) => ({ ...prev, profile_picture: data.secure_url }));
-        setImageSrc(null);
-        toast.success("Profile picture uploaded successfully!");
-      } else {
-        throw new Error("Cloudinary upload failed");
-      }
-    } catch (error) {
-      toast.error("Failed to upload image.");
-      console.error("Image Processing Error:", error);
+    const croppedImg = await getCroppedImg();
+    if (croppedImg) {
+      setCroppedImage(croppedImg);
+      setFormData((prev) => ({ ...prev, profilePhoto: croppedImg }));
+      setImageSrc(null);
+      setShowCropper(false);
     }
   };
 
   const handleSave = async () => {
-    if (!formData.name || !formData.email || !formData.phone) {
-      toast.error("Please fill in all required fields.");
+    if (!userId) {
+      alert("User ID not found. Please log in again.");
       return;
     }
-  
-    if (!user || !user.id) {
-      toast.error("User ID is missing. Please log in again.");
-      return;
-    }
-  
-    setIsUpdating(true);
+
     try {
-      await updateUser(user.id, formData);  // Ensure user.id is passed
-      toast.success("Profile updated successfully!");
-      localStorage.setItem("user", JSON.stringify(formData));
-      navigate("/donor/dashboard");
+      const response = await fetch(`http://127.0.0.1:5000/users/${userId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        alert("Profile updated successfully!");
+      } else {
+        alert("Failed to update profile.");
+      }
     } catch (error) {
-      toast.error("Failed to update profile.");
-      console.error("Profile update error:", error);
+      console.error("Error updating profile:", error);
+      alert("An error occurred while saving the profile.");
     }
-    setIsUpdating(false);
   };
   
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50 py-6">
-      <div className="max-w-4xl w-full mx-auto p-8 bg-white shadow-xl rounded-3xl">
-        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">
-          Profile Settings
-        </h2>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
+      <div className="max-w-4xl w-full p-8 bg-white shadow-lg rounded-2xl space-y-6">
+        <h2 className="text-4xl font-bold text-center mb-8 text-gray-800">Profile Settings</h2>
 
-        {imageSrc && (
-          <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center">
-            <div className="bg-white p-6 rounded-lg shadow-xl w-96">
-              <h3 className="text-xl font-semibold mb-4 text-center">
-                Crop Your Image
-              </h3>
-              <div className="relative w-full h-64 bg-gray-200 rounded-lg overflow-hidden">
+        <div className="flex flex-col items-center">
+          <img
+            src={croppedImage || formData.profilePhoto || "/default-avatar.png"}
+            alt="Profile"
+            className="rounded-full object-cover border-4 border-gray-300 shadow-md w-32 h-32 mb-4"
+          />
+          <input type="file" accept="image/*" onChange={handleImageUpload} className="border p-2 rounded w-full" />
+        </div>
+
+        {showCropper && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <h2 className="text-xl font-bold mb-4">Crop Image</h2>
+              <div className="relative w-80 h-80 bg-gray-300">
                 <Cropper
                   image={imageSrc}
-                  crop={crop}
+                  crop={{ x: 0, y: 0 }}
                   zoom={zoom}
                   aspect={1}
-                  onCropChange={setCrop}
+                  onCropChange={() => {}}
                   onCropComplete={onCropComplete}
                   onZoomChange={setZoom}
                 />
               </div>
-              <div className="mt-4 text-center">
-                <button
-                  className="bg-blue-500 text-white p-2 rounded"
-                  onClick={handleCropSave}
-                >
-                  Save Cropped Image
+              <div className="flex justify-between mt-4">
+                <button onClick={() => setShowCropper(false)} className="bg-gray-500 text-white px-4 py-2 rounded-md">
+                  Cancel
+                </button>
+                <button onClick={handleCropSave} className="bg-blue-600 text-white px-4 py-2 rounded-md">
+                  Crop & Save
                 </button>
               </div>
             </div>
           </div>
         )}
 
-        <div className="space-y-4">
-          <div>
-            <label className="block font-medium">Name</label>
-            <input
-              type="text"
-              className="w-full p-3 border border-gray-300 rounded-md"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-            />
-          </div>
-
-          <div>
-            <label className="block font-medium">Email</label>
-            <input
-              type="email"
-              className="w-full p-3 border border-gray-300 rounded-md"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-            />
-          </div>
-
-          <div>
-            <label className="block font-medium">Phone</label>
-            <input
-              type="text"
-              className="w-full p-3 border border-gray-300 rounded-md"
-              value={formData.phone}
-              onChange={(e) =>
-                setFormData({ ...formData, phone: e.target.value })
-              }
-            />
-          </div>
-
-          <div>
-            <label className="block font-medium">Profile Photo</label>
-            <input
-              type="file"
-              className="w-full p-3 border border-gray-300 rounded-md"
-              onChange={handleImageUpload}
-            />
-            {formData.profile_picture && (
-              <div className="mt-2 flex justify-center">
-                <img
-                  src={formData.profile_picture}
-                  alt="Profile"
-                  className="w-32 h-32 object-cover rounded-full border border-gray-300"
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="mt-6 text-center">
-            <button
-              onClick={handleSave}
-              className={`bg-blue-500 text-white p-3 rounded-md w-full ${
-                isUpdating ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              disabled={isUpdating}
-            >
-              {isUpdating ? "Saving..." : "Save Changes"}
-            </button>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input type="text" name="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Full Name" className="border p-3 rounded-md shadow-sm w-full" />
+          <input type="email" name="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="Email" className="border p-3 rounded-md shadow-sm w-full" />
         </div>
+
+        <button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold p-4 rounded-md shadow-md w-full mt-6 transition">
+          Save Changes
+        </button>
       </div>
     </div>
   );
 }
+
+const createImage = (url) =>
+  new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = url;
+    img.onload = () => resolve(img);
+    img.onerror = (error) => reject(error);
+  });

@@ -11,7 +11,7 @@ def create_user():
     data = request.get_json()
 
     # Validate request payload
-    if not data or "email" not in data or "password" not in data or "full_name" not in data or "profile_picture" not in data:
+    if not data or "email" not in data or "password" not in data or "full_name" not in data:
         return jsonify({"msg": "Invalid request"}), 400
     
     if User.query.filter_by(email=data["email"]).first():
@@ -20,7 +20,7 @@ def create_user():
     full_name=data["full_name"]
     email=data["email"]
     password=generate_password_hash(data["password"])
-    profile_picture = data["profile_picture"]
+    profile_picture = ""
     
     #default role = user 
     role = data.get("userType", "user")

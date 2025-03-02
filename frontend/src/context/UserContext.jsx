@@ -87,7 +87,7 @@ export const UserProvider = ({ children }) => {
       } else if (userData.role === "user") {
         navigate("donor/dashboard");
       } else if (userData.role === "charity") {
-        navigate("charity/dashboard");
+        navigate("/charity/dashboard");
       } else {
         navigate("/");
       }
@@ -188,7 +188,6 @@ export const UserProvider = ({ children }) => {
       console.error("Error deleting User:", error);
     }
   };
-
 
   return (
     <UserContext.Provider value={{ user, registerUser, loginUser, logoutUser, updateUser }}>
