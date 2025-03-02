@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { DollarSign, Users, TrendingUp, BarChart } from "lucide-react";
 
 const CharityDashboard = () => {
   const [donations, setDonations] = useState([]);
-  const [storyTitle, setStoryTitle] = useState("");
-  const [storyContent, setStoryContent] = useState("");
+  const [isApproved, setIsApproved] = useState(false);
   const [dashboardStats, setDashboardStats] = useState({
     totalDonations: 0,
     totalDonors: 0,
@@ -12,17 +12,21 @@ const CharityDashboard = () => {
     successRate: "0%",
   });
 
-  // Fetch donations and dashboard stats
+  const navigate = useNavigate();
+
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     const fetchDashboardData = async () => {
       try {
-        const [donationsRes, statsRes] = await Promise.all([
+        const [donationsRes, statsRes, approvalRes] = await Promise.all([
           fetch("http://127.0.0.1:5000/donations", {
             headers: { Authorization: `Bearer ${token}` },
           }),
           fetch("http://127.0.0.1:5000/dashboard-stats", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch("http://127.0.0.1:5000/charity-status", {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -36,41 +40,18 @@ const CharityDashboard = () => {
           const statsData = await statsRes.json();
           setDashboardStats(statsData);
         }
+
+        if (approvalRes.ok) {
+          const { isApproved } = await approvalRes.json();
+          setIsApproved(isApproved);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
     fetchDashboardData();
-  }, []);
-
-  // Handle impact story submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem("token");
-    const storyData = { title: storyTitle, content: storyContent };
-
-    try {
-      const response = await fetch("http://127.0.0.1:5000/stories", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(storyData),
-      });
-
-      if (response.ok) {
-        alert("Impact story submitted successfully!");
-        setStoryTitle("");
-        setStoryContent("");
-      } else {
-        alert("Failed to submit story.");
-      }
-    } catch (error) {
-      console.error("Error submitting story:", error);
-    }
-  };
+  }, [navigate]);
 
   return (
     <div className="flex-1 bg-gray-50 font-[Inter]">
@@ -78,22 +59,29 @@ const CharityDashboard = () => {
         <h1 className="text-4xl font-extrabold text-gray-900">Charity Dashboard</h1>
         <p className="text-gray-600 mt-2 text-lg">Monitor your donations and impact</p>
 
-        {/* Dashboard Statistics */}
+        {!isApproved && (
+          <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 my-6 rounded-md">
+            <p className="font-bold">Account Verification Required</p>
+            <p>
+              To fully activate your account, please complete the verification process.
+              <Link
+                to="/charity/verification"
+                className="text-blue-600 hover:underline ml-2"
+              >
+                Go to Charity Verification
+              </Link>
+            </p>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           {[
-            {
-              title: "Total Donations",
-              value: `$${dashboardStats.totalDonations}`,
-              Icon: DollarSign,
-            },
+            { title: "Total Donations", value: `$${dashboardStats.totalDonations}`, Icon: DollarSign },
             { title: "Total Donors", value: dashboardStats.totalDonors, Icon: Users },
             { title: "Monthly Growth", value: dashboardStats.monthlyGrowth, Icon: TrendingUp },
             { title: "Success Rate", value: dashboardStats.successRate, Icon: BarChart },
           ].map(({ title, value, Icon }) => (
-            <div
-              key={title}
-              className="bg-white p-6 rounded-xl shadow-md flex items-center justify-between"
-            >
+            <div key={title} className="bg-white p-6 rounded-xl shadow-md flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">{title}</p>
                 <p className="text-2xl font-bold text-gray-900">{value}</p>
@@ -103,7 +91,6 @@ const CharityDashboard = () => {
           ))}
         </div>
 
-        {/* Recent Donations Table */}
         <div className="bg-white rounded-xl shadow-md mb-8">
           <div className="p-6 border-b border-gray-200">
             <h2 className="text-xl font-semibold text-gray-900">Recent Donations</h2>
@@ -148,36 +135,6 @@ const CharityDashboard = () => {
               </tbody>
             </table>
           </div>
-        </div>
-
-        {/* Impact Stories Form */}
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Share an Impact Story</h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <input
-              type="text"
-              name="storyTitle"
-              value={storyTitle}
-              onChange={(e) => setStoryTitle(e.target.value)}
-              placeholder="Title"
-              className="border p-3 rounded-md shadow-sm w-full"
-              required
-            />
-            <textarea
-              name="storyContent"
-              value={storyContent}
-              onChange={(e) => setStoryContent(e.target.value)}
-              placeholder="Write your impact story..."
-              className="border p-3 rounded-md shadow-sm w-full h-32"
-              required
-            />
-            <button
-              type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold p-4 rounded-md shadow-md w-full transition"
-            >
-              Submit Story
-            </button>
-          </form>
         </div>
       </div>
     </div>

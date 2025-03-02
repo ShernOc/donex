@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Users, Building2, AlertCircle, CheckCircle } from "lucide-react";
+import { Users, Building2, AlertCircle, CheckCircle, DollarSign, XCircle, Check } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 const AdminDashboard = () => {
@@ -7,9 +7,10 @@ const AdminDashboard = () => {
   const [charityApplications, setCharityApplications] = useState([]);
   const [activeCharities, setActiveCharities] = useState([]);
   const [donationData, setDonationData] = useState([]);
+  const [totalDonations, setTotalDonations] = useState(0);
 
   useEffect(() => {
-    const token = localStorage.getItem('token'); // Get the authorization token
+    const token = localStorage.getItem('token');
 
     fetch("http://127.0.0.1:5000/users")
       .then((res) => res.json())
@@ -46,60 +47,29 @@ const AdminDashboard = () => {
           donations: donation.amount,
         }));
         setDonationData(formattedData);
+        const total = donations.reduce((acc, donation) => acc + donation.amount, 0);
+        setTotalDonations(total);
       })
       .catch((err) => console.error("Error fetching donations:", err));
   }, []);
 
-  const handleApprove = (id) => {
+  const handleDecision = (id, decision) => {
     const token = localStorage.getItem('token');
-    fetch(`http://127.0.0.1:5000/charities/update/${id}`, {
+    fetch(`http://127.0.0.1:5000/charities/${id}`, {
       method: "PATCH",
       headers: {
         "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ status: "Approved" }),
+      body: JSON.stringify({ status: decision }),
     })
       .then((res) => res.json())
-      .then(() => {
-        setCharityApplications((prev) =>
-          prev.map((app) => (app.id === id ? { ...app, status: "Approved" } : app))
-        );
-        setActiveCharities((prev) =>
-          [...prev, charityApplications.find((app) => app.id === id)]
-        );
+      .then((data) => {
+        setCharityApplications((prev) => prev.map((charity) =>
+          charity.id === id ? { ...charity, status: data.status } : charity
+        ));
       })
-      .catch((err) => console.error("Error approving charity:", err));
-  };
-
-  const handleReject = (id) => {
-    const token = localStorage.getItem('token');
-    fetch(`http://127.0.0.1:5000/charities/delete/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    })
-      .then(() => {
-        setCharityApplications((prev) => prev.filter((app) => app.id !== id));
-      })
-      .catch((err) => console.error("Error rejecting charity:", err));
-  };
-
-  const handleDeleteCharity = (id) => {
-    const token = localStorage.getItem('token');
-    fetch(`http://127.0.0.1:5000/charities/delete/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    })
-      .then(() => {
-        setActiveCharities((prev) => prev.filter((charity) => charity.id !== id));
-      })
-      .catch((err) => console.error("Error deleting charity:", err));
+      .catch((err) => console.error("Error updating charity status:", err));
   };
 
   return (
@@ -116,6 +86,7 @@ const AdminDashboard = () => {
             { label: "Active Charities", value: activeCharities.length, icon: <Building2 className="h-8 w-8 text-rose-500" /> },
             { label: "Pending Reviews", value: charityApplications.filter(app => app.status === "Pending").length, icon: <AlertCircle className="h-8 w-8 text-rose-500" /> },
             { label: "Approved Charities", value: activeCharities.length, icon: <CheckCircle className="h-8 w-8 text-rose-500" /> },
+            { label: "Total Donations", value: `ksh ${totalDonations.toLocaleString()}`, icon: <DollarSign className="h-8 w-8 text-rose-500" /> },
           ].map((stat, index) => (
             <div key={index} className="bg-white p-6 rounded-lg shadow-sm flex justify-between">
               <div>
@@ -125,6 +96,21 @@ const AdminDashboard = () => {
               {stat.icon}
             </div>
           ))}
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-sm mb-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Pending Charity Requests</h2>
+          <ul>
+            {charityApplications.filter(app => app.status === "Pending").map((charity) => (
+              <li key={charity.id} className="p-4 bg-gray-100 mb-2 flex justify-between items-center">
+                <span>{charity.name}</span>
+                <div>
+                  <button className="bg-green-500 text-white px-4 py-2 rounded mr-2" onClick={() => handleDecision(charity.id, "Approved")}>Approve <Check className="inline" /></button>
+                  <button className="bg-red-500 text-white px-4 py-2 rounded" onClick={() => handleDecision(charity.id, "Rejected")}>Reject <XCircle className="inline" /></button>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-sm">
