@@ -35,8 +35,12 @@ def get_charity_by_id(charity_id):
         "charity_name": charity.charity_name,
         "email": charity.email,
         "description":charity.description,
-        "profile_picture": charity.profile_picture,
-        "approved":charity.approved
+        "phone_number": charity.phone_number,
+        "bank_name": charity.bank_name,
+        "account_number": charity.account_number,
+        "account_holder": charity.account_holder,
+        "targeted_amount": charity.targeted_amount,
+        
     }), 200
 
 

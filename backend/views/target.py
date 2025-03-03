@@ -76,8 +76,8 @@ def get_pending_charities():
 def update_charity_status(charity_id):
     data = request.json
     charity = Charity.query.get_or_404(charity_id)
-    if "status" in data and data["status"] in ["approved", "rejected"]:
-        charity.status = data["status"]
+    if "approved" in data and isinstance(data["approved"], bool):  # Check for boolean value
+        charity.approved = data["approved"]
         db.session.commit()
         return jsonify({"message": "Charity status updated"})
     return jsonify({"message": "Invalid status"}), 400
@@ -86,4 +86,4 @@ def update_charity_status(charity_id):
 @target_bp.route("/charities/<int:charity_id>/status", methods=["GET"])
 def get_charity_status(charity_id):
     charity = Charity.query.get_or_404(charity_id)
-    return jsonify({"charity_id": charity.id, "status": charity.status})
+    return jsonify({"charity_id": charity.id, "status": charity.approved})
