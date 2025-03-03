@@ -2,66 +2,67 @@ import { useState, useContext } from "react";
 import { UserContext } from "../context/UserContext";
 import { CharityContext } from "../context/CharityContext.jsx";
 import { Link, useNavigate } from "react-router-dom";
-import { FaGithub, FaGoogle } from "react-icons/fa";
-import signinwithgoogle from "./Google.jsx"; 
+import { jwtDecode } from "jwt-decode";
+import { GoogleLogin } from "@react-oauth/google";
+import { toast } from "react-toastify";
 
 const Login = () => {
-  const { loginUser } = useContext(UserContext);
-  // const {loginCharity}=useContext(CharityContext)
-  const navigate = useNavigate();
-  const { googleLogin } = signinwithgoogle; 
+  const { loginUser, login_with_google } = useContext(UserContext);
+  // const { loginCharity } = useContext(CharityContext); // Now correctly included
 
+  const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [userType, setUserType] = useState("donor");
-  
- 
-// Handle change 
+
+  // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     const email = form.email.trim();
     const password = form.password.trim();
+
     if (!email || !password) {
       setError("Please fill in all fields!");
       return;
     }
+
     setError("");
     setLoading(true);
 
-
     try {
       if (userType === "donor") {
-         await loginUser(email, password);
-        navigate("/donor/dashboard"); 
-
+        await loginUser(email, password);
+        toast.success("Login successful!");
+        navigate("/donor/dashboard");
       } else if (userType === "charity") {
-         await loginCharity(email, password);navigate("/charity/dashboard");
+        await loginCharity(email, password);
+        toast.success("Login successful!");
+        navigate("/charity/dashboard");
       }
-    } catch {
+    } catch (err) {
       setError("Invalid email or password!");
     } finally {
       setLoading(false);
     }
   };
 
-  const togglePassword = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const handleGoogleLogin = async () => {
+  // Handle Google Login
+  const handleGoogleLogin = async (credential) => {
     try {
-      await googleLogin();
+      const user_details = jwtDecode(credential);
+      await login_with_google(user_details.email);
+      toast.success("Google login successful!");
       navigate("/donor/dashboard");
     } catch (error) {
-      console.error(error);
-      setError("Google login failed!");
+      toast.error("Failed to login with Google. Please try again.");
     }
   };
 
@@ -124,15 +125,13 @@ const Login = () => {
           </button>
         </form>
 
-        <div className="flex flex-col space-y-4 mt-4">
-          <button
-            onClick={handleGoogleLogin}
-            className="flex items-center justify-center p-3 text-gray-800 bg-gray-300 rounded-lg shadow hover:scale-105 transition transform duration-300"
-          >
-            <FaGoogle className="w-5 h-5 mr-2" />
-            Login with Google
-          </button>
-        </div>
+        {/* Google Login */}
+        <GoogleLogin
+          onSuccess={(credentialResponse) =>
+            handleGoogleLogin(credentialResponse.credential)
+          }
+          onError={() => toast.error("Google Login Failed")}
+        />
 
         <p className="text-center text-gray-800 dark:text-gray-300">
           Don&apos;t have an account?{" "}
@@ -146,4 +145,3 @@ const Login = () => {
 };
 
 export default Login;
-

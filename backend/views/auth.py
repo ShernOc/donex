@@ -34,7 +34,7 @@ def login():
 
 # login with google
 @auth_bp.route("/google-login", methods=["POST"])
-def google_login():
+def login_with_google():
     data = request.get_json()
     email = data.get("email")
 

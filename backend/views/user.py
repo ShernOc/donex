@@ -47,7 +47,7 @@ def get_users():
 
 
 # get user by id
-@user_bp.route("/users/<int:user_id>", methods=["GET"])
+@user_bp.route("/user/<int:user_id>", methods=["GET"])
 def get_user_by_id(user_id):
     user = User.query.get_or_404(user_id)
     return jsonify({"id": user.id, "full_name": user.full_name, "email": user.email,"profile_picture":user.profile_picture,"role":user.role})

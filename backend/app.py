@@ -4,6 +4,7 @@ from models import db, TokenBlocklist
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
 from flask_cors import CORS  
+import os
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///donex.db'
@@ -28,7 +29,7 @@ from views import *
 
 # Register blueprints
 app.register_blueprint(user_bp)
-app.register_blueprint(charity_bp)
+# app.register_blueprint(charity_bp)
 app.register_blueprint(donation_bp)
 app.register_blueprint(story_bp)
 app.register_blueprint(auth_bp)
@@ -68,8 +69,4 @@ PAYPAL_BASE_URL = os.getenv("PAYPAL_BASE_URL")
 
 
 if __name__ == '__main__':
-<<<<<<< HEAD
     app.run(debug=True, port=5000) 
-=======
-    app.run(debug=True, port=5001) 
->>>>>>> origin/development
