@@ -1,26 +1,23 @@
 import { useState } from "react";
 import { useUser } from "../context/UserContext";
-import { useCharity } from "../context/CharityContext";
 import { useNavigate, Link } from "react-router-dom";
+import { signInWithGoogle } from "../firebase";
 
 const Register = () => {
-  const { registerUser} = useUser();
-  const { registerCharity } = useCharity();
+  const { registerUser } = useUser();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("user");
   const [message, setMessage] = useState("");
-  const {user} = useUser();
-
-
   const [userForm, setUserForm] = useState({
     full_name: "",
     email: "",
     password: "",
     confirmPassword: "",
+    profile_picture: "",
   });
 
   const [charityForm, setCharityForm] = useState({
-    charity_name: "",
+    full_name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -39,7 +36,7 @@ const Register = () => {
 
   const handleSubmit = async (e, formType) => {
     e.preventDefault();
-    
+    const formData = formType === "user" ? userForm : charityForm;
     setMessage("");
 
     if (formType === "charity") {
@@ -199,9 +196,15 @@ const Register = () => {
           <button type="submit" className="w-full p-3 text-white bg-red-500 hover:bg-red-600 rounded-lg">
             Register
           </button>
+          <button
+            onClick={handleGoogleSignIn}
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"
+          >
+            sign in with Google
+          </button>
           <p className="text-center text-gray-900">
-          Already have an account? <Link to="/login" className="text-rose-500 hover:underline">Login</Link>
-        </p>
+            Already have an account? <Link to="/login" className="text-rose-500 hover:underline">Login</Link>
+          </p>
         </form>
       </div>
     </div>
@@ -209,5 +212,3 @@ const Register = () => {
 };
 
 export default Register;
-
-

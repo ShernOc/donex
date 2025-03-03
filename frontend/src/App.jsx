@@ -1,5 +1,4 @@
-
-import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import { UserProvider } from './context/UserContext';
@@ -7,8 +6,8 @@ import { CharityProvider } from './context/CharityContext';
 import { StoryProvider } from './context/StoryContext'
 import { DonationProvider } from './context/DonationContext.jsx';
 import Home from './pages/Home';
-import DonorDashboard from './pages/DonorDashboard';
 import CharityDashboard from './pages/CharityDashboard';
+import DonorDashboard from './pages/DonorDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import DonationPage from './pages/DonationPage';
 import CharityList from './pages/CharityList';
@@ -19,23 +18,15 @@ import LoginPage from './pages/LoginPage';
 import Register from './pages/Register';
 import RegisterAdmin from './pages/RegisterAdmin.jsx';
 import ProfilePage from './pages/ProfilePage';
-
-// Paypal 
-import PayPal from './pages/PayPal.jsx';
-
-
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from './components/ProtectedRoute'; 
 import Github from './pages/Github';
 import Google from './pages/Google';
+import CharityVerificationForm from './pages/CharityVerification';
 
 
 function App() {
-  // const isAuthenticated = Boolean(localStorage.getItem('token'));
-
   return (
-
     <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* <BrowserRouter> */}
       <UserProvider>
         <Navbar />
         <CharityProvider>

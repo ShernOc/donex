@@ -15,13 +15,12 @@ def get_donations():
     
     user_id = request.args.get("user_id", type=int)
     charity_id = request.args.get("charity_id", type=int)
-    
     query = db.session.query(Donation)
     if user_id: 
         query = query.filter(Donation.user_id == user_id)
     if charity_id: 
         query = query.filter(Donation.charity_id == charity_id)
-    
+
     donations = query.all()
     
     # Paypal donations 
@@ -42,10 +41,10 @@ def get_donations():
         })
     
      # Calculate total donations per user
+     
     user_donations = db.session.query(Donation.user_id, func.sum(Donation.amount).label("total_amount")).group_by(Donation.user_id).all()
-    
     user_total = {user: total for user, total in user_donations}
-    
+
     # Calculate total donations per charity
     charity_donations = db.session.query(Donation.charity_id, func.sum(Donation.amount).label("total_received")).group_by(Donation.charity_id).all()
     
@@ -60,9 +59,9 @@ def get_donations():
         ).group_by('year', 'month').all()
     )
     monthly_total = {f"{int(year)}-{int(month)}": total for year, month, total in monthly_donations}
-    
+
     grand_total = db.session.query(func.sum(Donation.amount)).scalar() or 0
-    
+
     return jsonify({
         "donations":result,
         "user_donations": user_total,
@@ -71,7 +70,6 @@ def get_donations():
         "monthly_donations": monthly_total,
     }),200
     
- 
 # Create a new donation / its also optional
 @donation_bp.route('/donations', methods=['POST'])
 @jwt_required(optional=True)
@@ -79,11 +77,11 @@ def create_donation():
     current_user_id=get_jwt_identity()
     # is_anonymous = data.get("Anonymous_user", False)
     data=request.get_json()
-    
+
     print("Current User ID:", current_user_id)
     if not data or "charity_id" not in data or "amount" not in data:
         return jsonify({"error": "Invalid request data"}), 400
-    
+
     try:
         new_donation = Donation(
         user_id=current_user_id,
@@ -120,7 +118,7 @@ def create_donation():
 def update_donation(donation_id):
     current_user_id=get_jwt_identity()
     data = request.get_json()
-    
+
     donation = Donation.query.get(donation_id)
     if not donation:
         return jsonify({"error": "Donation not found"}), 404

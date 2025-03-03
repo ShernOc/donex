@@ -1,8 +1,25 @@
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, Heart, Users, Trophy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import 'animate.css';
 
 const Home = () => {
+  const [totalDonations, setTotalDonations] = useState(0);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/donations/total")
+      .then((response) => response.json())
+      .then((data) => {
+        // Check if data.totalDonations exists and is a number
+        if (data && typeof data.totalDonations === 'number') {
+          setTotalDonations(data.totalDonations);
+        } else {
+          console.error("Invalid data format from API:", data);
+        }
+      })
+      .catch((error) => console.error("Error fetching total donations:", error));
+  }, []);
+
   return (
     <div className="flex-1 flex flex-col font-['Poppins']">
       {/* Hero Section */}
@@ -38,13 +55,17 @@ const Home = () => {
                 </Link>
               </div>
             </div>
+            
             {/* Total Donations Inside Hero */}
-            <div className="mt-12 text-center animate__animated animate__fadeIn animate__delay-5s">
-              <h2 className="text-3xl font-bold mb-4">Total Donations Made</h2>
-              <p className="text-xl mb-6">Our community has raised a total of:</p>
-              <h3 className="text-5xl font-bold mb-4">$5.1M+</h3>
-              <p className="text-lg text-gray-300">Thank you for making a difference!</p>
-            </div>
+            <section className="mb-20 mt-16">
+              <h2 className="text-4xl font-semibold mb-8 animate__animated animate__fadeInUp">
+                Total Donations Made
+              </h2>
+              <h3 className="text-5xl font-bold mb-4">ksh{totalDonations.toLocaleString()}+</h3>
+              <p className="text-lg">
+                Join thousands of donors in making a positive impact globally.
+              </p>
+            </section>
           </div>
         </div>
       </section>
@@ -65,7 +86,6 @@ const Home = () => {
               Your contribution can provide our children with families with a safe and healthy environment to grow. Let’s build a world where everyone has the chance to thrive and believe in a brighter future ahead.
             </p>
           </div>
-
           {/* Image */}
           <div className="w-full md:w-1/2">
             <img
@@ -117,7 +137,7 @@ const Home = () => {
               <p className="text-gray-600">Empowered Donor</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <p className="text-lg mb-4">"I've seen firsthand how access to clean water can change a community. I’m grateful to contribute to such a vital mission"</p>
+              <p className="text-lg mb-4">"I've seen firsthand how access to clean water can change a community. I’m grateful to contribute to such a vital mission."</p>
               <p className="font-semibold">Michael R.</p>
               <p className="text-gray-600">Community Advocate</p>
             </div>
@@ -154,78 +174,79 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Featured Charities */}
-<section className="w-full bg-gray-50 animate__animated animate__fadeIn animate__delay-12s">
-  <div className="max-w-7xl mx-auto px-4 py-16">
-    <h2 className="text-3xl font-bold text-center mb-12">Featured Charities</h2>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {/* Kenya Red Cross Society */}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <img
-          src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&w=800&q=80"
-          className="w-full h-48 object-cover"
-        />
-        <div className="p-6">
-          <h3 className="text-xl font-semibold mb-2">Kenya Red Cross Society</h3>
-          <p className="text-gray-600 mb-4">
-            Dedicated to alleviating human suffering and empowering communities in Kenya through various humanitarian initiatives.
-          </p>
-          <a
-            href="https://www.redcross.or.ke/"
-            className="text-rose-500 font-semibold hover:text-rose-600"
-            target="_blank" rel="noopener noreferrer"
-          >
-            Learn More →
-          </a>
-        </div>
-      </div>
+      {/* Featured Charities Section */}
+      <section className="w-full bg-gray-50 animate__animated animate__fadeIn animate__delay-12s">
+        <div className="max-w-7xl mx-auto px-4 py-16">
+          <h2 className="text-3xl font-bold text-center mb-12">Featured Charities</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Kenya Red Cross Society */}
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <img
+                src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&w=800&q=80"
+                alt="Kenya Red Cross Society"
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-6">
+                <h3 className="text-xl font-semibold mb-2">Kenya Red Cross Society</h3>
+                <p className="text-gray-600 mb-4">
+                  Dedicated to alleviating human suffering and empowering communities in Kenya through various humanitarian initiatives.
+                </p>
+                <a
+                  href="https://www.redcross.or.ke/"
+                  className="text-rose-500 font-semibold hover:text-rose-600"
+                  target="_blank" rel="noopener noreferrer"
+                >
+                  Learn More →
+                </a>
+              </div>
+            </div>
 
-      {/* Amref Health Africa */}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <img
-          src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&w=800&q=80"
-          alt="Amref Health Africa"
-          className="w-full h-48 object-cover"
-        />
-        <div className="p-6">
-          <h3 className="text-xl font-semibold mb-2">Amref Health Africa</h3>
-          <p className="text-gray-600 mb-4">
-            Focused on improving health care in Kenya by addressing the needs of vulnerable populations, especially women and children.
-          </p>
-          <a
-            href="https://amref.org/kenya/"
-            className="text-rose-500 font-semibold hover:text-rose-600"
-            target="_blank" rel="noopener noreferrer"
-          >
-            Learn More →
-          </a>
-        </div>
-      </div>
+            {/* Amref Health Africa */}
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <img
+                src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&w=800&q=80"
+                alt="Amref Health Africa"
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-6">
+                <h3 className="text-xl font-semibold mb-2">Amref Health Africa</h3>
+                <p className="text-gray-600 mb-4">
+                  Focused on improving health care in Kenya by addressing the needs of vulnerable populations, especially women and children.
+                </p>
+                <a
+                  href="https://amref.org/kenya/"
+                  className="text-rose-500 font-semibold hover:text-rose-600"
+                  target="_blank" rel="noopener noreferrer"
+                >
+                  Learn More →
+                </a>
+              </div>
+            </div>
 
-      {/* Shining Hope for Communities (SHOFCO) */}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <img
-          src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&w=800&q=80"
-          alt="Shining Hope for Communities"
-          className="w-full h-48 object-cover"
-        />
-        <div className="p-6">
-          <h3 className="text-xl font-semibold mb-2">Shining Hope for Communities (SHOFCO)</h3>
-          <p className="text-gray-600 mb-4">
-            Combines community advocacy with tangible services to combat urban poverty and gender inequality in Kenya&apos;s informal settlements.
-          </p>
-          <a
-            href="https://shofco.org/"
-            className="text-rose-500 font-semibold hover:text-rose-600"
-            target="_blank" rel="noopener noreferrer"
-          >
-            Learn More →
-          </a>
+            {/* Shining Hope for Communities (SHOFCO) */}
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <img
+                src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&w=800&q=80"
+                alt="Shining Hope for Communities"
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-6">
+                <h3 className="text-xl font-semibold mb-2">Shining Hope for Communities (SHOFCO)</h3>
+                <p className="text-gray-600 mb-4">
+                  Combines community advocacy with tangible services to combat urban poverty and gender inequality in Kenya's informal settlements.
+                </p>
+                <a
+                  href="https://shofco.org/"
+                  className="text-rose-500 font-semibold hover:text-rose-600"
+                  target="_blank" rel="noopener noreferrer"
+                >
+                  Learn More →
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+      </section>
     </div>
   );
 };

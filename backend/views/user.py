@@ -21,12 +21,28 @@ def create_user():
     full_name=data["full_name"]
     email=data["email"]
     password=generate_password_hash(data["password"])
-    
+    profile_picture =["profile_picture "]
     new_user = User(full_name=full_name,email=email,password=password, role="user")
+    #default role = user 
+    role = data.get("userType", "user")
+    
+    allowed_roles = ["user", "charity"]
+    if role not in allowed_roles:
+        return jsonify({"msg": "Invalid role. Choose from 'user', 'charity'"}), 400
+    if role =="admin" and not User.can_register():
+        return jsonify({"msg": "Admin limit reached. Only 3 admins allowed."}), 403
+    
+    
+    new_user = User(full_name=full_name,
+                    email=email,
+                    password=password,
+                    profile_picture=profile_picture, 
+                    role=role)
+    
     db.session.add(new_user)
     db.session.commit()
 
-    return jsonify({"msg":"User created successfully"}), 200
+    return jsonify({"msg":"Registered successfully"}), 201
 
 
 @user_bp.route("/register_admin", methods=["POST"])
@@ -76,40 +92,44 @@ def get_users():
 @user_bp.route("/users/<int:user_id>", methods=["GET"])
 def get_user_by_id(user_id):
     user = User.query.get_or_404(user_id)
-    return jsonify({"id": user.id, "full_name": user.full_name, "email": user.email,"role":user.role})
+    return jsonify({"id": user.id, "full_name": user.full_name, "email": user.email,"profile_picture":user.profile_picture,"role":user.role})
 
 
 # update user by id
-@user_bp.route("/users/<int:user_id>", methods=["PATCH"])
+@user_bp.route("/user/<int:user_id>", methods=["PUT"])
 @jwt_required()
 def update_user_by_id(user_id):
     current_user_id = get_jwt_identity()
     current_user = User.query.filter_by(id=current_user_id).first()
-    
+
     if not current_user:
-        return jsonify({"error": "Not authorized"}),403
-   
-    user = User.query.get(user_id) 
-    if not user:
-        return jsonify({"error": "User not found"}), 404
+        return jsonify({"error": "Unauthorized"}), 403
     
-    #admin and user only
-    if current_user.role != "admin" and current_user.id != user.id:
-        return jsonify({"error": "denied to update user"}), 403
-    
+    user = User.query.get_or_404(user_id)
+
     data = request.get_json()
-    # Update fields if provided
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+    
     if "full_name" in data:
         user.full_name = data["full_name"]
+
     if "email" in data:
         user.email = data["email"]
-    if "role" in data:
-        user.role = data["role"]
+    
     if "password" in data:
         user.password = generate_password_hash(data["password"])
-
+    
+    if "profile_picture" in data:
+        user.profile_picture = data["profile_picture"]
+    
+    if "role" in data:
+        user.role = data["role"]
+    
     db.session.commit()
-    return jsonify({"msg": "user updated successfully"})
+
+    return jsonify({"msg": "User updated successfully"}), 200
+
 
 
 # delete user by id
