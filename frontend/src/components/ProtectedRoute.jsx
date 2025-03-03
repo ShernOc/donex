@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 
 const ProtectedRoute = ({ element}) => {
   // If the user is not authenticated, redirect to the login page
-  if (!localStorage.getItem('token')) {
-    return <Navigate to="/login" replace />;
-  }
+  // if (!localStorage.getItem('token')) {
+  //   return <Navigate to="/login" replace />;
+  // }
 
   // If authenticated, render the requested component
   return element;

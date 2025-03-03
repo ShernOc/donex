@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 const Login = () => {
   const { loginUser, login_with_google } = useContext(UserContext);
-  // const { loginCharity } = useContext(CharityContext); // Now correctly included
+  const { loginCharity } = useContext(CharityContext); // Now correctly included
 
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
@@ -54,13 +54,32 @@ const Login = () => {
     }
   };
 
+  // Function to determine user type based on email
+  const determineUserType = (email) => {
+    if (email.includes("charity")) return "charity"; // Example logic, replace with actual check
+    return "donor";
+  };
+
   // Handle Google Login
   const handleGoogleLogin = async (credential) => {
     try {
       const user_details = jwtDecode(credential);
+      const detectedUserType = determineUserType(user_details.email);
+
+      console.log('lll ', detectedUserType);
+      
       await login_with_google(user_details.email);
       toast.success("Google login successful!");
-      navigate("/donor/dashboard");
+
+      if (detectedUserType == "donor") {
+        console.log("donoooo");
+        
+        navigate("/donor/dashboard");
+      } else if (detectedUserType === "charity") {
+        navigate("/charity/dashboard");
+      } else {
+        toast.error("User type not recognized.");
+      }
     } catch (error) {
       toast.error("Failed to login with Google. Please try again.");
     }
@@ -116,6 +135,12 @@ const Login = () => {
               required
             />
           </div>
+          <div className="text-white">
+            <Link to="/forgot-password" className="hover:underline">
+              Forgot Password?
+            </Link>
+          </div>
+
           <button
             type="submit"
             className="w-full p-3 text-white bg-red-500 rounded-lg shadow-lg hover:scale-105 transition transform duration-300"

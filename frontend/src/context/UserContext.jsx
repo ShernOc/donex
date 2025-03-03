@@ -11,6 +11,10 @@ export const UserProvider = ({ children }) => {
   const [token, setToken] = useState(sessionStorage.getItem("token") || "");
   const navigate = useNavigate();
 
+
+  console.log("access token ", token);
+  console.log("current user ", user);
+  
   useEffect(() => {
     if (token) {
       fetchCurrentUser();
@@ -230,7 +234,7 @@ export const UserProvider = ({ children }) => {
   };
   
   return (
-    <UserContext.Provider value={{ user, registerUser, loginUser, logoutUser, updateUser,login_with_google }}>
+    <UserContext.Provider value={{ user, registerUser, loginUser,setUser, logoutUser, updateUser,login_with_google }}>
       {children}
     </UserContext.Provider>
   );

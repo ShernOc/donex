@@ -4,9 +4,13 @@ from models import db, TokenBlocklist
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
 from flask_cors import CORS  
+from flask_mail import Mail
+
 import os
 
+
 app = Flask(__name__)
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///donex.db'
 CORS(app)
 migrate = Migrate(app, db)
@@ -23,6 +27,17 @@ app.config["JWT_SECRET_KEY"] = "jiyucfvbkaudhudkvfbt"
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 
 jwt = JWTManager(app)
+
+# Flask mail configuration
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = 'collinskathu313@gmail.com'  
+app.config['MAIL_PASSWORD'] ='wksb hzbp lyqu wyxo'  
+app.config['MAIL_DEFAULT_SENDER'] = "collins.testingmoringa@gmail.com"
+
+mail = Mail(app)
 
 # Import views
 from views import *

@@ -1,45 +1,17 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Heart, LogIn, UserPlus, Menu, LogOut } from 'lucide-react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useContext } from 'react';
+import { UserContext } from '../context/UserContext';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const {user, logoutUser} = useContext(UserContext); 
+
   const navigate = useNavigate();
 
-  // Function to check authentication status
-  const checkAuth = useCallback(() => {
-    setIsAuthenticated(Boolean(localStorage.getItem('token')));
-  }, []);
 
-  // Check authentication on mount & listen for changes
-  useEffect(() => {
-    checkAuth();
-    window.addEventListener('storage', checkAuth);
-    
-    const syncLogout = (event) => {
-      if (event.key === 'logout') {
-        setIsAuthenticated(false);
-        navigate('/login');
-      }
-    };
-
-    window.addEventListener('storage', syncLogout);
-
-    return () => {
-      window.removeEventListener('storage', checkAuth);
-      window.removeEventListener('storage', syncLogout);
-    };
-  }, [checkAuth, navigate]);
-
-  // Handle logout
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    window.localStorage.setItem('logout', Date.now()); // Sync logout across tabs
-    setIsAuthenticated(false);
-    navigate('/login');
-  };
-
+  
   return (
     <nav className="bg-white shadow-md w-full">
       <div className="flex justify-between items-center h-16 px-4">
@@ -65,7 +37,7 @@ const Navbar = () => {
           </Link>
 
           {/* Authentication Links */}
-          {!isAuthenticated ? (
+          {user==null ? (
             <>
               <Link to="/login" className="flex items-center space-x-1 bg-rose-500 !text-white px-6 py-2 rounded-md hover:bg-rose-600 transition">
                 <LogIn className="h-5 w-5" />
@@ -77,7 +49,7 @@ const Navbar = () => {
               </Link> */}
             </>
           ) : (
-            <button onClick={handleLogout} className="flex items-center space-x-1 text-red-600 hover:text-red-800 text-lg font-medium">
+            <button onClick={()=>logoutUser()} className="flex items-center space-x-1 text-red-600 hover:text-red-800 text-lg font-medium">
               <LogOut className="h-5 w-5" />
               <span>Logout</span>
             </button>
