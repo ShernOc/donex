@@ -18,7 +18,12 @@ import LoginPage from './pages/LoginPage';
 import Register from './pages/Register';
 import RegisterAdmin from './pages/RegisterAdmin.jsx';
 import ProfilePage from './pages/ProfilePage';
-import ProtectedRoute from './components/ProtectedRoute'; 
+
+// Paypal 
+import PayPal from './pages/PayPal.jsx';
+
+
+import ProtectedRoute from './components/ProtectedRoute';
 import Github from './pages/Github';
 import Google from './pages/Google';
 import CharityVerificationForm from './pages/CharityVerification';

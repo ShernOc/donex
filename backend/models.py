@@ -16,6 +16,7 @@ class User(db.Model):
     password = db.Column(db.String(256), nullable=False)
     full_name = db.Column(db.String(100))
     profile_picture = db.Column(db.String(512),nullable=False)
+
     role = db.Column(db.String(100), nullable=False,default="user")
     
     
@@ -26,9 +27,9 @@ class User(db.Model):
     donations = relationship("Donation", back_populates="user")
     stories = relationship("Story", back_populates="user")
     
-    # __table_args__ = (
-    #     CheckConstraint(role.in_(['user', 'admin', 'charity']), name="valid_role"),
-    # )
+    __table_args__ = (
+        CheckConstraint(role.in_(['user', 'admin', 'charity']), name="valid_role"),
+    )
     
      # limit admin to 3 users
     @staticmethod
@@ -42,18 +43,11 @@ class Charity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(128), nullable=False, unique=True)
     charity_name = db.Column(db.String(128), nullable=False, unique=True)
-    password= db.Column(db.String(512), nullable=False)
-    description= db.Column(db.Text, nullable=True)
-    url = db.Column(db.String(200),nullable=False)
-    approved = db.Column(db.String(20), default="pending")
-    
-    #Foreign keys
-    user_id= db.Column(db.Integer, db.ForeignKey("users.id"), nullable = True)
-    
     description = db.Column(db.Text, nullable=True)
     password = db.Column(db.String(512), nullable=False)
     profile_picture = db.Column(db.String(1024), nullable=False)
-   
+    approved = db.Column(db.String(20), default="pending")
+    
     # Verification fields
     phone_number = db.Column(db.String(20), nullable=False)
     bank_name = db.Column(db.String(255), nullable=True)
@@ -63,7 +57,7 @@ class Charity(db.Model):
 
     # Foreign keys
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
-    
+
     # Relationships
     user = relationship("User", back_populates="charities")
     donations = relationship("Donation", back_populates="charities")
@@ -84,9 +78,6 @@ class Donation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Float, nullable=False)
     donation_date = db.Column(db.DateTime, nullable=False, default=func.now())
-    # one-time, monthly
-    donation_type = db.Column(db.String(20), nullable=False, default="one-time")  
-    frequency = db.Column(db.String(50), nullable=True) 
     
     # Foreign keys
     #allow anonymous donation 
@@ -99,25 +90,8 @@ class Donation(db.Model):
     # Relationships
     user=relationship("User", back_populates="donations")
     charities= relationship("Charity", back_populates="donations")
-    transaction= relationship("Transaction", back_populates="donation", uselist=False)
-    
-    
-#paypal transactions to store the model 
-class Transaction(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    paypal_order_id = db.Column(db.String(255), unique=True, nullable=False)
-    status = db.Column(db.String(50), nullable=False)
-    amount = db.Column(db.Float, nullable=False)
-    currency = db.Column(db.String(10), nullable=False)
-    payer_email = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, server_default=func.now())
 
-    # Foreign key linking to Donation
-    donation_id = db.Column(db.Integer, db.ForeignKey("donation.id"), unique=True, nullable=False)
-
-    # Relationship
-    donation = relationship("Donation", back_populates="transaction")
-
+     
 class TokenBlocklist(db.Model):
     __tablename__ = "token_blocklist"
     __table_args__ = {"extend_existing": True}  # Prevents table redefinition error
