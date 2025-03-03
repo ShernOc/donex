@@ -8,11 +8,15 @@ flask = "*"
 flask-migrate = "*"
 flask-sqlalchemy = "*"
 flask-mail = "*"
-flask-cors = "*"
 flask-jwt-extended = "*"
 flask-bcrypt = "*"
+psycopg2-binary = "*"
+flask-oauthlib = "*"
+gunicorn = "*"
+requests = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.12"
+python_version = "*"
