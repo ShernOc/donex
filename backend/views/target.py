@@ -87,3 +87,24 @@ def update_charity_status(charity_id):
 def get_charity_status(charity_id):
     charity = Charity.query.get_or_404(charity_id)
     return jsonify({"charity_id": charity.id, "status": charity.approved})
+
+# Updated Route to get only approved charities
+@target_bp.route("/charities", methods=["GET"])
+def get_approved_charities():
+    approved_charities = Charity.query.filter_by(approved=True).all()
+    return jsonify({
+        "charities": [
+            {
+                "id": charity.id,
+                "charity_name": charity.charity_name,
+                "phone_number": charity.phone_number,
+                "bank_name": charity.bank_name or "",
+                "account_number": charity.account_number or "",
+                "account_holder": charity.account_holder or "",
+                "targeted_amount": charity.targeted_amount,
+                "status": charity.approved,
+                "email": charity.email,
+            }
+            for charity in approved_charities
+        ]
+    })
