@@ -115,7 +115,7 @@ const CharityVerification = ({ onSubmit }) => {
 
         {/* Bank Name (Optional) */}
         <div>
-          <label className="block text-gray-700 font-medium">Bank Name (Optional)</label>
+          <label className="block text-gray-700 font-medium">Bank Name</label>
           <input
             type="text"
             name="bank_name"
@@ -127,7 +127,7 @@ const CharityVerification = ({ onSubmit }) => {
 
         {/* Account Number (Optional) */}
         <div>
-          <label className="block text-gray-700 font-medium">Account Number (Optional)</label>
+          <label className="block text-gray-700 font-medium">Account Number</label>
           <input
             type="text"
             name="account_number"
@@ -139,7 +139,7 @@ const CharityVerification = ({ onSubmit }) => {
 
         {/* Account Holder Name (Optional) */}
         <div className="col-span-2">
-          <label className="block text-gray-700 font-medium">Account Holder Name (Optional)</label>
+          <label className="block text-gray-700 font-medium">Account Holder Name </label>
           <input
             type="text"
             name="account_holder"
