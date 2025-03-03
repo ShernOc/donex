@@ -17,8 +17,11 @@ class User(db.Model):
     full_name = db.Column(db.String(100))
     role = db.Column(db.String(100), nullable=False,default="user")
     
+    
     # Relationships
     charities= relationship("Charity", back_populates="user")
+    
+    # The user can be anonymous
     donations = relationship("Donation", back_populates="user")
     stories = relationship("Story", back_populates="user")
     
@@ -39,7 +42,8 @@ class Charity(db.Model):
     email = db.Column(db.String(128), nullable=False)
     charity_name = db.Column(db.String(128), nullable=False, unique=True)
     password= db.Column(db.String(512), nullable=False)
-    # description= db.Column(db.Text, nullable=True)
+    description= db.Column(db.Text, nullable=True)
+    url = db.Column(db.String(200),nullable=False)
     # approved = db.Column(db.String(20), default="pending")
     
     #Foreign keys
@@ -66,16 +70,42 @@ class Donation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Float, nullable=False)
     donation_date = db.Column(db.DateTime, nullable=False, default=func.now())
+    # one-time, monthly
+    donation_type = db.Column(db.String(20), nullable=False, default="one-time")  
+    frequency = db.Column(db.String(50), nullable=True) 
+    
     
     # Foreign keys
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    charity_id = db.Column(db.Integer, db.ForeignKey("charities.id", ondelete="CASCADE"))
-
+    #allow anonymous donation 
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"),nullable=True)
+    charity_id = db.Column(db.Integer, db.ForeignKey("charities.id", ondelete="CASCADE"),nullable=False)
+    
+    #Anonymous donations 
+    is_anonymous = db.Column(db.Boolean, default=False)
+    
     # Relationships
     user=relationship("User", back_populates="donations")
     charities= relationship("Charity", back_populates="donations")
+    transaction= relationship("Transaction", back_populates="donation", uselist=False)
+    
+    
+#paypal transactions to store the model 
+class Transaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    paypal_order_id = db.Column(db.String(255), unique=True, nullable=False)
+    status = db.Column(db.String(50), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    currency = db.Column(db.String(10), nullable=False)
+    payer_email = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime, server_default=func.now())
 
-     
+    # Foreign key linking to Donation
+    donation_id = db.Column(db.Integer, db.ForeignKey("donation.id"), unique=True, nullable=False)
+
+    # Relationship
+    donation = relationship("Donation", back_populates="transaction")
+
+
 class TokenBlocklist(db.Model):
     __tablename__ = "token_blocklist"
     __table_args__ = {"extend_existing": True}  # Prevents table redefinition error

@@ -212,7 +212,7 @@ const Home = () => {
         <div className="p-6">
           <h3 className="text-xl font-semibold mb-2">Shining Hope for Communities (SHOFCO)</h3>
           <p className="text-gray-600 mb-4">
-            Combines community advocacy with tangible services to combat urban poverty and gender inequality in Kenya's informal settlements.
+            Combines community advocacy with tangible services to combat urban poverty and gender inequality in Kenya&apos;s informal settlements.
           </p>
           <a
             href="https://shofco.org/"

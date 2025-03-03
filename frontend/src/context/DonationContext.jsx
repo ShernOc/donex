@@ -1,20 +1,21 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
+export const DonationContext = createContext();
 
-const DonationContext = createContext();
-
-export const useDonations = () => {
+export const useDonation = () =>{
   return useContext(DonationContext);
-};
+} ;
 
 export const DonationProvider = ({ children }) => {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(false);
 
+
+  // get the donations
   const fetchDonations = async () => {
     setLoading(true);
     try {
-      const response = await fetch("/api/donations", {
+      const response = await fetch("http://127.0.0.1:5000/donations", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -22,35 +23,38 @@ export const DonationProvider = ({ children }) => {
       });
       if (!response.ok) throw new Error("Failed to fetch donations");
       const data = await response.json();
-      setDonations(data);
+      setDonations(data.donations);
     } catch (error) {
-      console.error(error.message);
+      console.error("Error fetching the donations", error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const createDonation = async (charityId, amount) => {
+
+// post a donation 
+  const createDonation = async (charityId, amount, isAnonymous) => {
     try {
-      const response = await fetch("/api/donations", {
+      const response = await fetch("http://127.0.0.1:5000/donations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({ charity_id: charityId, amount }),
+        body: JSON.stringify({ charity_id: charityId, amount, isAnonymous }),
       });
       if (!response.ok) throw new Error("Failed to create donation");
       const newDonation = await response.json();
       setDonations((prev) => [...prev, newDonation]);
-    } catch (error) {
-      console.error(error.message);
+    }
+      catch (error) {
+      console.error( "Error creating donation", error.message);
     }
   };
 
   const updateDonation = async (donationId, updatedData) => {
     try {
-      const response = await fetch(`/api/donations/${donationId}`, {
+      const response = await fetch(`http://127.0.0.1:5000/donations/${donationId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -71,7 +75,7 @@ export const DonationProvider = ({ children }) => {
 
   const deleteDonation = async (donationId) => {
     try {
-      const response = await fetch(`/api/donations/${donationId}`, {
+      const response = await fetch(`donations/delete/${donationId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -90,7 +94,7 @@ export const DonationProvider = ({ children }) => {
 
   return (
     <DonationContext.Provider
-      value={{ donations, loading, fetchDonations, createDonation, updateDonation, deleteDonation }}
+      value={{ donations, loading, fetchDonations, createDonation, updateDonation, deleteDonation}}
     >
       {children}
     </DonationContext.Provider>

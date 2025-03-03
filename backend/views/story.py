@@ -15,7 +15,6 @@ def get_story():
             "user_id":story.user_id
             }for story in stories]), 200
     
-    
 # get story by id
 @story_bp.route("/stories/<int:user_id>", methods=["GET"])
 def story_by_id(user_id):
@@ -117,6 +116,3 @@ def delete_story(story_id):
 #     Story.query.delete()
 #     db.session.commit()
 #     return jsonify({"message": "All stories deleted successfully"}), 200
-
-
-

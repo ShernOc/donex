@@ -11,6 +11,7 @@ const Register = () => {
   const [message, setMessage] = useState("");
   const {user} = useUser();
 
+
   const [userForm, setUserForm] = useState({
     full_name: "",
     email: "",
@@ -23,6 +24,8 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    description:"",
+    url:""
   });
 
   const handleChange = (e, formType) => {
@@ -49,7 +52,8 @@ const Register = () => {
         email: charityForm.email,
         password: charityForm.password,
         user_id:user?.id ||null,
-      
+        description:charityForm.description,
+        url:charityForm.url
       });
     } else {
       if (userForm.password !== userForm.confirmPassword) {
@@ -61,9 +65,11 @@ const Register = () => {
         email: userForm.email,
         password: userForm.password,
       });
+      {
+        setMessage("User account created successfully!");
+      }
     }
   };
-
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
@@ -152,6 +158,23 @@ const Register = () => {
                 onChange={(e) => handleChange(e, "charity")}
                 required
                 className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
+              />
+              <textarea
+              name="description"
+              placeholder="Enter description"
+              value={charityForm.description}
+              onChange={(e) => handleChange(e, "charity")}
+              required
+              className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300 h-24"
+            />
+            <input
+              type="text"
+              name="url"
+              placeholder="Website URL"
+              value={charityForm.url}
+              onChange={(e) => handleChange(e, "charity")}
+              required
+              className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
               />
               <input
                 type="password"

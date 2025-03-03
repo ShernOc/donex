@@ -1,4 +1,5 @@
 from flask import jsonify, request, Blueprint
+from sqlalchemy import func
 from models import db, Charity,User
 from flask_jwt_extended import jwt_required, get_jwt_identity,create_access_token, get_jwt
 from werkzeug.security import generate_password_hash
@@ -14,8 +15,8 @@ def post_charity():
     charity_name = data.get("charity_name")
     password =generate_password_hash(data.get("password")) 
     email=data.get("email")
-    
-    # description=data.get("description")
+    description=data.get("description")
+    url =data.get("url")
     # approved="pending"
   
     # Validate required fields
@@ -28,7 +29,7 @@ def post_charity():
         return jsonify({"error":"Charity already exists"}), 406
     
     # Create a new charity record
-    new_charity = Charity(charity_name=charity_name, email=email, password=password, user_id=None)
+    new_charity = Charity(charity_name=charity_name, email=email, password=password, user_id=None, url=url, description=description)
                                     
     # description= description, user_id=user_id)
     
@@ -47,14 +48,17 @@ def post_charity():
 def get_charities():
     # Get all charities regardless of the current user.
     charities = Charity.query.all()
+    total_charities=db.session.query(func.count(Charity.id)).scalar()
     
     return jsonify({
+        "total_charities": total_charities, 
         "charities":[{
             "id": charity.id,
             "charity_name":charity.charity_name,
             "email":charity.email,
             "user_id":charity.user_id,
-            # "description":charity.description,
+            "description":charity.description,
+            "url":charity.url
             # "approved":charity.approved
         }  for charity in charities ]} ), 200 
     
@@ -71,8 +75,9 @@ def get_charity_by_id(charity_id):
         "id": charity.id,
         "charity_name": charity.charity_name,
         "email": charity.email,
-        "user_id":charity.user_id
-        # "description":charity.description,
+        "user_id":charity.user_id,
+        "description":charity.description,
+        "url":charity.url
         # "approved":charity.approved
     }), 200
 
@@ -111,6 +116,8 @@ def update_charity(charity_id):
     
     if "description" in data:
         charity.description = data["description"]
+    if "url" in data:
+        charity.url = data["url"]
 
     if "password" in data:
         charity.password = generate_password_hash(data["password"])

@@ -6,6 +6,9 @@ from flask_jwt_extended import JWTManager
 from datetime import timedelta
 from flask_cors import CORS  
 import os
+import requests
+
+
 
 app = Flask(__name__)
 CORS(app)
@@ -35,6 +38,7 @@ app.register_blueprint(charity_bp)
 app.register_blueprint(donation_bp)
 app.register_blueprint(story_bp)
 app.register_blueprint(auth_bp)
+app.register_blueprint(paypal_bp)
 
 
 @app.errorhandler(404)
@@ -53,14 +57,6 @@ def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
     token = db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
     return token is not None
 
-# load_dotenv()
-
-# PAYPAL Payments:
-PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
-PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET")
-PAYPAL_BASE_URL = os.getenv("PAYPAL_BASE_URL")
-
-
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001) 
+    app.run(debug=True, port=5000) 

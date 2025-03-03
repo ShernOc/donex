@@ -85,7 +85,7 @@ export const CharityProvider = ({ children }) => {
       setCharities(charityData);
       sessionStorage.setItem("charity", JSON.stringify(charityData));
 
-      console.log("Charity name :", charityData.email);
+      console.log("Charity name :", charityData.charity_name);
       
       // Navigate to Charity Dashboard
       if (charityData.email){
@@ -132,7 +132,7 @@ export const CharityProvider = ({ children }) => {
   };
 
   // Get all the charities 
-  const fetchCharities_id = async (id) => {
+  const fetchCharityById = async (id) => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/charities/${id}`, {
         method: "GET",
@@ -173,6 +173,22 @@ export const CharityProvider = ({ children }) => {
     }
   };
 
+  //  Default Charity
+   // Fetch the charity details if defaultCharityId exists
+  //  useEffect(() => {
+  //   if (defaultCharityId) {
+  //     fetchCharityById(defaultCharityId).then((charity) => {
+  //       if (charity) {
+  //         setCharityId(charity.id);
+  //         setCharityName(charity.name);
+  //       }
+  //     });
+  //   }
+  // }, [defaultCharityId,])
+
+  // in the Donor or any page, populate the work in 
+  //onst [charityId, setCharityId] = useState(defaultCharityId || '');
+
   const deleteCharity = async (id) => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/charities/delete/${id}`, {
@@ -196,7 +212,7 @@ export const CharityProvider = ({ children }) => {
       value={{
         charities,
         fetchCharities,
-        fetchCharities_id,
+        fetchCharityById,
         registerCharity,
         loginCharity,
         logoutCharity,

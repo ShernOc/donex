@@ -1,3 +1,7 @@
 # Python Byte ompiled files
 __pycache__/
 *.py[cod]
+*/vars
+instance/
+.vscode/
+*.env

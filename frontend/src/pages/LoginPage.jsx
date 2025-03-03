@@ -2,20 +2,21 @@ import { useState, useContext } from "react";
 import { UserContext } from "../context/UserContext";
 import { CharityContext } from "../context/CharityContext.jsx";
 import { Link, useNavigate } from "react-router-dom";
-import { FaGithub, FaGoogle } from "react-icons/fa";
-import signinwithgoogle from "./Google.jsx"; 
+// import { FaGithub, FaGoogle } from "react-icons/fa";
+// import signinwithgoogle from "./Google.jsx"; 
 
 const Login = () => {
   const { loginUser } = useContext(UserContext);
   const {loginCharity}=useContext(CharityContext)
   const navigate = useNavigate();
-  const { googleLogin } = signinwithgoogle; 
+  // const { googleLogin } = signinwithgoogle; 
 
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [userType, setUserType] = useState("donor");
+  
   
  
 // Handle change 
@@ -55,15 +56,17 @@ const Login = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      await googleLogin();
-      navigate("/donor/dashboard");
-    } catch (error) {
-      console.error(error);
-      setError("Google login failed!");
-    }
-  };
+
+  // const handleGoogleLogin = async () => {
+  //   try {
+  //     await googleLogin();
+  //     console.log("Logged in user:", user);
+  //     navigate("/donor/dashboard");
+  //   } catch (error) {
+  //     console.error(error);
+  //     setError("Google login failed!");
+  //   }
+  // };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
@@ -125,13 +128,13 @@ const Login = () => {
         </form>
 
         <div className="flex flex-col space-y-4 mt-4">
-          <button
+          {/* <button
             onClick={handleGoogleLogin}
             className="flex items-center justify-center p-3 text-gray-800 bg-gray-300 rounded-lg shadow hover:scale-105 transition transform duration-300"
           >
             <FaGoogle className="w-5 h-5 mr-2" />
             Login with Google
-          </button>
+          </button> */}
         </div>
 
         <p className="text-center text-gray-800 dark:text-gray-300">

@@ -1,4 +1,5 @@
-from flask import jsonify, request, Blueprint
+from flask import jsonify, request, Blueprint 
+from sqlalchemy import func
 from models import db, User
 from werkzeug.security import generate_password_hash
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -21,28 +22,54 @@ def create_user():
     email=data["email"]
     password=generate_password_hash(data["password"])
     
-    #default role = user 
-    role = data.get("userType", "user")
-    
-    allowed_roles = ["user", "charity"]
-    if role not in allowed_roles:
-        return jsonify({"msg": "Invalid role. Choose from 'user', 'charity'"}), 400
-    if role =="admin" and not User.can_register():
-        return jsonify({"msg": "Admin limit reached. Only 3 admins allowed."}), 403
-    
-    
-    new_user = User(full_name=full_name,email=email,password=password, role=role)
+    new_user = User(full_name=full_name,email=email,password=password, role="user")
     db.session.add(new_user)
     db.session.commit()
 
     return jsonify({"msg":"User created successfully"}), 200
 
 
+@user_bp.route("/register_admin", methods=["POST"])
+def register_admin():
+    if not User.can_register():
+        return jsonify({"msg": "Admin limit reached. Only 3 admins allowed."}), 403
+    data = request.get_json()
+    required_fields = ["full_name", "email", "password"]
+    if not all(field in data for field in required_fields):
+        return jsonify({"msg": "Missing required fields"}), 400
+
+    if User.query.filter_by(email=data["email"]).first():
+        return jsonify({"msg": "Email already registered"}), 409
+
+    new_admin = User(
+        full_name=data["full_name"],
+        email=data["email"],
+        password=generate_password_hash(data["password"]),
+        role="admin"
+    )
+    db.session.add(new_admin)
+    db.session.commit()
+
+    return jsonify({"msg": "Admin registered successfully!"}), 201
+    
+
 # get all users
 @user_bp.route("/users", methods=["GET"])
 def get_users():
     users = User.query.all()
-    return jsonify([{"id": user.id, "full_name": user.full_name, "email": user.email,"role":user.role} for user in users]), 200
+    
+    # the total user/admin
+    total_people=db.session.query(func.count(User.id)).scalar()
+    total_admin= db.session.query(func.count(User.id)).filter(User.role=="admin").scalar()
+    total_user = db.session.query(func.count(User.id)).filter(User.role=="user").scalar()
+    
+    return jsonify(
+        
+       { 
+        "total_people":total_people, 
+        "total_user":total_user,
+        "total_admin":total_admin,
+       "users": [{"id": user.id, "full_name": user.full_name, "email": user.email,"role":user.role} for user in users]}), 200
 
 
 # get user by id
@@ -50,6 +77,7 @@ def get_users():
 def get_user_by_id(user_id):
     user = User.query.get_or_404(user_id)
     return jsonify({"id": user.id, "full_name": user.full_name, "email": user.email,"role":user.role})
+
 
 # update user by id
 @user_bp.route("/users/<int:user_id>", methods=["PATCH"])

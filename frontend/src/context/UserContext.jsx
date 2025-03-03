@@ -8,6 +8,7 @@ export const useUser = () => useContext(UserContext);
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const[admin,setAdmin] = useState(null)
   const [token, setToken] = useState(sessionStorage.getItem("token") || "");
   const navigate = useNavigate();
 
@@ -41,6 +42,31 @@ export const UserProvider = ({ children }) => {
       toast.dismiss();
       toast.error("Something went wrong. Please try again.");
       console.error("Registration failed:", error);
+    }
+  };
+
+  const registerAdmin = async (formData) => {
+    try {
+      toast.loading("Registering admin...");
+      const response = await fetch("http://127.0.0.1:5000/register_admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+  
+      const data = await response.json();
+      toast.dismiss();
+  
+      if (response.ok) {
+        toast.success(data.msg || "Admin registered successfully!");
+        navigate("/login"); 
+      } else {
+        toast.error(data.error || "Admin registration failed.");
+      }
+    } catch (error) {
+      toast.dismiss();
+      toast.error("Something went wrong. Please try again.");
+      console.error("Admin registration failed:", error);
     }
   };
 
@@ -82,7 +108,7 @@ export const UserProvider = ({ children }) => {
       sessionStorage.setItem("user", JSON.stringify(userData));
   
       console.log("User Role:", userData.role);
-  
+
       // Ensure navigation happens only when userData is set
       if (userData.role ==="admin") {
         navigate("/admin/dashboard");
@@ -97,6 +123,31 @@ export const UserProvider = ({ children }) => {
       toast.dismiss();
       toast.error(error.message || "Login failed!");
       console.error("Login error:", error);
+    }
+  };
+
+  // Getting the User
+  const fetchAllUsers= async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/users`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setUser(data);
+        sessionStorage.setItem("user", JSON.stringify(data));
+      } else {
+        console.error("Failed to fetch user:", data.msg);
+        logoutUser();
+      }
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      logoutUser();
     }
   };
   
@@ -128,7 +179,7 @@ export const UserProvider = ({ children }) => {
   // Getting the current User
   const fetchCurrentUser = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:5000/users", {
+      const response = await fetch("http://127.0.0.1:5000/current_user", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -189,7 +240,7 @@ export const UserProvider = ({ children }) => {
 
 
   return (
-    <UserContext.Provider value={{ user, registerUser, loginUser, logoutUser, deleteUser, fetchUser_ById}}>
+    <UserContext.Provider value={{ user,admin, registerAdmin, registerUser, fetchAllUsers, loginUser, logoutUser, deleteUser, fetchUser_ById,fetchCurrentUser}}>
       {children}
     </UserContext.Provider>
   );
