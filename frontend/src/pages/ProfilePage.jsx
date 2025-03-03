@@ -1,31 +1,55 @@
 import { useState, useEffect, useCallback } from "react";
 import Cropper from "react-easy-crop";
-import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { toast } from "react-toastify";
 
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dvqgo17cz/upload";
-const UPLOAD_PRESET = "donex_proj"; 
+const UPLOAD_PRESET = "donex_proj";
+
+// Utility function to crop the image
+const getCroppedImg = async (imageSrc, pixelCrop) => {
+  const image = new Image();
+  image.src = imageSrc;
+
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = pixelCrop.width;
+  canvas.height = pixelCrop.height;
+
+  ctx.drawImage(
+    image,
+    pixelCrop.x,
+    pixelCrop.y,
+    pixelCrop.width,
+    pixelCrop.height,
+    0,
+    0,
+    pixelCrop.width,
+    pixelCrop.height
+  );
+
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => {
+      resolve(blob);
+    }, "image/jpeg");
+  });
+};
 
 export default function ProfilePage() {
   const { user, updateUser } = useUser();
-  const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    about: "",
     profilePhoto: "",
-    description: "",
-    donationGoal: "",
-    impactStories: "",
-    role: "user",
   });
 
   const [imageSrc, setImageSrc] = useState(null);
   const [croppedImage, setCroppedImage] = useState(null);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [zoom, setZoom] = useState(1);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [userId, setUserId] = useState(null);
   const [showCropper, setShowCropper] = useState(false);
 
@@ -41,14 +65,9 @@ export default function ProfilePage() {
           const data = await response.json();
           setUserId(data.id);
           setFormData({
-            name: data.name || "",
+            name: data.full_name || "",
             email: data.email || "",
-            about: data.about || "",
-            profilePhoto: data.profile_photo || "",
-            description: data.description || "",
-            donationGoal: data.donation_goal || "",
-            impactStories: data.impact_stories || "",
-            role: data.role || "user",
+            profilePhoto: data.profile_picture || "",
           });
         } else {
           console.error("Failed to fetch user profile");
@@ -61,7 +80,10 @@ export default function ProfilePage() {
     fetchUserProfile();
   }, []);
 
-  const isCharity = formData.role === "charity";
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -79,65 +101,42 @@ export default function ProfilePage() {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
-  const createImage = (url) =>
-    new Promise((resolve, reject) => {
-      const image = new Image();
-      image.crossOrigin = "anonymous";
-      image.src = url;
-      image.onload = () => resolve(image);
-      image.onerror = reject;
-    });
-
-  const getCroppedImg = async () => {
-    if (!imageSrc || !croppedAreaPixels) return null;
-
+  const handleCropAndUpload = useCallback(async () => {
     try {
-      const image = await createImage(imageSrc);
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
+      const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels);
+      setCroppedImage(croppedImage);
 
-      canvas.width = croppedAreaPixels.width;
-      canvas.height = croppedAreaPixels.height;
+      const formData = new FormData();
+      formData.append("file", croppedImage);
+      formData.append("upload_preset", UPLOAD_PRESET);
 
-      ctx.drawImage(
-        image,
-        croppedAreaPixels.x,
-        croppedAreaPixels.y,
-        croppedAreaPixels.width,
-        croppedAreaPixels.height,
-        0,
-        0,
-        croppedAreaPixels.width,
-        croppedAreaPixels.height
-      );
-
-      return new Promise((resolve, reject) => {
-        canvas.toBlob((blob) => {
-          if (blob) resolve(blob);
-          else reject(new Error("Canvas to Blob conversion failed"));
-        }, "image/jpeg");
+      const response = await fetch(CLOUDINARY_URL, {
+        method: "POST",
+        body: formData,
       });
-    } catch (error) {
-      console.error("Error cropping image:", error);
-      return null;
-    }
-  };
 
-  const handleCropSave = async () => {
-    const croppedImg = await getCroppedImg();
-    if (croppedImg) {
-      setCroppedImage(croppedImg);
-      setFormData((prev) => ({ ...prev, profilePhoto: croppedImg }));
-      setImageSrc(null);
+      const data = await response.json();
+      setFormData((prev) => ({ ...prev, profilePhoto: data.secure_url }));
       setShowCropper(false);
+    } catch (error) {
+      console.error("Error cropping and uploading image:", error);
+      toast.error("Failed to upload image.");
     }
-  };
+  }, [imageSrc, croppedAreaPixels]);
 
   const handleSave = async () => {
     if (!userId) {
-      alert("User ID not found. Please log in again.");
+      toast.error("User ID not found. Please log in again.");
       return;
     }
+
+    // Map frontend fields to backend fields
+    const payload = {
+      full_name: formData.name,
+      email: formData.email,
+      profile_picture: formData.profilePhoto,
+      role: "user", // Add a default role or fetch it from the user context
+    };
 
     try {
       const response = await fetch(`http://127.0.0.1:5000/users/${userId}`, {
@@ -146,20 +145,21 @@ export default function ProfilePage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
-        alert("Profile updated successfully!");
+        toast.success("Profile updated successfully!");
+        const data = await response.json();
+        updateUser(data); // Update the user context if needed
       } else {
-        alert("Failed to update profile.");
+        toast.error("Failed to update profile.");
       }
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("An error occurred while saving the profile.");
+      toast.error("An error occurred while saving the profile.");
     }
   };
-  
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
@@ -168,7 +168,7 @@ export default function ProfilePage() {
 
         <div className="flex flex-col items-center">
           <img
-            src={croppedImage || formData.profilePhoto || "/default-avatar.png"}
+            src={formData.profilePhoto || "/default-avatar.png"}
             alt="Profile"
             className="rounded-full object-cover border-4 border-gray-300 shadow-md w-32 h-32 mb-4"
           />
@@ -176,36 +176,46 @@ export default function ProfilePage() {
         </div>
 
         {showCropper && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-            <div className="bg-white p-6 rounded-lg shadow-lg">
-              <h2 className="text-xl font-bold mb-4">Crop Image</h2>
-              <div className="relative w-80 h-80 bg-gray-300">
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
+            <div className="bg-white p-4 rounded-lg">
+              <div className="relative w-96 h-96">
                 <Cropper
                   image={imageSrc}
-                  crop={{ x: 0, y: 0 }}
+                  crop={crop}
                   zoom={zoom}
                   aspect={1}
-                  onCropChange={() => {}}
+                  onCropChange={setCrop}
                   onCropComplete={onCropComplete}
                   onZoomChange={setZoom}
                 />
               </div>
-              <div className="flex justify-between mt-4">
-                <button onClick={() => setShowCropper(false)} className="bg-gray-500 text-white px-4 py-2 rounded-md">
-                  Cancel
-                </button>
-                <button onClick={handleCropSave} className="bg-blue-600 text-white px-4 py-2 rounded-md">
-                  Crop & Save
-                </button>
-              </div>
+              <button
+                onClick={handleCropAndUpload}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold p-2 rounded-md shadow-md mt-4"
+              >
+                Crop and Upload
+              </button>
             </div>
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input type="text" name="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Full Name" className="border p-3 rounded-md shadow-sm w-full" />
-          <input type="email" name="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="Email" className="border p-3 rounded-md shadow-sm w-full" />
-        </div>
+        <input
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          placeholder="Name"
+          className="border p-3 rounded w-full"
+        />
+
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="Email"
+          className="border p-3 rounded w-full"
+        />
 
         <button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold p-4 rounded-md shadow-md w-full mt-6 transition">
           Save Changes
@@ -214,11 +224,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
-const createImage = (url) =>
-  new Promise((resolve, reject) => {
-    const img = new Image();
-    img.src = url;
-    img.onload = () => resolve(img);
-    img.onerror = (error) => reject(error);
-  });

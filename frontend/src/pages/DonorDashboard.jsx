@@ -4,47 +4,79 @@ import { Heart, Clock, Settings } from 'lucide-react';
 
 const DonorDashboard = () => {
   const [donations, setDonations] = useState([]);
-  const [user, setUser] = useState({ name: 'User', profilePicture: '/profile-placeholder.png' });
+  const [user, setUser] = useState({ fullname: 'User', profilePicture: '/profile-placeholder.png' });
   const [stats, setStats] = useState({ totalDonated: 0, charitiesSupported: 0, monthlyDonations: {} });
 
-  useEffect(() => {
-    const fetchDonorData = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:5000/donations', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch donations');
-        }
-        
-        const data = await response.json();
-        setDonations(data.user_donations);
-        setUser({
-          name: data.user_name,
-          profilePicture: data.profile_picture || '/profile-placeholder.png',
-        });
-        setStats({
-          totalDonated: data.grand_total_donations,
-          charitiesSupported: Object.keys(data.charity_donations).length,
-          monthlyDonations: data.monthly_donations,
-        });
-      } catch (error) {
-        console.error('Error fetching donor data:', error);
-      }
-    };
+  // Fetch donor data from the backend
+  const fetchDonorData = async () => {
+    try {
+      const token = localStorage.getItem('token');
 
+      // Fetch current user data
+      const userResponse = await fetch('http://127.0.0.1:5000/current_user', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!userResponse.ok) {
+        throw new Error('Failed to fetch user data');
+      }
+
+      const userData = await userResponse.json();
+
+      // Update user state with fetched data
+      setUser({
+        fullname: userData.full_name || 'User',
+        profilePicture: userData.profilePicture || '/profile-placeholder.png',
+      });
+
+      // Fetch donations data
+      const donationsResponse = await fetch('http://localhost:5000/donations', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!donationsResponse.ok) {
+        throw new Error('Failed to fetch donor data');
+      }
+
+      const donationsData = await donationsResponse.json();
+
+      // Update state with fetched donations data
+      setDonations(donationsData.user_donations);
+      setStats({
+        totalDonated: donationsData.grand_total_donations,
+        charitiesSupported: Object.keys(donationsData.charity_donations).length,
+        monthlyDonations: donationsData.monthly_donations,
+      });
+    } catch (error) {
+      console.error('Error fetching donor data:', error);
+    }
+  };
+
+  // Fetch data on component mount
+  useEffect(() => {
     fetchDonorData();
+  }, []);
+
+  // Polling: Fetch data every 2 minutes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchDonorData();
+    }, 120000); // Fetch data every 2 mins
+
+    return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
   return (
     <div className="flex-1 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
 
+        {/* Welcome Section */}
         <div className="mb-8 flex items-center justify-between bg-white p-6 rounded-lg shadow-sm">
           <div className="flex items-center space-x-4">
             <img 
@@ -53,7 +85,7 @@ const DonorDashboard = () => {
               className="h-16 w-16 rounded-full border border-gray-300"
             />
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">Welcome back, {JSON.parse(sessionStorage.getItem('user'))['full_name']}!</h2>
+              <h2 className="text-xl font-semibold text-gray-900">Welcome back, {user.fullname}!</h2>
               <p className="text-gray-600">Manage your donations and impact.</p>
             </div>
           </div>
@@ -65,6 +97,7 @@ const DonorDashboard = () => {
           </Link>
         </div>
 
+        {/* Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className="flex items-center justify-between">
@@ -95,6 +128,7 @@ const DonorDashboard = () => {
           </div>
         </div>
 
+        {/* Recent Donations Section */}
         <div className="bg-white rounded-lg shadow-sm mb-8">
           <div className="p-6 border-b border-gray-200">
             <h2 className="text-xl font-semibold text-gray-900">Recent Donations</h2>

@@ -126,3 +126,51 @@ def delete_user_by_id(user_id):
 #     User.query.delete()
 #     db.session.commit()
 #     return jsonify({"message": "All users deleted successfully"}), 200
+# GET route to get information about a user
+
+# GET route to retrieve a user's information
+@user_bp.route('/users/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    user = User.query.get(user_id)
+    if user:
+        return jsonify({
+            'id': user.id,
+            'email': user.email,
+            'full_name': user.full_name,
+            'profile_picture': user.profile_picture,
+            'role': user.role
+        })
+    else:
+        return jsonify({'message': 'User not found'}), 404
+
+# PATCH route to update a user's information
+@user_bp.route('/users/<int:user_id>', methods=['PATCH'])
+def update_user(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+
+    data = request.get_json()
+
+    # Safely update fields if they exist in the request data
+    if 'full_name' in data:
+        user.full_name = data['full_name']
+    if 'email' in data:
+        user.email = data['email']
+    if 'profile_picture' in data:
+        user.profile_picture = data['profile_picture']
+    if 'role' in data and data['role'] in ['user', 'admin', 'charity']:
+        user.role = data['role']
+
+    try:
+        db.session.commit()
+        return jsonify({
+            'id': user.id,
+            'email': user.email,
+            'full_name': user.full_name,
+            'profile_picture': user.profile_picture,
+            'role': user.role
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': 'Failed to update user', 'error': str(e)}), 500
