@@ -1,0 +1,5 @@
+# Python Byte ompiled files
+__pycache__/
+*.py[cod]
+
+*.db

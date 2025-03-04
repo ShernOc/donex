@@ -1,38 +1,37 @@
 from flask import jsonify, request, Blueprint
-from models import db, Story, Admin, User
-from datetime import datetime
+from models import db, Story, User
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-story_bp = Blueprint("story_bp",__name__)
+story_bp = Blueprint("story_bp", __name__)
 
 #Get all stories:
-@story_bp.route('/stories', methods = ['GET'])
-# @jwt_required()
+@story_bp.route("/stories", methods = ['GET'])
 def get_story():
-    # get all the stories
-    # current_user_id = get_jwt_identity()
-    stories= Story.query.all()
-    
-    story_list= []
-    for story in stories:
-            story_list.append({ 
+    stories= Story.query.all()    
+    return jsonify([{ 
             "id": story.id,
             "title":story.title,
             "content":story.content,
             "user_id":story.user_id
-            }) 
-    return jsonify({"All stories":story_list}), 200
-       
+            }for story in stories]), 200
+    
+    
+# get story by id
+@story_bp.route("/stories/<int:user_id>", methods=["GET"])
+def story_by_id(user_id):
+    story = Story.query.get_or_404(user_id)
+    return jsonify({"id": story.id, "title": story.title, "content": story.content,"user_id":story.user_id})
+
+
 #Create a story by admin
-@story_bp.route('/stories', methods = ["POST"])
+@story_bp.route('/stories', methods =["POST"])
 @jwt_required()
 def post_story():
     current_user_id = get_jwt_identity()
     #fetch the admin
     user = User.query.get(current_user_id)
-    admin = Admin.query.get(current_user_id)
     
-    if not user and not admin:
+    if not user:
         return jsonify({"Error":"Only admins can post stories"}), 403
     
     data = request.get_json()
@@ -48,7 +47,7 @@ def post_story():
         return jsonify({"Error":"The story already exist or has been posted"}), 406
    
     #create a new story
-    new_story =Story(title=title,user_id=current_user_id, content=content)
+    new_story =Story(title=title, user_id=current_user_id, content=content)
     
     #call the function 
     db.session.add(new_story)
@@ -60,10 +59,9 @@ def post_story():
 @jwt_required()
 def update_story_id(story_id):
     current_user_id = get_jwt_identity()
-    admin = Admin.query.filter_by(id=current_user_id).first()
     
-    if not admin:
-        return jsonify({"Error":" Only admins can update the stories"}), 404
+    if not current_user_id:
+        return jsonify({"Error":"Not authorized to update the story"}), 404
     
     story= Story.query.get(story_id)
     # check if the user exist, 
@@ -90,21 +88,35 @@ def update_story_id(story_id):
     return jsonify({"Success":f"Story was updated successfully"}),200
 
 # Delete story only by the user 
-@story_bp.route('/story/delete/<int:story_id>',methods=['DELETE']) 
+@story_bp.route('/stories/delete/<int:story_id>', methods=['DELETE']) 
 @jwt_required()
 def delete_story(story_id):
     current_user_id = get_jwt_identity()
-    user = User.query.get(current_user_id)
-    admin = Admin.query.get(current_user_id)
-    if not admin: 
+    user = User.query.get(id=current_user_id)
+    if not user: 
         return jsonify({"Error":"Cannot delete story/Unauthorized"}), 406 
     
-    story=Story.query.get(story_id,)
+    story=Story.query.get(story_id)
     if not story:
         return jsonify({"Error": "Story not found"}), 404
+    
     db.session.delete(story)
     db.session.commit()
     
     return jsonify({"Success":f"Story deleted Successfully"})
+
+
+# @story_bp.route('/stories/delete_all', methods=['DELETE'])
+# @jwt_required()
+# def delete_all_stories():
+#     current_user_id =get_jwt_identity()
+    
+#     if not current_user_id:
+#         return jsonify({"error": "Not authorized to delete this donation"}), 403
+    
+#     Story.query.delete()
+#     db.session.commit()
+#     return jsonify({"message": "All stories deleted successfully"}), 200
+
 
 

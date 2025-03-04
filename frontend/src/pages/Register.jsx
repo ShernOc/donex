@@ -1,73 +1,157 @@
 import { useState } from "react";
 import { useUser } from "../context/UserContext";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { signInWithGoogle } from "../firebase";
 
 const Register = () => {
-  const userContext = useUser(); // Ensure useUser() is returning a valid context object
-  if (!userContext) {
-    console.error("UserContext is not found! Make sure UserProvider is wrapping your app.");
-    return null; // Prevent crashing if UserProvider is missing
-  }
-  
-  const { registerUser } = userContext;
-
+  const { registerUser } = useUser();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("user");
-  const [error, setError] = useState("");
-
+  const [message, setMessage] = useState("");
   const [userForm, setUserForm] = useState({
-    fullName: "",
+    full_name: "",
     email: "",
     password: "",
     confirmPassword: "",
+    profile_picture: "",
   });
 
   const [charityForm, setCharityForm] = useState({
-    charityName: "",
+    full_name: "",
     email: "",
     password: "",
     confirmPassword: "",
-    description: "",
   });
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const user = await signInWithGoogle();
+      navigate("/dashboard"); // Redirect to dashboard after login
+    } catch (error) {
+      console.error("Google Sign-In Error:", error.message);
+    }
+  };
 
   const handleChange = (e, formType) => {
     const { name, value } = e.target;
-    formType === "user"
-      ? setUserForm({ ...userForm, [name]: value })
-      : setCharityForm({ ...charityForm, [name]: value });
+    if (formType === "user") {
+      setUserForm((prev) => ({ ...prev, [name]: value }));
+    } else {
+      setCharityForm((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e, formType) => {
     e.preventDefault();
-    const formData = formType ==="user" ? userForm : charityForm;
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match!");
-      return;
-    }
+    const formData = formType === "user" ? userForm : charityForm;
+    setMessage("");
+    await registerUser(formData, formType, navigate);
+  };
 
-    setError("");
-    await registerUser(formData, formType);
+  const getFormFields = () => {
+    if (activeTab === "user") {
+      return (
+        <>
+          <input
+            type="text"
+            name="full_name"
+            placeholder="Full Name"
+            value={userForm.full_name}
+            onChange={(e) => handleChange(e, "user")}
+            required
+            className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={userForm.email}
+            onChange={(e) => handleChange(e, "user")}
+            required
+            className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={userForm.password}
+            onChange={(e) => handleChange(e, "user")}
+            required
+            className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
+          />
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm Password"
+            value={userForm.confirmPassword}
+            onChange={(e) => handleChange(e, "user")}
+            required
+            className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
+          />
+        </>
+      );
+    } else {
+      return (
+        <>
+          <input
+            type="text"
+            name="full_name"
+            placeholder="Charity Name"
+            value={charityForm.charity_name}
+            onChange={(e) => handleChange(e, "charity")}
+            required
+            className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={charityForm.email}
+            onChange={(e) => handleChange(e, "charity")}
+            required
+            className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={charityForm.password}
+            onChange={(e) => handleChange(e, "charity")}
+            required
+            className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
+          />
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm Password"
+            value={charityForm.confirmPassword}
+            onChange={(e) => handleChange(e, "charity")}
+            required
+            className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
+          />
+        </>
+      );
+    }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-purple-500 to-blue-500 p-6">
-      <div className="w-full max-w-lg bg-white dark:bg-gray-900 shadow-lg rounded-xl p-6">
-        <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-300">
-          Register
-        </h2>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
+      <div className="w-full max-w-lg bg-white shadow-xl rounded-xl p-6">
+        <h2 className="text-3xl font-bold text-center text-gray-800">Register</h2>
 
         {/* Tab Switcher */}
         <div className="flex mt-4 border-b">
           <button
             className={`w-1/2 py-3 text-lg font-semibold ${
-              activeTab === "user" ? "border-b-4 border-blue-500 text-blue-500" : "text-gray-500"
+              activeTab === "user" ? "border-b-4 border-red-500 text-red-500" : "text-gray-500"
             }`}
             onClick={() => setActiveTab("user")}
           >
-            User
+            Donor
           </button>
           <button
             className={`w-1/2 py-3 text-lg font-semibold ${
-              activeTab === "charity" ? "border-b-4 border-blue-500 text-blue-500" : "text-gray-500"
+              activeTab === "charity" ? "border-b-4 border-red-500 text-red-500" : "text-gray-500"
             }`}
             onClick={() => setActiveTab("charity")}
           >
@@ -75,26 +159,23 @@ const Register = () => {
           </button>
         </div>
 
-        {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+        {message && <p className="text-green-500 text-center mt-2">{message}</p>}
 
         {/* Form */}
         <form onSubmit={(e) => handleSubmit(e, activeTab)} className="space-y-4 mt-6">
-          {activeTab === "user" ? (
-            <>
-              <input type="text" name="fullName" placeholder="Full Name" value={userForm.fullName} onChange={(e) => handleChange(e, "user")} required className="w-full p-3 border rounded-lg" />
-              <input type="email" name="email" placeholder="Email" value={userForm.email} onChange={(e) => handleChange(e, "user")} required className="w-full p-3 border rounded-lg" />
-              <input type="password" name="password" placeholder="Password" value={userForm.password} onChange={(e) => handleChange(e, "user")} required className="w-full p-3 border rounded-lg" />
-              <input type="password" name="confirmPassword" placeholder="Confirm Password" value={userForm.confirmPassword} onChange={(e) => handleChange(e, "user")} required className="w-full p-3 border rounded-lg" />
-            </>
-          ) : (
-            <>
-              <input type="text" name="charityName" placeholder="Charity Name" value={charityForm.charityName} onChange={(e) => handleChange(e, "charity")} required className="w-full p-3 border rounded-lg" />
-              <input type="email" name="email" placeholder="Email" value={charityForm.email} onChange={(e) => handleChange(e, "charity")} required className="w-full p-3 border rounded-lg" />
-              <input type="password" name="password" placeholder="Password" value={charityForm.password} onChange={(e) => handleChange(e, "charity")} required className="w-full p-3 border rounded-lg" />
-              <input type="password" name="confirmPassword" placeholder="Confirm Password" value={charityForm.confirmPassword} onChange={(e) => handleChange(e, "charity")} required className="w-full p-3 border rounded-lg" />
-            </>
-          )}
-          <button type="submit" className="w-full p-3 text-white bg-blue-500 rounded-lg">Register</button>
+          {getFormFields()}
+          <button type="submit" className="w-full p-3 text-white bg-red-500 hover:bg-red-600 rounded-lg">
+            Register
+          </button>
+          <button
+            onClick={handleGoogleSignIn}
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"
+          >
+            sign in with Google
+          </button>
+          <p className="text-center text-gray-900">
+            Already have an account? <Link to="/login" className="text-rose-500 hover:underline">Login</Link>
+          </p>
         </form>
       </div>
     </div>

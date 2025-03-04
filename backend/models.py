@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData ,ForeignKey
+from sqlalchemy import MetaData ,ForeignKey, CheckConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -15,23 +15,48 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)
     full_name = db.Column(db.String(100))
+    profile_picture = db.Column(db.String(512),nullable=False)
+
+    role = db.Column(db.String(100), nullable=False,default="user")
+    
     # Relationships
     charities= relationship("Charity", back_populates="user")
     donations = relationship("Donation", back_populates="user")
     stories = relationship("Story", back_populates="user")
-
+    
+    __table_args__ = (
+        CheckConstraint(role.in_(['user', 'admin', 'charity']), name="valid_role"),
+    )
+    
+     # limit admin to 3 users
+    @staticmethod
+    def can_register():
+        admin_count = db.session.query(func.count(User.id)).filter_by(role="admin").scalar()
+        return admin_count < 3
+     
 class Charity(db.Model):
     __tablename__ = "charities"
-    
+
     id = db.Column(db.Integer, primary_key=True)
-    organization = db.Column(db.String(128), nullable=False, unique=True)
-    type= db.Column(db.String, nullable=False)
-    
-    #Foreign keys
-    user_id= db.Column(db.Integer, db.ForeignKey("users.id"), nullable = False)
-    
+    email = db.Column(db.String(128), nullable=False, unique=True)
+    charity_name = db.Column(db.String(128), nullable=False, unique=True)
+    description = db.Column(db.Text, nullable=True)
+    password = db.Column(db.String(512), nullable=False)
+    profile_picture = db.Column(db.String(1024), nullable=False)
+    approved = db.Column(db.String(20), default="pending")
+
+    # Verification fields
+    phone_number = db.Column(db.String(20), nullable=False)
+    bank_name = db.Column(db.String(255), nullable=True)
+    account_number = db.Column(db.String(50), nullable=True, unique=True)
+    account_holder = db.Column(db.String(255), nullable=True)
+    targeted_amount = db.Column(db.Float, nullable=False)
+
+    # Foreign keys
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+
     # Relationships
-    user= relationship("User", back_populates="charities")
+    user = relationship("User", back_populates="charities")
     donations = relationship("Donation", back_populates="charities")
     
     
@@ -60,19 +85,7 @@ class Donation(db.Model):
     user=relationship("User", back_populates="donations")
     charities= relationship("Charity", back_populates="donations")
 
-class Admin(db.Model):
-    __tablename__ ="admins"
-    
-    id = db.Column(db.Integer, primary_key=True)
-    full_name = db.Column(db.String(128), nullable=False)
-    email = db.Column(db.String(128), nullable=False, unique=True)
-    password = db.Column(db.String(512),nullable=False)
-
-    # limit to 3 admins
-    @staticmethod
-    def can_register():
-        return Admin.query.count() < 3
-      
+     
 class TokenBlocklist(db.Model):
     __tablename__ = "token_blocklist"
     __table_args__ = {"extend_existing": True}  # Prevents table redefinition error
@@ -80,14 +93,3 @@ class TokenBlocklist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     jti = db.Column(db.String(36), nullable=False, index=True)
     created_at = db.Column(db.DateTime, nullable=False)
-    
-class SQLiteModel(db.Model):
-    __bind_key__ = 'sqlite_db'  
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-
-class PostgresModel(db.Model):
-    __bind_key__ = 'postgres_db' 
-    
-    id = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.String(100))

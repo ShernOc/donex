@@ -1,9 +1,10 @@
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import { UserProvider } from './context/UserContext';
 import Home from './pages/Home';
-import DonorDashboard from './pages/DonorDashboard';
 import CharityDashboard from './pages/CharityDashboard';
+import DonorDashboard from './pages/DonorDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import DonationPage from './pages/DonationPage';
 import CharityList from './pages/CharityList';
@@ -12,55 +13,47 @@ import AboutPage from './pages/AboutPage';
 import CharityDetail from './pages/CharityDetail';
 import LoginPage from './pages/LoginPage';
 import Register from './pages/Register';
-import Profile from './pages/ProfilePage';
-// import { UserProvider } from './context/UserContext';
-
-import ProtectedRoute from './components/ProtectedRoute'; // import the ProtectedRoute compon
-import Profile from './pages/ProfilePage';
 import ProfilePage from './pages/ProfilePage';
+import ProtectedRoute from './components/ProtectedRoute';
+import Google from './pages/Google';
+import CharityVerificationForm from './pages/CharityVerification';
 
 
 function App() {
-  // You can check if the user is authenticated here, e.g., from localStorage or context
-  const isAuthenticated = Boolean(localStorage.getItem('authToken')); // Example authentication check
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
-      <main className="flex-1 flex flex-col">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/donor/dashboard" element={<DonorDashboard />} />
-          <Route path="/charity/dashboard" element={<CharityDashboard />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/donate/:charityId?" element={<DonationPage />} />
-          <Route path="/charities" element={<CharityList />} />
-          <Route path="/stories" element={<BeneficiaryStories />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/charity/:id" element={<CharityDetail />} />
-          <Route path="/profile" element={<Profile />} />
-
-          {/* profile */}
-           <Route path="/profile" element={<ProfilePage/>} /> 
-          
-          {/* Protect Login and Register routes */}
-          <Route
-            path="/login"
-            element={
-              <ProtectedRoute element={<LoginPage />} isAuthenticated={isAuthenticated} />
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <ProtectedRoute element={<Register />} isAuthenticated={isAuthenticated} />
-            }
-          />
-        </Routes>
-      </main>
-      <Footer />
+      <UserProvider>
+        <Navbar />
+            <main className="flex-1 flex flex-col">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/donate/:charityId?" element={<DonationPage />} />
+                <Route path="/charities" element={<CharityList />} />
+                <Route path="/stories" element={<BeneficiaryStories />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/charity/:id" element={<CharityDetail />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/google" element={<Google />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/charity/verification" element={<CharityVerificationForm />} />
+                <Route
+                  path="/donor/dashboard"
+                  element={<ProtectedRoute element={<DonorDashboard />} />}
+                />
+                <Route
+                  path="/charity/dashboard"
+                  element={<ProtectedRoute element={<CharityDashboard />} />}
+                />
+                <Route
+                  path="/admin/dashboard"
+                  element={<ProtectedRoute element={<AdminDashboard />} />}
+                />
+              </Routes>
+            </main>
+            <Footer />
+      </UserProvider>
     </div>
-
   );
 }
 
