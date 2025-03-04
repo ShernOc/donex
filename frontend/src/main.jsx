@@ -1,5 +1,6 @@
 import React from "react";
 import { ToastContainer } from 'react-toastify'
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import ReactDOM from "react-dom/client";
 import { BrowserRouter} from "react-router-dom";
 import { UserProvider } from "./context/UserContext"; 
@@ -11,7 +12,12 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                <BrowserRouter>
             <UserProvider>  
             <ToastContainer />
-                    <App />
+            <GoogleOAuthProvider clientId="556662948216-duufjajs5dlct44vgsuukoqtlk8tou1f.apps.googleusercontent.com"> 
+                <App />
+            
+            </GoogleOAuthProvider>;
+
+                   
                 
               </UserProvider> 
               </BrowserRouter>

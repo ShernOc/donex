@@ -14,8 +14,9 @@ import CharityDetail from './pages/CharityDetail';
 import LoginPage from './pages/LoginPage';
 import Register from './pages/Register';
 import ProfilePage from './pages/ProfilePage';
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import ProtectedRoute from './components/ProtectedRoute';
-import Google from './pages/Google';
 import CharityVerificationForm from './pages/CharityVerification';
 
 
@@ -33,7 +34,8 @@ function App() {
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/charity/:id" element={<CharityDetail />} />
                 <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/google" element={<Google />} />
+                <Route path="forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/charity/verification" element={<CharityVerificationForm />} />

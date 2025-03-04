@@ -17,6 +17,7 @@
     "cloudinary": "^2.5.1",
     "cors": "^2.8.5",
     "firebase": "^11.3.1",
+    "itsdangerous": "^0.0.1",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.475.0",
     "react": "^19.0.0",

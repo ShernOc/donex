@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { useUser } from "../context/UserContext";
 import { useNavigate, Link } from "react-router-dom";
-import { signInWithGoogle } from "../firebase";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 
 const Register = () => {
   const { registerUser } = useUser();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("user");
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [userForm, setUserForm] = useState({
     full_name: "",
     email: "",
@@ -23,15 +25,6 @@ const Register = () => {
     confirmPassword: "",
   });
 
-  const handleGoogleSignIn = async () => {
-    try {
-      const user = await signInWithGoogle();
-      navigate("/dashboard"); // Redirect to dashboard after login
-    } catch (error) {
-      console.error("Google Sign-In Error:", error.message);
-    }
-  };
-
   const handleChange = (e, formType) => {
     const { name, value } = e.target;
     if (formType === "user") {
@@ -44,8 +37,46 @@ const Register = () => {
   const handleSubmit = async (e, formType) => {
     e.preventDefault();
     const formData = formType === "user" ? userForm : charityForm;
+
+    if (formData.password !== formData.confirmPassword) {
+      setMessage("Passwords do not match");
+      return;
+    }
+
+    setIsLoading(true);
     setMessage("");
-    await registerUser(formData, formType, navigate);
+
+    try {
+      await registerUser(formData, formType, navigate);
+    } catch (error) {
+      setMessage(error.message || "Registration failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignUp = async (credentialResponse) => {
+    setIsLoading(true);
+    setMessage("");
+
+    try {
+      // Decode the JWT token to get user information
+      const decoded = jwtDecode(credentialResponse.credential);
+
+      const googleUser = {
+        full_name: decoded.name,
+        email: decoded.email,
+        profile_picture: decoded.picture,
+        password: "google_oauth_placeholder", // Placeholder password for Google users
+      };
+
+      // Register the user using the Google OAuth data
+      await registerUser(googleUser, "user", navigate);
+    } catch (error) {
+      setMessage(error.message || "Google Sign-Up failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getFormFields = () => {
@@ -97,7 +128,7 @@ const Register = () => {
             type="text"
             name="full_name"
             placeholder="Charity Name"
-            value={charityForm.charity_name}
+            value={charityForm.full_name}
             onChange={(e) => handleChange(e, "charity")}
             required
             className="w-full p-3 border rounded-lg focus:ring focus:ring-red-300"
@@ -159,20 +190,24 @@ const Register = () => {
           </button>
         </div>
 
-        {message && <p className="text-green-500 text-center mt-2">{message}</p>}
+        {message && <p className="text-red-500 text-center mt-2">{message}</p>}
 
         {/* Form */}
         <form onSubmit={(e) => handleSubmit(e, activeTab)} className="space-y-4 mt-6">
           {getFormFields()}
-          <button type="submit" className="w-full p-3 text-white bg-red-500 hover:bg-red-600 rounded-lg">
-            Register
-          </button>
           <button
-            onClick={handleGoogleSignIn}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"
+            type="submit"
+            disabled={isLoading}
+            className="w-full p-3 text-white bg-red-500 hover:bg-red-600 rounded-lg disabled:bg-gray-400"
           >
-            sign in with Google
+            {isLoading ? "Registering..." : "Register"}
           </button>
+          <div className="flex justify-center mt-4">
+            <GoogleLogin
+              onSuccess={handleGoogleSignUp}
+              onError={() => setMessage("Google Sign-In failed. Please try again.")}
+            />
+          </div>
           <p className="text-center text-gray-900">
             Already have an account? <Link to="/login" className="text-rose-500 hover:underline">Login</Link>
           </p>
