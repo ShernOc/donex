@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    img-src 'self' 
+      https://*.googleusercontent.com 
+      https://*.paypal.com 
+      https://*.paypal.cn 
+      https://*.paypalobjects.com 
+      https://objects.paypal.cn 
+      https://ak1s.abmr.net 
+      https://ak1s.mathtag.com 
+      https://akamai.mathtag.com 
+      https://ak1.abmr.net 
+      https://www.google.com 
+      https://www.google.co.ke 
+      https://googleads.g.doubleclick.net 
+      https://www.facebook.com 
+      https://www.google-analytics.com 
+      https://px.ads.linkedin.com 
+      data:;
+    connect-src 'self' 
+      https://*.paypal.com 
+      https://*.paypal.cn 
+      https://*.paypalobjects.com 
+      https://objects.paypal.cn 
+      https://192.55.233.1 
+      https://browser-intake-us5-datadoghq.com 
+      https://*.qualtrics.com 
+      https://www.google.com 
+      https://www.google.co.ke 
+      https://googleads.g.doubleclick.net;
+    script-src 'self' 
+      'nonce-random-value' 
+      https://www.google.com 
+      https://www.gstatic.com;
+    style-src 'self' 
+      'unsafe-inline' 
+      https://fonts.googleapis.com;
+    font-src 'self' 
+      https://fonts.gstatic.com;
+  ">
+  <title>Your Website</title>
+  <!-- Example of an inline script with a nonce -->
+  <script nonce="random-value">
+    console.log('This inline script is allowed by the CSP.');
+  </script>
+  <!-- Example of external scripts -->
+  <script src="https://www.google.com/example-script.js" nonce="random-value"></script>
+  <!-- Example of external styles -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+</head>
+<body>
+  <h1>Welcome to Your Website</h1>
+  <p>This is a sample page with a Content Security Policy (CSP) enforced via a meta tag.</p>
+  <!-- Example of an image from an allowed domain -->
+  <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="Google Logo">
+</body>
+</html>
