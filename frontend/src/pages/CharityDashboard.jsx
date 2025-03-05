@@ -20,7 +20,7 @@ const CharityDashboard = () => {
     const fetchDashboardData = async () => {
       try {
         const [donationsRes, statsRes, approvalRes] = await Promise.all([
-          fetch("http://127.0.0.1:5000/donations", {
+          fetch("http://127.0.0.1:5001/donations", {
             headers: { Authorization: `Bearer ${token}` },
           }),
           fetch("http://127.0.0.1:5000/dashboard-stats", {

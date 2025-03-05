@@ -3,9 +3,21 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData ,ForeignKey, CheckConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+from enum import Enum
+
 
 metadata = MetaData()
 db = SQLAlchemy(metadata=metadata)
+
+class DonationType(Enum):
+    ONE_TIME = "one-time"
+    RECURRING = "recurring"
+
+class DonationFrequency(Enum):
+    WEEKLY = "weekly"
+    MONTHLY = "monthly"
+    YEARLY = "yearly"
+
 
 # Define the User model
 class User(db.Model):
@@ -15,9 +27,9 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)
     full_name = db.Column(db.String(100))
-    profile_picture = db.Column(db.String(512),nullable=False)
+    profile_picture = db.Column(db.String(512),nullable=True)
 
-    role = db.Column(db.String(100), nullable=False,default="user")
+    role = db.Column(db.String(10), nullable=False, default="user")
     
     # Relationships
     charities= relationship("Charity", back_populates="user")
@@ -46,11 +58,11 @@ class Charity(db.Model):
     approved = db.Column(db.String(20), default="pending")
 
     # Verification fields
-    phone_number = db.Column(db.String(20), nullable=False)
+    phone_number = db.Column(db.String(20), nullable=True)
     bank_name = db.Column(db.String(255), nullable=True)
     account_number = db.Column(db.String(50), nullable=True, unique=True)
     account_holder = db.Column(db.String(255), nullable=True)
-    targeted_amount = db.Column(db.Float, nullable=False)
+    targeted_amount = db.Column(db.Float, nullable=True)
 
     # Foreign keys
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
@@ -76,14 +88,38 @@ class Donation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Float, nullable=False)
     donation_date = db.Column(db.DateTime, nullable=False, default=func.now())
+    is_anonymous = db.Column(db.Boolean, default=False, nullable=False)  # Track anonymity of the donation 
+    
+    donation_type = db.Column(db.Enum(DonationType), nullable=False, default=DonationType.ONE_TIME)
+    donation_frequency = db.Column(db.Enum(DonationFrequency), nullable=True)  
+    
     
     # Foreign keys
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable = True)
+    
     charity_id = db.Column(db.Integer, db.ForeignKey("charities.id", ondelete="CASCADE"))
 
     # Relationships
     user=relationship("User", back_populates="donations")
     charities= relationship("Charity", back_populates="donations")
+    transaction = relationship("Transaction", back_populates="donation", uselist=False) 
+    
+    #PAYPAL to store the transaction 
+class Transaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    paypal_order_id = db.Column(db.String(255), unique=True, nullable=False)
+    status = db.Column(db.String(50), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    currency = db.Column(db.String(10), nullable=False)
+    payer_email = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime, server_default=func.now())
+
+    # Foreign key linking to Donation
+    donation_id = db.Column(db.Integer, db.ForeignKey("donation.id"), unique=True, nullable=False)
+
+    # Relationship
+    donation = relationship("Donation", back_populates="transaction")
+    
 
      
 class TokenBlocklist(db.Model):

@@ -4,8 +4,10 @@ from models import db, TokenBlocklist
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
 from flask_cors import CORS
+from flask_mail import Mail
 
 import os
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///donex.db'
@@ -25,6 +27,23 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 
 jwt = JWTManager(app)
 
+# Flask-Mail Configuration
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = 'collinskathu7@gmail.com'  
+app.config['MAIL_PASSWORD'] ='dqdc cghl djdx fuex'  
+app.config['MAIL_DEFAULT_SENDER'] = "collinskathu7@gmail.com"
+
+mail = Mail(app)
+
+
+# PAYPAL Payments:
+PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
+PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET")
+PAYPAL_BASE_URL = os.getenv("PAYPAL_BASE_URL")
+
 # Import views
 from views import *
 
@@ -36,8 +55,9 @@ app.register_blueprint(story_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(target_bp)
+app.register_blueprint(paypal_bp)
 
-
+# Error handling
 @app.errorhandler(404)
 def not_found_error(error):
     return jsonify({"error": "Not Found"}), 404
@@ -53,22 +73,14 @@ def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
     jti = jwt_payload["jti"]
     token = db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
     return token is not None
+
+#seed.py
 def create_app():
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///donex.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    
     db.init_app(app)
-
     return app
-
-# load_dotenv()
-
-# PAYPAL Payments:
-PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
-PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET")
-PAYPAL_BASE_URL = os.getenv("PAYPAL_BASE_URL")
-
 
 
 if __name__ == '__main__':

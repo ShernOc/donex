@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import { UserProvider } from './context/UserContext';
+import { DonationProvider } from './context/DonationContext';
 import Home from './pages/Home';
 import CharityDashboard from './pages/CharityDashboard';
 import DonorDashboard from './pages/DonorDashboard';
@@ -15,14 +16,16 @@ import LoginPage from './pages/LoginPage';
 import Register from './pages/Register';
 import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './components/ProtectedRoute';
-import Google from './pages/Google';
 import CharityVerificationForm from './pages/CharityVerification';
+import { CharityProvider } from './context/CharityContext';
 
 
 function App() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <UserProvider>
+        <CharityProvider>
+        <DonationProvider>
         <Navbar />
             <main className="flex-1 flex flex-col">
               <Routes>
@@ -33,7 +36,6 @@ function App() {
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/charity/:id" element={<CharityDetail />} />
                 <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/google" element={<Google />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/charity/verification" element={<CharityVerificationForm />} />
@@ -51,6 +53,8 @@ function App() {
                 />
               </Routes>
             </main>
+            </DonationProvider>
+            </CharityProvider>
             <Footer />
       </UserProvider>
     </div>

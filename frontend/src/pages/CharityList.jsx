@@ -1,46 +1,36 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter} from 'lucide-react';
+import { useCharity } from '../context/CharityContext';
 
 const CharityList = () => {
-  const [charities, setCharities] = useState([]);
+  const {fetchCharities}=useCharity();
+  const [allCharity, setCharity] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const accessToken = localStorage.getItem('token');
 
   useEffect(() => {
-    fetch('http://localhost:5000/charities', {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log('Fetched approved charities:', data);
-        if (data && Array.isArray(data.charities)) {
-          setCharities(data.charities);
-        } else {
-          setCharities([]);
-          setError('Invalid data format received.');
-        }
-      })
-      .catch((error) => {
-        console.error('Error fetching charities:', error);
-        setError('Failed to fetch charities.');
-      })
-      .finally(() => setLoading(false));
-  }, [accessToken]);
+    const getCharities = async () => {
+      try {
+        const maxCharity = await fetchCharities(); 
 
-  const filteredCharities = charities.filter((charity) =>
+        //append the stored charities to 
+        setCharity[maxCharity];
+
+        setLoading(false);
+
+      } catch (error) {
+        setError("Failed to load charities");
+        setLoading(false);
+      }
+    };
+
+    getCharities();
+  }, []);
+
+  const filteredCharities = allCharity.filter((charity) =>
     charity.charity_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -81,7 +71,7 @@ const CharityList = () => {
             {filteredCharities.map((charity) => (
               <div key={charity.id} className="bg-white rounded-lg shadow-md overflow-hidden">
                 <img
-                  src={charity.image || 'https://via.placeholder.com/300'}
+                  src={charity.profile_picture || 'https://via.placeholder.com/300'}
                   alt={charity.charity_name}
                   className="w-full h-48 object-cover"
                 />

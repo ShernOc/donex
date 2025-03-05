@@ -14,25 +14,23 @@ def create_user():
     if not data or "email" not in data or "password" not in data or "full_name" not in data:
         return jsonify({"msg": "Invalid request"}), 400
     
-    if User.query.filter_by(email=data["email"]).first():
+    if User.query.filter_by(email=data["email"]).first() is not None:
         return jsonify({"msg":"Email already registered"}), 409
     
     full_name=data["full_name"]
     email=data["email"]
     password=generate_password_hash(data["password"])
-    profile_picture = ""
-    
+
     #default role = user 
-    role = data.get("userType", "user")
+    role = data.get("admin", "user")
     
-    allowed_roles = ["user", "charity"]
+    allowed_roles = ["user", "admin"]
     if role not in allowed_roles:
-        return jsonify({"msg": "Invalid role. Choose from 'user', 'charity'"}), 400
+        return jsonify({"msg": "Invalid role. Choose from 'user', 'admin'"}), 400
     if role =="admin" and not User.can_register():
         return jsonify({"msg": "Admin limit reached. Only 3 admins allowed."}), 403
     
-    
-    new_user = User(full_name=full_name,email=email,password=password,profile_picture=profile_picture, role=role)
+    new_user = User(full_name=full_name,email=email,password=password,role=role)
     db.session.add(new_user)
     db.session.commit()
 

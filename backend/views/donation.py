@@ -1,6 +1,6 @@
 from flask import jsonify, request, Blueprint
 from sqlalchemy import func, extract
-from models import db, Donation
+from models import db, Donation, DonationFrequency,DonationType
 from datetime import datetime
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -11,7 +11,6 @@ donation_bp = Blueprint("donation_bp", __name__)
 @donation_bp.route('/donations', methods =['GET'])
 @jwt_required()
 def get_donations():
-    current_user_id = get_jwt_identity()
     user_id = request.args.get("user_id", type=int)
     charity_id = request.args.get("charity_id", type=int)
 
@@ -23,11 +22,11 @@ def get_donations():
 
     donations = query.all()
     
-    # Calculate total donations per user
+    # Calculate total donations for the  user
     user_donations = db.session.query(Donation.user_id, func.sum(Donation.amount).label("total_amount")).group_by(Donation.user_id).all()
     user_total = {user: total for user, total in user_donations}
 
-    # Calculate total donations per charity
+    # Calculate total donations for the charity
     charity_donations = db.session.query(Donation.charity_id, func.sum(Donation.amount).label("total_received")).group_by(Donation.charity_id).all()
     charity_total = {charity: total for charity, total in charity_donations}
 
@@ -39,6 +38,7 @@ def get_donations():
             func.sum(Donation.amount).label('total_monthly')
         ).group_by('year', 'month').all()
     )
+    
     monthly_total = {f"{int(year)}-{int(month)}": total for year, month, total in monthly_donations}
 
     grand_total = db.session.query(func.sum(Donation.amount)).scalar() or 0
@@ -58,21 +58,42 @@ def get_total_donations():
 
 # Create a new donation
 @donation_bp.route('/donations', methods=['POST'])
-@jwt_required()
+# @jwt_required()
 def create_donation():
     current_user_id=get_jwt_identity()
-    data=request.get_json()
-
+    
     print("Current User ID:", current_user_id)
-
-    if not data or "charity_id" not in data or "amount" not in data:
+    
+    data = request.get_json()
+    amount = data.get('amount')
+    charity_id=data.get("charity_id")
+    is_anonymous = data.get('is_anonymous', False)
+    donation_type = data.get('donation_type', 'one-time').lower()
+    donation_frequency = data.get('donation_frequency')
+    
+    if not amount or not charity_id:
         return jsonify({"error": "Invalid request data"}), 400
+
+    # Validate donation type
+    if donation_type not in [dt.value for dt in DonationType]:
+        return jsonify({"error": "Invalid donation type"}), 400
+    
+    # Validate donation frequency if donation is recurring
+    if donation_type == DonationType.RECURRING.value:
+        if not donation_frequency or donation_frequency not in [df.value for df in DonationFrequency]:
+            return jsonify({"error": "Recurring donations require a valid frequency"}), 400
+    else:
+        donation_frequency = None  # Ensure it's null for one-time donations
 
     try:
         new_donation = Donation(
         user_id=current_user_id,
-        charity_id=data["charity_id"],
-        amount= float(data["amount"]))
+        charity_id=charity_id,
+        is_anonymous=is_anonymous, 
+        amount=float(amount),
+        donation_type=DonationType(donation_type),
+        donation_frequency=DonationFrequency(donation_frequency) if donation_frequency else None
+        )
 
         db.session.add(new_donation)
         db.session.commit()
@@ -80,6 +101,7 @@ def create_donation():
     except Exception as e:
         db.session.rollback()
     return jsonify({"error":str(e)}), 500
+
 
 # Update the donation 
 @donation_bp.route('/donations/<int:donation_id>', methods=['PATCH'])
@@ -101,6 +123,21 @@ def update_donation(donation_id):
 
     if "charity_id" in data:
         donation.charity_id = data["charity_id"]
+        
+    if "donation_type" in data:
+        donation_type = data["donation_type"].lower()
+        if donation_type not in [dt.value for dt in DonationType]:
+            return jsonify({"error": "Invalid donation type"}), 400
+        donation.donation_type = DonationType(donation_type)
+
+    if "donation_frequency" in data:
+        if donation.donation_type == DonationType.RECURRING:  # Only allow frequency for recurring
+            donation_frequency = data["donation_frequency"].lower()
+            if donation_frequency not in [df.value for df in DonationFrequency]:
+                return jsonify({"error": "Invalid donation frequency"}), 400
+            donation.donation_frequency = DonationFrequency(donation_frequency)
+        else:
+            donation.donation_frequency = None
 
     db.session.commit()
     return jsonify(({"Success":"Donation updated successfully"}))

@@ -42,7 +42,7 @@ def get_charity_by_id(charity_id):
         "targeted_amount": charity.targeted_amount,
         
     }), 200
-
+    
 
 # Post a charity no need to be login 
 @charity_bp.route('/charities', methods=["POST"])
@@ -53,7 +53,8 @@ def post_charity():
     email=data.get("email")
     profile_picture = data.get("profile_picture")
     description=data.get("description")
-    # approved="pending"
+    approved=data.get("pending")
+    user_id=data.get("user_id")
   
     # Validate required fields
     if not charity_name or not password or not email:
@@ -70,33 +71,6 @@ def post_charity():
     db.session.commit()
     return jsonify({"success": "Charity added successfully", "charity_id": new_charity.id}), 200
 
-# # Get all charities
-# @charity_bp.route('/charities', methods=['GET'])
-# @jwt_required()
-# def get_charities():
-#     charities = Charity.query.all()
-#     return jsonify({
-#         "charities": [{
-#             "id": charity.id,
-#             "charity_name": charity.charity_name,
-#             "email": charity.email,
-#             "user_id": charity.user_id
-#         } for charity in charities]
-#     }), 200
-
-# # Get a charity by ID
-# @charity_bp.route('/charities/<int:charity_id>', methods=['GET'])
-# @jwt_required()
-# def get_charity_by_id(charity_id):
-#     charity = Charity.query.get(charity_id)
-#     if not charity:
-#         return jsonify({"error": "Charity not found"}), 404
-#     return jsonify({
-#         "id": charity.id,
-#         "charity_name": charity.charity_name,
-#         "email": charity.email,
-#         "user_id": charity.user_id
-#     }), 200
 
 # Update a charity
 @charity_bp.route('/charities/update/<int:charity_id>', methods=["PATCH"])

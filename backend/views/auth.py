@@ -5,10 +5,12 @@ from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
+from app import mail
+from flask_mail import Message
 
-
-
+serializer = URLSafeTimedSerializer("SECRET_KEY")
 auth_bp = Blueprint("auth_bp", __name__)
+
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
@@ -31,7 +33,6 @@ def login():
         return jsonify({"msg":"Invalid email or password"}), 401
     
     
-
 # login with google
 @auth_bp.route("/google-login", methods=["POST"])
 def google_login():
@@ -74,6 +75,7 @@ def logout():
     db.session.commit()
 
     return jsonify({"Success": "Logged out successfully"}), 200
+
 
 # CHARITY AUTHENTICATION 
 @auth_bp.route('/charities/login', methods=["POST"])
@@ -122,6 +124,58 @@ def charities_logout():
     db.session.commit()
 
     return jsonify({"Success": "Logged out successfully"}), 200
+
+# Forgot Password Route
+@auth_bp.route('/auth/forgot-password', methods=['POST'])
+def forgot_password():
+    data = request.get_json()
+    email = data.get('email')
+
+    if not email:
+        return jsonify({"error": "Email is required"}), 400
+
+    # Query the user from the database
+    user = User.query.filter_by(email=email).first()
+    
+    if not user:
+        return jsonify({"error": "Email not found"}), 404
+
+    # Generate a reset token (for demonstration, use a simple string)
+    reset_token = serializer.dumps(email, salt="password-reset-salt")
+
+    # Send the reset link via email
+    try:
+        msg = Message(
+            subject="Password Reset",
+            recipients=[email],
+            body=f"Click the link to reset your password: http://localhost:5173/reset-password?token={reset_token}",
+        )
+        mail.send(msg)
+        return jsonify({"message": "Reset link sent to your email"}), 200
+    except Exception as e:
+        print(f"Error sending email: {e}")
+        return jsonify({"error": "Failed to send reset link"}), 500
+
+
+@auth_bp.route('/auth/reset-password', methods=['POST'])
+def reset_password():
+    data = request.get_json()
+    token = data.get('token')
+    new_password = data.get('new_password')
+
+    try:
+        email = serializer.loads(token, salt="password-reset-salt", max_age=3600)
+    except Exception as e:
+        return jsonify({"error": "Invalid or expired token"}), 400
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    user.password = generate_password_hash(new_password)
+    db.session.commit()
+
+    return jsonify({"message": "Password reset successfully"}), 200
     
     
     

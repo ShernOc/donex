@@ -5,7 +5,7 @@ from models import Charity, db, User
 # Define blueprint
 target_bp = Blueprint("target", __name__)
 
-# ✅ Route to submit charity verification
+# Route to submit charity verification
 @target_bp.route("/charities/verify", methods=["POST"])
 @jwt_required()
 def verify_charity():
@@ -30,7 +30,7 @@ def verify_charity():
 
     return jsonify({"message": "Charity verification submitted successfully!"}), 201
 
-# ✅ Route to get all charities
+# Route to get all charities
 @target_bp.route("/charities", methods=["GET"])
 def get_charities():
     charities = Charity.query.all()
@@ -50,7 +50,7 @@ def get_charities():
         ]
     })
 
-# ✅ Route to get pending charities for admin review
+# Route to get pending charities for admin review
 @target_bp.route("/admin/charities/pending", methods=["GET"])
 @jwt_required()
 def get_pending_charities():
@@ -70,7 +70,7 @@ def get_pending_charities():
         for charity in pending_charities
     ])
 
-# ✅ Route to approve or reject a charity
+# Route to approve or reject a charity
 @target_bp.route("/admin/charities/<int:charity_id>", methods=["PATCH"])
 @jwt_required()
 def update_charity_status(charity_id):
@@ -82,7 +82,7 @@ def update_charity_status(charity_id):
         return jsonify({"message": "Charity status updated"})
     return jsonify({"message": "Invalid status"}), 400
 
-# ✅ Route to get a charity's status
+# Route to get a charity's status
 @target_bp.route("/charities/<int:charity_id>/status", methods=["GET"])
 def get_charity_status(charity_id):
     charity = Charity.query.get_or_404(charity_id)
@@ -108,3 +108,5 @@ def get_approved_charities():
             for charity in approved_charities
         ]
     })
+    
+    

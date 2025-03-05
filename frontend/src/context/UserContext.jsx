@@ -99,6 +99,7 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  
   // Fetch current user data
   const fetchCurrentUser = async () => {
     try {
@@ -123,6 +124,57 @@ export const UserProvider = ({ children }) => {
       logoutUser();
     }
   };
+
+  //Google login 
+  const login_with_google = async (email) => {
+    try {
+      toast.loading("Logging you in ...");
+
+      const response = await fetch("http://127.0.0.1:5000/google-login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) throw new Error("Failed to log in with Google");
+
+      const data = await response.json();
+      toast.dismiss(); // Remove loading toast
+
+      if (data.access_token) {
+        localStorage.setItem("token", token);
+        setToken(data.access_token);
+        
+        console.log("Google Token: ", token)
+        // Fetch user details
+        const userResponse = await fetch("http://127.0.0.1:5000/current_user", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!userResponse.ok) throw new Error("Failed to fetch user data");
+        const userData = await userResponse.json();
+
+        if (userData.email) {
+          setUser(userData);
+        } else {
+          throw new Error("User data is incomplete.");
+        }
+      } else {
+        throw new Error(data.error || "Invalid email provided.");
+      }
+    } catch (error) {
+      console.error("Google login error:", error);
+      toast.dismiss();
+        toast.error(String(error?.message || "Something went wrong. Please try again."));
+    }
+  };
+
 
   const updateUser = async (userId, updatedData) => {
     if (!userId) {
@@ -162,6 +214,8 @@ export const UserProvider = ({ children }) => {
 
       setUser(null);
       setToken("");
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
       sessionStorage.removeItem("token");
       sessionStorage.removeItem("user");
       navigate("/login");
@@ -190,7 +244,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, registerUser, loginUser, logoutUser, updateUser }}>
+    <UserContext.Provider value={{ user, registerUser, loginUser, logoutUser, updateUser, login_with_google, deleteUser}}>
       {children}
     </UserContext.Provider>
   );

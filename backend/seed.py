@@ -11,7 +11,7 @@ def seed_charities():
             "approved": "approved",
             "password": "unicef123",
             "user_id": 1,
-            "profile_picture": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/UNICEF_Logo.svg/512px-UNICEF_Logo.svg.png"
+            "profile_picture": "backend/images/unicef.png"
         },
         {
             "email": "contact@redcross.org",
@@ -20,7 +20,7 @@ def seed_charities():
             "approved": "approved",
             "password": "redcross456",
             "user_id": 2,
-            "profile_picture": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Red_Cross.svg/512px-Red_Cross.svg.png"
+            "profile_picture": "backend/images/redcross.png"
         },
         {
             "email": "support@oxfam.org",
@@ -29,7 +29,7 @@ def seed_charities():
             "approved": "approved",
             "password": "oxfam789",
             "user_id": 3,
-            "profile_picture": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Oxfam_logo.svg/512px-Oxfam_logo.svg.png"
+            "profile_picture": "backend/images/Oxfam_logo_vertical.svg.png"
         },
         {
             "email": "donate@savethechildren.org",
@@ -38,7 +38,7 @@ def seed_charities():
             "approved": "pending",
             "password": "savethekids123",
             "user_id": 4,
-            "profile_picture": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Save_the_Children_logo.svg/512px-Save_the_Children_logo.svg.png"
+            "profile_picture": "backend/images/save.png"
         },
         {
             "email": "hello@doctorswithoutborders.org",
@@ -47,7 +47,7 @@ def seed_charities():
             "approved": "approved",
             "password": "medic456",
             "user_id": 5,
-            "profile_picture": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Doctors_Without_Borders_logo.svg/512px-Doctors_Without_Borders_logo.svg.png"
+            "profile_picture": "backend/images/doctors.png"
         },
         {
             "email": "info@wwf.org",
@@ -56,7 +56,7 @@ def seed_charities():
             "approved": "approved",
             "password": "wildlife789",
             "user_id": 6,
-            "profile_picture": "https://upload.wikimedia.org/wikipedia/en/thumb/2/24/WWF_logo.svg/512px-WWF_logo.svg.png"
+            "profile_picture": "backend/images/wwf.png"
         },
         {
             "email": "contact@water.org",
@@ -65,7 +65,7 @@ def seed_charities():
             "approved": "pending",
             "password": "waterlife123",
             "user_id": 7,
-            "profile_picture": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Water.org_logo.svg/512px-Water.org_logo.svg.png"
+            "profile_picture": "backend/images/water.png"
         },
         {
             "email": "team@feedingamerica.org",
@@ -74,7 +74,7 @@ def seed_charities():
             "approved": "approved",
             "password": "hunger456",
             "user_id": 8,
-            "profile_picture": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Feeding_America_logo.svg/512px-Feeding_America_logo.svg.png"
+            "profile_picture": "backend/images/feedinga.png"
         },
         {
             "email": "support@habitat.org",
@@ -83,7 +83,7 @@ def seed_charities():
             "approved": "approved",
             "password": "homes789",
             "user_id": 9,
-            "profile_picture": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Habitat_for_Humanity_logo.svg/512px-Habitat_for_Humanity_logo.svg.png"
+            "profile_picture": "backend/images/habitat.png"
         },
         {
             "email": "info@amnesty.org",
@@ -92,7 +92,7 @@ def seed_charities():
             "approved": "approved",
             "password": "justice123",
             "user_id": 10,
-            "profile_picture": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Amnesty_International_logo.svg/512px-Amnesty_International_logo.svg.png"
+            "profile_picture": "backend/images/amnesty.png"
         }
     ]
 
@@ -109,7 +109,7 @@ def seed_charities():
         db.session.add(charity)
 
     db.session.commit()
-    print("✅ Seed data inserted successfully!")
+    print("Seed data inserted successfully!")
 
 if __name__ == "__main__":
     app = create_app()  

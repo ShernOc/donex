@@ -12,6 +12,8 @@ const BeneficiaryStories = () => {
       likes: 245,
       comments: 18,
     },
+
+    
     {
       id: 2,
       title: "Building Schools in Rural Communities",
