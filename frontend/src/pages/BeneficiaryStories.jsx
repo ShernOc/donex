@@ -59,22 +59,7 @@ const BeneficiaryStories = () => {
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">{story.title}</h3>
                 <p className="text-gray-600 mb-4">{story.content}</p>
-                <div className="flex items-center justify-between pt-4 border-t">
-                  <div className="flex space-x-4">
-                    <button className="flex items-center text-gray-500 hover:text-rose-600">
-                      <Heart className="h-5 w-5 mr-1" />
-                      <span>{story.likes}</span>
-                    </button>
-                    <button className="flex items-center text-gray-500 hover:text-rose-600">
-                      <MessageCircle className="h-5 w-5 mr-1" />
-                      <span>{story.comments}</span>
-                    </button>
-                  </div>
-                  <button className="flex items-center text-gray-500 hover:text-rose-600">
-                    <Share2 className="h-5 w-5 mr-1" />
-                    <span>Share</span>
-                  </button>
-                </div>
+                
               </div>
             </div>
           ))}

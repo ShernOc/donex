@@ -67,7 +67,7 @@ const CharityList = () => {
               />
               <Search className="h-5 w-5 text-gray-400 absolute left-3 top-2.5" />
             </div>
-            <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md bg-white text-black hover:bg-gray-100">
+            <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md bg-white text-white hover:bg-gray-100">
               <Filter className="h-5 w-5 mr-2" />
               Filter
             </button>
@@ -93,7 +93,7 @@ const CharityList = () => {
                   <div className="flex items-center justify-between">
                     <Link
                       to={`/donate/${charity.id}`}
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-rose-600 hover:bg-rose-700"
+                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm bg-rose-600 hover:bg-rose-700 !text-white"
                     >
                       Donate Now
                     </Link>

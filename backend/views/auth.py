@@ -70,7 +70,7 @@ def get_current_user():
     }), 200
 
 # Logout (Revoke JWT Token)
-@auth_bp.route("/logout", methods=["DELETE"])
+@auth_bp.route("/logout", methods=["POST"])
 @jwt_required()
 def logout():
     jti = get_jwt()["jti"]
