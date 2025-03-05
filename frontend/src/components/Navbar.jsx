@@ -1,8 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Heart, LogIn, UserPlus, Menu, LogOut } from 'lucide-react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback,useContext } from 'react';
+import { UserContext } from '../context/UserContext'; 
 
 const Navbar = () => {
+  const { logoutUser } = useContext(UserContext);
+  
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
@@ -34,6 +37,7 @@ const Navbar = () => {
 
   // Handle logout
   const handleLogout = () => {
+    logoutUser();
     localStorage.removeItem('token');
     window.localStorage.setItem('logout', Date.now()); // Sync logout across tabs
     setIsAuthenticated(false);

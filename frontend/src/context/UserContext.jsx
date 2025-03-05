@@ -64,7 +64,7 @@ export const UserProvider = ({ children }) => {
       if (!response.ok) throw new Error(data.error || "Login failed!");
 
       localStorage.setItem("token", data.access_token);
-      setToken(data.access_token);
+      await setToken(data.access_token);
 
       // Wait before fetching user
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -74,12 +74,12 @@ export const UserProvider = ({ children }) => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${data.access_token}`,
         },
       });
 
       const userData = await userResponse.json();
-      if (!userResponse.ok) throw new Error("User data retrieval failed");
+      // if (!userResponse.ok) throw new Error("User data retrieval failed");
 
       setUser(userData);
       sessionStorage.setItem("user", JSON.stringify(userData));
@@ -212,7 +212,7 @@ export const UserProvider = ({ children }) => {
   const logoutUser = async () => {
     try {
       await fetch("http://127.0.0.1:5000/logout", {
-        method: "DELETE",
+        method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
 

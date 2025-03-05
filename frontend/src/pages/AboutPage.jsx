@@ -1,7 +1,7 @@
 const AboutPage = () => {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-gray-800 px-6">
-      <div className="max-w-4xl text-center">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gray-100 text-gray-800 px-6 py-12">
+      <div className="w-full max-w-4xl text-center">
         <h1 className="text-4xl font-bold text-blue-600 mb-4 animate__animated animate__fadeInDown">
           About Donex
         </h1>
@@ -34,12 +34,12 @@ const AboutPage = () => {
               <p className="text-gray-500">Software Engineer</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-lg font-bold text-gray-700">sherlyne ochieng</h3>
-              <p className="text-gray-500">software engineer</p>
+              <h3 className="text-lg font-bold text-gray-700">Sherlyne Ochieng</h3>
+              <p className="text-gray-500">Software Engineer</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-lg font-bold text-gray-700">collins kathurima</h3>
-              <p className="text-gray-500">software engineer</p>
+              <h3 className="text-lg font-bold text-gray-700">Collins Kathurima</h3>
+              <p className="text-gray-500">Software Engineer</p>
             </div>
           </div>
         </div>

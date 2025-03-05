@@ -4,6 +4,7 @@ import Footer from './components/Footer';
 import { UserProvider } from './context/UserContext';
 import Home from './pages/Home';
 import CharityDashboard from './pages/CharityDashboard';
+import { DonationProvider } from './context/DonationContext';
 import DonorDashboard from './pages/DonorDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import DonationPage from './pages/DonationPage';
@@ -24,6 +25,7 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <UserProvider>
+        <DonationProvider>
         <Navbar />
             <main className="flex-1 flex flex-col">
               <Routes>
@@ -54,7 +56,8 @@ function App() {
               </Routes>
             </main>
             <Footer />
-      </UserProvider>
+      </DonationProvider>
+    </UserProvider>
     </div>
   );
 }

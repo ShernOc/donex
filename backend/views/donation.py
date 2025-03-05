@@ -7,8 +7,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 donation_bp = Blueprint("donation_bp", __name__)
 
-# get the donation 
-@donation_bp.route('/donations', methods =['GET'])
+# Get donations with filtering
+@donation_bp.route('/donations', methods=['GET'])
 @jwt_required()
 def get_donations():
     current_user_id = get_jwt_identity()
@@ -18,6 +18,9 @@ def get_donations():
     query = db.session.query(Donation)
     if user_id: 
         query = query.filter(Donation.user_id == user_id)
+    else:
+        query = query.filter(Donation.user_id == current_user_id)
+
     if charity_id: 
         query = query.filter(Donation.charity_id == charity_id)
 
@@ -48,7 +51,7 @@ def get_donations():
         "charity_donations": charity_total,
         "grand_total_donations": grand_total,
         "monthly_donations": monthly_total,
-    }),200
+    }), 200
 
 # Get the total donations
 @donation_bp.route('/donations/total', methods=['GET'])
@@ -60,32 +63,31 @@ def get_total_donations():
 @donation_bp.route('/donations', methods=['POST'])
 @jwt_required()
 def create_donation():
-    current_user_id=get_jwt_identity()
-    data=request.get_json()
-
-    print("Current User ID:", current_user_id)
+    current_user_id = get_jwt_identity()
+    data = request.get_json()
 
     if not data or "charity_id" not in data or "amount" not in data:
         return jsonify({"error": "Invalid request data"}), 400
 
     try:
         new_donation = Donation(
-        user_id=current_user_id,
-        charity_id=data["charity_id"],
-        amount= float(data["amount"]))
+            user_id=current_user_id,
+            charity_id=data["charity_id"],
+            amount=float(data["amount"])
+        )
 
         db.session.add(new_donation)
         db.session.commit()
         return jsonify(new_donation.to_dict()), 201
     except Exception as e:
         db.session.rollback()
-    return jsonify({"error":str(e)}), 500
+        return jsonify({"error": str(e)}), 500
 
-# Update the donation 
+# Update a donation
 @donation_bp.route('/donations/<int:donation_id>', methods=['PATCH'])
 @jwt_required()
 def update_donation(donation_id):
-    current_user_id=get_jwt_identity()
+    current_user_id = get_jwt_identity()
     data = request.get_json()
 
     donation = Donation.query.get(donation_id)
@@ -93,7 +95,7 @@ def update_donation(donation_id):
     if not donation:
         return jsonify({"error": "Donation not found"}), 404
 
-    if donation.user_id != current_user_id["id"]:
+    if donation.user_id != current_user_id:
         return jsonify({"error": "Not authorized to update this donation"}), 403
 
     if "amount" in data:
@@ -103,34 +105,35 @@ def update_donation(donation_id):
         donation.charity_id = data["charity_id"]
 
     db.session.commit()
-    return jsonify(({"Success":"Donation updated successfully"}))
+    return jsonify(donation.to_dict()), 200
 
 # Delete a donation
 @donation_bp.route('/donations/<int:donation_id>', methods=['DELETE'])
 @jwt_required()
 def delete_donation(donation_id):
-    current_user_id =get_jwt_identity()
+    current_user_id = get_jwt_identity()
     donation = Donation.query.get(donation_id)
 
     if not donation:
         return jsonify({"error": "Donation not found"}), 404
 
-    if donation.user_id != current_user_id["id"]:
+    if donation.user_id != current_user_id:
         return jsonify({"error": "Not authorized to delete this donation"}), 403
 
     db.session.delete(donation)
     db.session.commit()
 
-    return jsonify({"message": "Donation deleted successfully"})
+    return jsonify({"message": "Donation deleted successfully"}), 200
 
-# Delete all donations 
+# Delete all donations (admin only)
 @donation_bp.route('/donations/delete_all', methods=['DELETE'])
 @jwt_required()
 def delete_all_donations():
-    current_user_id =get_jwt_identity()
+    current_user_id = get_jwt_identity()
 
-    if not current_user_id:
-        return jsonify({"error": "Not authorized to delete this donation"}), 403
+    # Ensure only admin can delete all donations
+    if not current_user_id or not request.args.get("admin", type=bool):
+        return jsonify({"error": "Not authorized to delete all donations"}), 403
 
     Donation.query.delete()
     db.session.commit()

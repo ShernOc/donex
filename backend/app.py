@@ -41,6 +41,7 @@ PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
 PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET")
 PAYPAL_BASE_URL = os.getenv("PAYPAL_BASE_URL")
 
+
 # Import views
 from views import *
 
@@ -52,6 +53,7 @@ app.register_blueprint(story_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(target_bp)
+app.register_blueprint(paypal_bp)
 
 # Error handling
 @app.errorhandler(404)
@@ -72,3 +74,5 @@ def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
+
+
