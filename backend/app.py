@@ -11,6 +11,7 @@ app = Flask(__name__)
 
 # Database Configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://donex_db_539e_user:iECJTdtynhUqXVOL184YEOxI0HLGtK2y@dpg-cv4ekjij1k6c73biuj3g-a.oregon-postgres.render.com/donex_db_539e' 
+
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
@@ -23,6 +24,7 @@ CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}},
 
 # JWT Configuration
 app.config["JWT_SECRET_KEY"] = "jiyucfvbkaudhudkvfbt" 
+
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 
 jwt = JWTManager(app)
@@ -46,6 +48,7 @@ PAYPAL_BASE_URL = os.getenv("PAYPAL_BASE_URL")
 
 # Import views
 from views import *
+from views import story_bp
 
 # Register blueprints
 app.register_blueprint(user_bp)

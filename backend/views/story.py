@@ -9,18 +9,18 @@ story_bp = Blueprint("story_bp", __name__)
 def get_story():
     stories= Story.query.all()    
     return jsonify([{ 
-            "id": story.id,
-            "title":story.title,
-            "content":story.content,
-            "user_id":story.user_id
-            }for story in stories]), 200
+            "id": stoy.id,
+            "title":stoy.title,
+            "content":stoy.content,
+            "user_id":stoy.user_id
+            }for stoy in stories]), 200
     
     
 # get story by id
 @story_bp.route("/stories/<int:user_id>", methods=["GET"])
 def story_by_id(user_id):
-    story = Story.query.get_or_404(user_id)
-    return jsonify({"id": story.id, "title": story.title, "content": story.content,"user_id":story.user_id})
+    stor = Story.query.get_or_404(user_id)
+    return jsonify({"id": stor.id, "title": stor.title, "content": stor.content,"user_id":stor.user_id})
 
 
 #Create a story by admin

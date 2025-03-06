@@ -4,9 +4,9 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 from itsdangerous import URLSafeTimedSerializer
 from datetime import timedelta
-from sqlalchemy_serializer import SerializerMixin
 from datetime import timezone
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
+
 from app import mail
 from flask_mail import Message
 

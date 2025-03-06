@@ -10,15 +10,12 @@ flask-bcrypt = "*"
 psycopg2-binary = "*"
 flask-oauthlib = "*"
 gunicorn = "*"
-<<<<<<< HEAD
 sqlalchemy = "*"
 flask-sqlalchemy = "*"
-flask-migrate = "*"
 flask = "*"
-=======
 requests = "*"
 python-dotenv = "*"
->>>>>>> origin/development
+flask-migrate = "*"
 
 [dev-packages]
 
