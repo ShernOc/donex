@@ -16,7 +16,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
 migrate = Migrate(app, db)
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, 
+CORS(app, resources={r"/*": {"origins":  "https://donex-5ecc.vercel.app"}}, 
+     
      supports_credentials=True, 
      methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], 
      allow_headers=["Content-Type", "Authorization"])
