@@ -15,7 +15,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
 migrate = Migrate(app, db)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # JWT Configuration
 app.config["JWT_SECRET_KEY"] = "jiyucfvbkaudhudkvfbt" 

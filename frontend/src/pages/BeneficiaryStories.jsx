@@ -1,5 +1,3 @@
-import { Heart, Share2, MessageCircle } from 'lucide-react';
-
 const BeneficiaryStories = () => {
   const stories = [
     {

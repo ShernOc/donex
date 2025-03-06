@@ -15,13 +15,13 @@ const AdminDashboard = () => {
     const token = localStorage.getItem('token');
 
     // Fetch users
-    fetch("http://127.0.0.1:5000/users")
+    fetch("https://donex-66an.onrender.com/users")
       .then((res) => res.json())
       .then((data) => setUsers(Array.isArray(data) ? data.length : 0))
       .catch((err) => console.error("Error fetching users:", err));
 
     // Fetch all charities
-    fetch("http://127.0.0.1:5000/charities", {
+    fetch("https://donex-66an.onrender.com/charities", {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -37,7 +37,7 @@ const AdminDashboard = () => {
       .catch((err) => console.error("Error fetching charities:", err));
 
     // Fetch approved charities
-    fetch("http://127.0.0.1:5000/charities?status=approved", {
+    fetch("https://donex-66an.onrender.com/charities?status=approved", {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -53,7 +53,7 @@ const AdminDashboard = () => {
       .catch((err) => console.error("Error fetching approved charities:", err));
 
     // Fetch donations
-    fetch("http://127.0.0.1:5000/donations", {
+    fetch("https://donex-66an.onrender.com/donations", {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -76,7 +76,7 @@ const AdminDashboard = () => {
 
   const handleDecision = (id, decision) => {
     const token = localStorage.getItem('token');
-    fetch(`http://127.0.0.1:5000/admin/charities/${id}`, {
+    fetch(`https://donex-66an.onrender.com/admin/charities/${id}`, {
       method: "PATCH",
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -103,7 +103,7 @@ const AdminDashboard = () => {
 
   const handleReview = (charity) => {
     const token = localStorage.getItem('token');
-    fetch(`http://127.0.0.1:5000/charities/${charity.id}`, {
+    fetch(`https://donex-66an.onrender.com/charities/${charity.id}`, {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${token}`,

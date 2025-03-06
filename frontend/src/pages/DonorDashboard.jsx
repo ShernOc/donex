@@ -13,7 +13,7 @@ const DonorDashboard = () => {
       const token = localStorage.getItem('token');
 
       // Fetch current user data
-      const userResponse = await fetch('http://127.0.0.1:5000/current_user', {
+      const userResponse = await fetch('https://donex-66an.onrender.com/current_user', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -33,7 +33,7 @@ const DonorDashboard = () => {
       });
 
       // Fetch donations data
-      const donationsResponse = await fetch('http://localhost:5000/donations', {
+      const donationsResponse = await fetch('https://donex-66an.onrender.com/donations', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',

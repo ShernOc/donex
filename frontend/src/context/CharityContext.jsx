@@ -24,7 +24,7 @@ export const CharityProvider = ({ children }) => {
   const registerCharity = async (charityData ) => {
     try {
       toast.loading("Registering...");
-      const response = await fetch("http://127.0.0.1:5000/charities", {
+      const response = await fetch("https://donex-66an.onrender.com/charities", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -52,7 +52,7 @@ export const CharityProvider = ({ children }) => {
   const loginCharity = async (email, password) => {
     toast.loading("Logging in as Charity...");
     try {
-      const response = await fetch("http://127.0.0.1:5000/charities/login", {
+      const response = await fetch("https://donex-66an.onrender.com/charities/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -71,7 +71,7 @@ export const CharityProvider = ({ children }) => {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       // get charity 
-      const charityResponse = await fetch("http://127.0.0.1:5000/current_charities", {
+      const charityResponse = await fetch("https://donex-66an.onrender.com/current_charities", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -112,7 +112,7 @@ export const CharityProvider = ({ children }) => {
   const fetchCharities = async () => {
     setLoading(true)
     try {
-      const response = await fetch("http://127.0.0.1:5000/charities", {
+      const response = await fetch("https://donex-66an.onrender.com/charities", {
         method: "GET",
         headers: {
           'Content-Type': 'application/json',
@@ -137,7 +137,7 @@ export const CharityProvider = ({ children }) => {
   
   const fetchCharityById = async (charity_id) => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/charities/${charity_id}`)
+      const response = await fetch(`https://donex-66an.onrender.com/charities/${charity_id}`)
       
       
       if (!response.ok) throw new Error("Failed to fetch");
@@ -155,7 +155,7 @@ export const CharityProvider = ({ children }) => {
   // Logout Charity
   const logoutCharity = async () => {
     try {
-      await fetch("http://127.0.0.1:5000/charities/logout", {
+      await fetch("https://donex-66an.onrender.com/charities/logout", {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -173,7 +173,7 @@ export const CharityProvider = ({ children }) => {
   
   const deleteCharity = async (id) => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/charities/delete/${id}`, {
+      const response = await fetch(`https://donex-66an.onrender.com/charities/delete/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("CharityToken")}`,

@@ -14,7 +14,7 @@ export const DonationProvider = ({ children }) => {
     setError(null);
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/create-donation", {
+      const response = await fetch("https://donex-66an.onrender.com/create-donation", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -60,7 +60,7 @@ export const DonationProvider = ({ children }) => {
     setError(null);
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/donations", {
+      const response = await fetch("https://donex-66an.onrender.com/donations", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

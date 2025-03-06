@@ -7,7 +7,7 @@ const Home = () => {
   const [totalDonations, setTotalDonations] = useState(0);
 
   useEffect(() => {
-    fetch("http://localhost:5000/donations/total")
+    fetch("https://donex-66an.onrender.com/donations/total")
       .then((response) => response.json())
       .then((data) => {
         if (data) {

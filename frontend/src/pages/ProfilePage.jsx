@@ -56,7 +56,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:5000/current_user", {
+        const response = await fetch("https://donex-66an.onrender.com/current_user", {
           method: "GET",
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
@@ -139,7 +139,7 @@ export default function ProfilePage() {
     };
 
     try {
-      const response = await fetch(`http://127.0.0.1:5000/users/${userId}`, {
+      const response = await fetch(`https://donex-66an.onrender.com/users/${userId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
