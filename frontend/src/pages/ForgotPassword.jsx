@@ -12,7 +12,7 @@ const ForgotPassword = () => {
     setMessage(""); // Clear previous messages
 
     try {
-      const response = await fetch("https://donex-66an.onrender.com/auth/forgot-password", {
+      const response = await fetch("https://donex-uq5f.onrender.com/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

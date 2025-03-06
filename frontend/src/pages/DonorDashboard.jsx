@@ -13,7 +13,7 @@ const DonorDashboard = () => {
       const token = localStorage.getItem('token');
 
       // Fetch current user data
-      const userResponse = await fetch('https://donex-66an.onrender.com/current_user', {
+      const userResponse = await fetch('https://donex-uq5f.onrender.com/current_user', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',

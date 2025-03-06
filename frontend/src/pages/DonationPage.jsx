@@ -31,7 +31,7 @@ const DonationPage = () => {
     /*
     const fetchCharities = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:5000/charities?status=approved");
+        const response = await fetch("https://donex-uq5f.onrender.com/charities?status=approved");
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }

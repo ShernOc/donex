@@ -24,7 +24,7 @@ const CharityVerification = ({ onSubmit }) => {
     setError(null);
 
     try {
-      const response = await fetch("https://donex-66an.onrender.com/charities/verify", {
+      const response = await fetch("https://donex-uq5f.onrender.com/charities/verify", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("token")}`,

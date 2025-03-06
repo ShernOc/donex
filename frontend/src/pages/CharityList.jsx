@@ -11,7 +11,7 @@ const CharityList = () => {
   const accessToken = localStorage.getItem('token');
 
   useEffect(() => {
-    fetch('https://donex-66an.onrender.com/charities', {
+    fetch('https://donex-uq5f.onrender.com/charities', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,

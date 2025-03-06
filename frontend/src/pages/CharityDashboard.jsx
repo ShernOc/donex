@@ -20,13 +20,13 @@ const CharityDashboard = () => {
     const fetchDashboardData = async () => {
       try {
         const [donationsRes, statsRes, approvalRes] = await Promise.all([
-          fetch("https://donex-66an.onrender.com/donations", {
+          fetch("https://donex-uq5f.onrender.com/donations", {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("https://donex-66an.onrender.com/dashboard-stats", {
+          fetch("https://donex-uq5f.onrender.com/dashboard-stats", {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("https://donex-66an.onrender.com/charity-status", {
+          fetch("https://donex-uq5f.onrender.com/charity-status", {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
