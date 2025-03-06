@@ -48,7 +48,7 @@ export const UserProvider = ({ children }) => {
   };
   };
 
-  
+
 
   // Login user
   const loginUser = async (email, password) => {
@@ -86,7 +86,7 @@ export const UserProvider = ({ children }) => {
       setUser(userData);
       sessionStorage.setItem("user", JSON.stringify(userData));
 
-      console.log("User Role:", userData.role);
+      console.log("User Role:", userData.full_name);
 
       // Ensure navigation happens only when userData is set
       if (userData.role === "admin") {
