@@ -12,6 +12,7 @@ app = Flask(__name__)
 # Database Configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://donex_db_539e_user:iECJTdtynhUqXVOL184YEOxI0HLGtK2y@dpg-cv4ekjij1k6c73biuj3g-a.oregon-postgres.render.com/donex_db_539e' 
 
+
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)

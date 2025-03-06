@@ -48,6 +48,8 @@ export const UserProvider = ({ children }) => {
   };
   };
 
+  
+
   // Login user
   const loginUser = async (email, password) => {
     try {
