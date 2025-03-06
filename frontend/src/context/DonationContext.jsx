@@ -124,7 +124,7 @@ export const DonationProvider = ({ children }) => {
   const fetchDonation = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:5001/donations", {
+      const response = await fetch("https://donex-uq5f.onrender.com/donations", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -154,7 +154,7 @@ export const DonationProvider = ({ children }) => {
   const handlePayPalPayment = async (charityId, amount, email) => {
     try {
       setLoading(true);
-      const response = await fetch("http://127.0.0.1:5001/create-donation", {
+      const response = await fetch("https://donex-uq5f.onrender.com/create-donation", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -192,7 +192,7 @@ export const DonationProvider = ({ children }) => {
   const capturePayPalPayment = async (orderId) => {
     try {
       setLoading(true);
-      const response = await fetch(`http://127.0.0.1:5001/capture-payment/${orderId}`, {
+      const response = await fetch(`https://donex-uq5f.onrender.com/capture-payment/${orderId}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,

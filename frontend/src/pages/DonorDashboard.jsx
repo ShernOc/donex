@@ -33,7 +33,7 @@ const DonorDashboard = () => {
       });
 
       // Fetch donations data
-      const donationsResponse = await fetch('https://donex-66an.onrender.com/donations', {
+      const donationsResponse = await fetch('https://donex-uq5f.onrender.com/donations', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',

@@ -111,7 +111,7 @@ export const CharityProvider = ({ children }) => {
   const fetchCharities = async () => {
     setLoading(true)
     try {
-      const response = await fetch("https://donex-uq5f.onrender.com/charities", {
+      const response = await fetch("https://donex-uq5f.onrender.com/charities?status=approved", {
         method: "GET",
         headers: {
           'Content-Type': 'application/json',
