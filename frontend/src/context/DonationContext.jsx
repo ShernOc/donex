@@ -127,7 +127,7 @@ export const DonationProvider = ({ children }) => {
       const response = await fetch("https://donex-uq5f.onrender.com/donations", {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
         },
       });
       if (!response.ok) throw new Error("Failed to fetch donations");

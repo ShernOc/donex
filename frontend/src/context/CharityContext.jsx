@@ -9,16 +9,15 @@ export const CharityContext = createContext();
 export const useCharity = () => {
 };
 
-CharityProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-};
+// CharityProvider.propTypes = {
+//   children: PropTypes.node.isRequired,
+// };
 
 export const CharityProvider = ({ children }) => {
   const [charities, setCharities] = useState([]);
   const navigate = useNavigate();
   const [token, setToken] = useState(sessionStorage.getItem("token") || "");
    const [loading, setLoading] = useState(false);
-
 
   // post charities 
   const registerCharity = async (charityData ) => {
