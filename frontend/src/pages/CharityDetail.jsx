@@ -27,7 +27,7 @@ const CharityDetail = () => {
   const fetchCurrentCharities = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:5000/charities/all_approved", {
+      const response = await fetch("https://donex-uq5f.onrender.com/charities/all_approved", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

@@ -19,7 +19,7 @@ export const DonationProvider = ({ children }) => {
     setError(null);
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/create-donation", {
+      const response = await fetch("https://donex-uq5f.onrender.com/create-donation", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -29,7 +29,7 @@ export const DonationProvider = ({ children }) => {
           charity_id: charityId,
           amount: parseFloat(amount),
           is_anonymous: isAnonymous,
-          
+
 
         }),
       });
@@ -67,7 +67,7 @@ export const DonationProvider = ({ children }) => {
       const token = localStorage.getItem('token');
 
       // Fetch current user data
-      const userResponse = await fetch('http://127.0.0.1:5000/current_user', {
+      const userResponse = await fetch('https://donex-uq5f.onrender.com/current_user', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -87,7 +87,7 @@ export const DonationProvider = ({ children }) => {
       });
 
       // Fetch donations data
-      const donationsResponse = await fetch('http://127.0.0.1:5000/donations', {
+      const donationsResponse = await fetch('https://donex-uq5f.onrender.com/donations', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',

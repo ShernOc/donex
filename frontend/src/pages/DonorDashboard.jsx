@@ -34,7 +34,7 @@ const DonorDashboard = () => {
       });
 
       // Fetch donations data
-      const donationsResponse = await fetch('http://127.0.0.1:5000/donations', {
+      const donationsResponse = await fetch('https://donex-uq5f.onrender.com/donations', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',

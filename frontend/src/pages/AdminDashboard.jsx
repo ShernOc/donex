@@ -106,7 +106,7 @@ const AdminDashboard = () => {
 
   const handleReview = (charity) => {
     const token = localStorage.getItem('token');
-    fetch(`http://127.0.0.1:5000/charities/charities/${charity.id}`, {
+    fetch(`https://donex-uq5f.onrender.com/charities/${charity.id}`, {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${token}`,

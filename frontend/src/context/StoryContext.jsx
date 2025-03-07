@@ -12,7 +12,7 @@ export const StoryProvider = ({ children }) => {
   
     const fetchStories = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:5001/stories");
+        const response = await fetch("https://donex-uq5f.onrender.com/stories");
         const data = await response.json();
         setStories(data["All stories"] || []);
       } catch (error) {
@@ -28,7 +28,7 @@ export const StoryProvider = ({ children }) => {
   // get the stories from the backend by id
     const fetchStoryById = async (id) => {
       try {
-        const response = await fetch(`http://127.0.0.1:5001/stories/${id}`);
+        const response = await fetch(`https://donex-uq5f.onrender.com/stories/${id}`);
         const data = await response.json();
         return data; // Return the fetched story
 
@@ -42,7 +42,7 @@ export const StoryProvider = ({ children }) => {
   // Create a new story
   const createStory = async (storyData, token) => {
     try {
-      const response = await fetch("http://127.0.0.1:5001/stories", {
+      const response = await fetch("https://donex-uq5f.onrender.com/stories", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -64,7 +64,7 @@ export const StoryProvider = ({ children }) => {
   // Update an existing story
   const updateStory = async (id, updateData, token) => {
     try {
-      const response = await fetch(`http://127.0.0.1:5001/stories/update/${id}`, {
+      const response = await fetch(`https://donex-uq5f.onrender.com/stories/update/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -88,7 +88,7 @@ export const StoryProvider = ({ children }) => {
   // Delete a story
   const deleteStory = async (id, token) => {
     try {
-      const response = await fetch(`http://127.0.0.1:5001/stories/delete/${id}`, {
+      const response = await fetch(`https://donex-uq5f.onrender.com/stories/delete/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
