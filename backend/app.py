@@ -81,13 +81,8 @@ def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
     token = db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
     return token is not None
 
-#seed.py
-def create_app():
-    app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///donex.db'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    db.init_app(app)
-    return app
+UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER")
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
