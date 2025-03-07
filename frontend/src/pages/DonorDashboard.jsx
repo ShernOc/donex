@@ -7,13 +7,14 @@ const DonorDashboard = () => {
   const [user, setUser] = useState({ fullname: 'User', profilePicture: '/profile-placeholder.png' });
   const [stats, setStats] = useState({ totalDonated: 0, charitiesSupported: 0, monthlyDonations: {} });
 
+
   // Fetch donor data from the backend
   const fetchDonorData = async () => {
     try {
       const token = localStorage.getItem('token');
 
       // Fetch current user data
-      const userResponse = await fetch('https://donex-uq5f.onrender.com/current_user', {
+      const userResponse = await fetch('http://127.0.0.1:5000/current_user', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -33,7 +34,7 @@ const DonorDashboard = () => {
       });
 
       // Fetch donations data
-      const donationsResponse = await fetch('https://donex-uq5f.onrender.com/donations', {
+      const donationsResponse = await fetch('http://127.0.0.1:5000/donations', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -72,12 +73,14 @@ const DonorDashboard = () => {
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
+
+  
   return (
-    <div className="flex-1 bg-gray-50">
+    <div className="flex-1 bg-pink-200">
       <div className="max-w-7xl mx-auto px-4 py-8">
 
         {/* Welcome Section */}
-        <div className="mb-8 flex items-center justify-between bg-white p-6 rounded-lg shadow-sm">
+        <div className="mb-8 flex items-center justify-between bg-pink-50 p-6 rounded-lg shadow-sm">
           <div className="flex items-center space-x-4">
             <img 
               src={user.profilePicture} 
@@ -91,7 +94,7 @@ const DonorDashboard = () => {
           </div>
           <Link 
             to="/profile" 
-            className="bg-rose-500 !text-white px-4 py-2 rounded-lg shadow-sm hover:bg-rose-600 transition"
+            className="bg-rose-400 !text-white px-4 py-2 rounded-lg shadow-sm hover:bg-rose-500 transition"
           >
             Edit Profile
           </Link>
@@ -99,7 +102,7 @@ const DonorDashboard = () => {
 
         {/* Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="bg-pink-50 p-6 rounded-lg shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total Donated</p>
@@ -108,7 +111,7 @@ const DonorDashboard = () => {
               <Heart className="h-8 w-8 text-rose-500" />
             </div>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="bg-pink-50 p-6 rounded-lg shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Charities Supported</p>
@@ -117,7 +120,7 @@ const DonorDashboard = () => {
               <Clock className="h-8 w-8 text-rose-500" />
             </div>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="bg-pink-50 p-6 rounded-lg shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Monthly Donations</p>
@@ -129,7 +132,7 @@ const DonorDashboard = () => {
         </div>
 
         {/* Recent Donations Section */}
-        <div className="bg-white rounded-lg shadow-sm mb-8">
+        <div className="bg-pink-50 rounded-lg shadow-sm mb-8">
           <div className="p-6 border-b border-gray-200">
             <h2 className="text-xl font-semibold text-gray-900">Recent Donations</h2>
           </div>

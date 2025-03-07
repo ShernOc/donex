@@ -1,18 +1,46 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { DollarSign, Users, TrendingUp, BarChart } from "lucide-react";
+import { useCharity } from "../context/CharityContext";
+
+
 
 const CharityDashboard = () => {
   const [donations, setDonations] = useState([]);
+  const [charity,setCharity]=useState(null)
   const [isApproved, setIsApproved] = useState(false);
-  const [dashboardStats, setDashboardStats] = useState({
+  const{fetchCurrentCharities}=useCharity();
+
+  console.log(fetchCurrentCharities);
+
+
+  const navigate = useNavigate();
+
+  const [stats, setStats] = useState({
     totalDonations: 0,
     totalDonors: 0,
+    monthlyDonations:0,
     monthlyGrowth: "0%",
     successRate: "0%",
   });
 
-  const navigate = useNavigate();
+  // fetch the current charity
+  useEffect(() => {
+    const getCharity = async () => {
+      try {
+        const data = await fetchCurrentCharities(); // Assuming this returns the current charity
+        if (data) {
+          setCharity(data);
+        }
+      } catch (error) {
+        console.error("Error fetching charity:", error);
+      }
+    };
+
+    getCharity();
+  }, [fetchCurrentCharities]);
+
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -20,13 +48,15 @@ const CharityDashboard = () => {
     const fetchDashboardData = async () => {
       try {
         const [donationsRes, statsRes, approvalRes] = await Promise.all([
-          fetch("https://donex-uq5f.onrender.com/donations", {
+          fetch("http://127.0.0.1:5000/donations", {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("https://donex-uq5f.onrender.com/dashboard-stats", {
+          
+          fetch("http://127.0.0.1:5000/dashboard-stats", {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("https://donex-uq5f.onrender.com/charity-status", {
+
+          fetch("http://127.0.0.1:5000/charity-status", {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -38,7 +68,7 @@ const CharityDashboard = () => {
 
         if (statsRes.ok) {
           const statsData = await statsRes.json();
-          setDashboardStats(statsData);
+          setStats(statsData);
         }
 
         if (approvalRes.ok) {
@@ -49,14 +79,16 @@ const CharityDashboard = () => {
         console.error("Error fetching data:", error);
       }
     };
-
     fetchDashboardData();
   }, [navigate]);
+
 
   return (
     <div className="flex-1 bg-gray-50 font-[Inter]">
       <div className="max-w-7xl mx-auto px-6 py-10">
-        <h1 className="text-4xl font-extrabold text-gray-900">Charity Dashboard</h1>
+        
+        <h1 className="text-4xl font-extrabold text-gray-900">Charity:{charity?.charity_name || "Loading"} Dashboard </h1>
+
         <p className="text-gray-600 mt-2 text-lg">Monitor your donations and impact</p>
 
         {!isApproved && (
@@ -73,13 +105,14 @@ const CharityDashboard = () => {
             </p>
           </div>
         )}
+      
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           {[
-            { title: "Total Donations", value: `$${dashboardStats.totalDonations}`, Icon: DollarSign },
-            { title: "Total Donors", value: dashboardStats.totalDonors, Icon: Users },
-            { title: "Monthly Growth", value: dashboardStats.monthlyGrowth, Icon: TrendingUp },
-            { title: "Success Rate", value: dashboardStats.successRate, Icon: BarChart },
+            { title: "Total Donations", value: `$${stats.totalDonations}`, Icon: DollarSign },
+            { title: "Total Donors", value: stats.totalDonors, Icon: Users },
+            { title: "Monthly Growth", value: stats.monthlyGrowth, Icon: TrendingUp },
+            { title: "Success Rate", value: stats.successRate, Icon: BarChart },
           ].map(({ title, value, Icon }) => (
             <div key={title} className="bg-white p-6 rounded-xl shadow-md flex items-center justify-between">
               <div>
@@ -109,18 +142,18 @@ const CharityDashboard = () => {
                 {donations.length > 0 ? (
                   donations.map((donation) => (
                     <tr key={donation.id} className="hover:bg-gray-100">
-                      <td className="px-6 py-4">{donation.donor}</td>
+                      <td className="px-6 py-4">{donation.user_id}</td>
                       <td className="px-6 py-4">${donation.amount}</td>
-                      <td className="px-6 py-4 text-gray-500">{donation.date}</td>
+                      <td className="px-6 py-4 text-gray-500">{donation.donation_date}</td>
                       <td className="px-6 py-4">
                         <span
                           className={`px-3 py-1 text-xs font-medium rounded-full ${
-                            donation.type === "Recurring"
+                            donation.donation_type === "Recurring"
                               ? "bg-green-100 text-green-800"
                               : "bg-blue-100 text-blue-800"
                           }`}
                         >
-                          {donation.type}
+                          {donation.donations_type}
                         </span>
                       </td>
                     </tr>

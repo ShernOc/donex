@@ -29,8 +29,13 @@ def login():
     
     if user and check_password_hash(user.password, password):
         access_token = create_access_token(identity=str(user.id),expires_delta=timedelta(hours=1))
+        
         print("Generated Token:", access_token)
-        return jsonify({"access_token": access_token}), 200
+        
+        return jsonify({"access_token": access_token,
+                        "role":user.role}), 200
+    
+    
     else:
         return jsonify({"msg":"Invalid email or password"}), 401
     

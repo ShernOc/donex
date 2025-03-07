@@ -25,7 +25,7 @@ def create_user():
     #default role = user 
     role = data.get("userType", "user")
     
-    allowed_roles = ["user", "charity"]
+    allowed_roles = ["user", "charity", "admin"]
     if role not in allowed_roles:
         return jsonify({"msg": "Invalid role. Choose from 'user', 'charity'"}), 400
     if role =="admin" and not User.can_register():

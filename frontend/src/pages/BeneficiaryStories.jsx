@@ -1,39 +1,56 @@
+import { useEffect, useState } from "react";
+
 const BeneficiaryStories = () => {
-  const stories = [
-    {
-      id: 1,
-      title: "A New Beginning for Sarah's Family",
-      charity: "Hope Foundation",
-      date: "March 15, 2024",
-      content: "Thanks to generous donors, Sarah's family received the support they needed during a difficult time...",
-      image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&w=800&q=80",
-      likes: 245,
-      comments: 18,
-    },
-    {
-      id: 2,
-      title: "Building Schools in Rural Communities",
-      charity: "Education for All",
-      date: "March 12, 2024",
-      content: "With your support, we've built 3 new schools reaching over 500 children in remote areas...",
-      image: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?ixlib=rb-4.0.3&w=800&q=80",
-      likes: 189,
-      comments: 12,
-    },
-    {
-      id: 3,
-      title: "Clean Water Initiative Success",
-      charity: "Global Health Project",
-      date: "March 10, 2024",
-      content: "Our latest water purification project has provided clean drinking water to over 1,000 families...",
-      image: "https://images.unsplash.com/photo-1512578659172-63a4634c05ec?ixlib=rb-4.0.3&w=800&q=80",
-      likes: 312,
-      comments: 24,
-    },
-  ];
+  const [stories, setStories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+ 
+const fetchStories = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("http://127.0.0.1:5000/stories", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setStories((prev) => [...prev, ...data]);; // adds new stories as they are written
+        setTotalPages(data.total_pages);
+
+      } else {
+        setError("Failed to fetch stories.");
+        console.error("Failed to fetch stories:", data.msg);
+      }
+    } catch (error) {
+      setError("Error fetching all the stories");
+      console.error("Error fetching approved charities:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStories();
+  }, []);
+
+  const handleLoadMore = () => {
+    if (page < totalPages) {
+      setPage(page + 1);
+      fetchStories(page + 1);
+    }
+  };
+
+  if (loading) return <p>Loading stories...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
+
 
   return (
-    <div className="flex-1 bg-gray-50">
+    <div className="flex-1 bg-pink-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -44,7 +61,7 @@ const BeneficiaryStories = () => {
         {/* Stories Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {stories.map((story) => (
-            <div key={story.id} className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div key={story.id} className="bg-pink-100 rounded-lg shadow-sm overflow-hidden">
               <img
                 src={story.image}
                 alt={story.title}
@@ -64,14 +81,17 @@ const BeneficiaryStories = () => {
         </div>
 
         {/* Load More Button */}
+        {page < totalPages && (
         <div className="text-center mt-8">
-          <button className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500">
-            Load More Stories
+          <button onClick={handleLoadMore}className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500">
+          {loading ? "Loading..." : "Load More Stories"}
           </button>
         </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default BeneficiaryStories;
+

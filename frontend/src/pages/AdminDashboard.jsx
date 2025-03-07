@@ -15,13 +15,13 @@ const AdminDashboard = () => {
     const token = localStorage.getItem('token');
 
     // Fetch users
-    fetch("https://donex-uq5f.onrender.com/users")
+    fetch("`http://127.0.0.1:5000/charities/users")
       .then((res) => res.json())
       .then((data) => setUsers(Array.isArray(data) ? data.length : 0))
       .catch((err) => console.error("Error fetching users:", err));
 
     // Fetch all charities
-    fetch("https://donex-uq5f.onrender.com/charities", {
+    fetch("http://127.0.0.1:5000/charities/charities", {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -37,7 +37,7 @@ const AdminDashboard = () => {
       .catch((err) => console.error("Error fetching charities:", err));
 
     // Fetch approved charities
-    fetch("https://donex-uq5f.onrender.com/charities?status=approved", {
+    fetch("`http://127.0.0.1:5000/charities/charities?status=approved", {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -53,7 +53,8 @@ const AdminDashboard = () => {
       .catch((err) => console.error("Error fetching approved charities:", err));
 
     // Fetch donations
-    fetch("https://donex-uq5f.onrender.com/donations", {
+
+    fetch("http://127.0.0.1:5000/donations", {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -74,9 +75,11 @@ const AdminDashboard = () => {
       .catch((err) => console.error("Error fetching donations:", err));
   }, []);
 
+
+
   const handleDecision = (id, decision) => {
     const token = localStorage.getItem('token');
-    fetch(`https://donex-uq5f.onrender.com/admin/charities/${id}`, {
+    fetch(`http://127.0.0.1:5000/charities/admin/charities/${id}`, {
       method: "PATCH",
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -103,7 +106,7 @@ const AdminDashboard = () => {
 
   const handleReview = (charity) => {
     const token = localStorage.getItem('token');
-    fetch(`https://donex-uq5f.onrender.com/charities/${charity.id}`, {
+    fetch(`http://127.0.0.1:5000/charities/charities/${charity.id}`, {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -125,7 +128,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="flex-1 bg-gray-50">
+    <div className="flex-1 bg-pink-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Your Admin Dashboard</h1>

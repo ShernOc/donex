@@ -28,7 +28,6 @@ class User(db.Model):
     password = db.Column(db.String(256), nullable=False)
     full_name = db.Column(db.String(100))
     profile_picture = db.Column(db.String(512),nullable=True)
-
     role = db.Column(db.String(10), nullable=False, default="user")
     
     # Relationships
@@ -70,6 +69,8 @@ class Charity(db.Model):
     # Relationships
     user = relationship("User", back_populates="charities")
     donations = relationship("Donation", back_populates="charities")
+    stories = relationship("Story", back_populates="charity", lazy=True)
+
     
     
 class Story(db.Model):
@@ -78,11 +79,27 @@ class Story(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(128), nullable=False)
     content = db.Column(db.Text, nullable=False)
+    image=db.Column(db.String(1024), nullable=False)
+    date = db.Column(db.DateTime, nullable=False, default=func.now())
     
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable = False)
     #Relationships
-    user= relationship("User", back_populates="stories")
+    charity_id = db.Column(db.Integer, db.ForeignKey('charities.id'), nullable=False)
 
+    user= relationship("User", back_populates="stories")
+    charity = relationship("Charity", back_populates="stories")
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "content": self.content,
+            "charity": {
+                "id": self.charity.id,
+                "name": self.charity.charity_name 
+            }
+        }
+        
 class Donation(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)

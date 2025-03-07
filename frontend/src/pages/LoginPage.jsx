@@ -76,9 +76,9 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
-      <div className="w-full max-w-md bg-gray-200 dark:bg-gray-800 shadow-lg rounded-3xl p-8 space-y-6">
-        <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-200">
+    <div className="flex justify-center items-center min-h-screen bg-pink-50 p-4">
+      <div className="w-full max-w-md bg-gray-200 shadow-lg rounded-3xl p-8 space-y-6">
+        <h2 className="text-3xl font-bold text-center text-gray-900">
           Login
         </h2>
 
@@ -91,7 +91,7 @@ const Login = () => {
             placeholder="Email"
             value={form.email}
             onChange={handleChange}
-            className="w-full px-4 py-3 border rounded-lg shadow-md dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 border-gray-300 focus:ring-2 focus:ring-red-500 transition transform hover:scale-105 duration-300"
+            className="w-full px-4 py-3 border rounded-lg shadow-md dark:bg-white dark:text-black border-gray-500 focus:ring-2 focus:transition transform hover:scale-105 duration-300"
             required
           />
           <div className="relative">
@@ -101,13 +101,13 @@ const Login = () => {
               placeholder="Password"
               value={form.password}
               onChange={handleChange}
-              className="w-full px-4 py-3 border rounded-lg shadow-md dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 border-gray-300 focus:ring-2 focus:ring-red-500 transition transform hover:scale-105 duration-300"
+              className="w-full px-4 py-3 border rounded-lg shadow-md dark:bg-white dark:text-black dark:border-gray-600 border-gray-500 focus:ring-2 focus: transition transform hover:scale-105 duration-300"
               required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-6  right-0 pr-3 flex items-center text-sm leading-5"
+              className="absolute inset-y-6 right-0 pr-3 flex items-center text-sm leading-5"
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
@@ -136,7 +136,7 @@ const Login = () => {
           />
         </div>
 
-        <p className="text-center text-gray-800 dark:text-gray-300">
+        <p className="text-center text-gray-800 dark:text-gray-600">
           Don&apos;t have an account?{" "}
           <Link to="/register" className="text-red-500 hover:underline">
             Register

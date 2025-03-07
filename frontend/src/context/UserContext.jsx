@@ -22,7 +22,7 @@ export const UserProvider = ({ children }) => {
   const registerUser = async (formData, userType) => {
     try {
       toast.loading("Registering...");
-      const response = await fetch("https://donex-uq5f.onrender.com/register", {
+      const response = await fetch("http://127.0.0.1:5000/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...formData, userType }),
@@ -40,7 +40,7 @@ export const UserProvider = ({ children }) => {
     } catch (error) {
       toast.dismiss();
       toast.error("Something went wrong. Please try again.");
-      console.error("Registration failed:", error);
+      toast.error("Registration failed:", error);
   };
   
   UserProvider.propTypes = {
@@ -48,13 +48,11 @@ export const UserProvider = ({ children }) => {
   };
   };
 
-
-
   // Login user
   const loginUser = async (email, password) => {
     try {
       toast.loading("Logging you in ...");
-      const response = await fetch("https://donex-uq5f.onrender.com/login", {
+      const response = await fetch("http://127.0.0.1:5000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -66,13 +64,15 @@ export const UserProvider = ({ children }) => {
       if (!response.ok) throw new Error(data.error || "Login failed!");
 
       localStorage.setItem("token", data.access_token);
+      localStorage.setItem("role", data.role);
+
       await setToken(data.access_token);
 
       // Wait before fetching user
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Get User
-      const userResponse = await fetch("https://donex-uq5f.onrender.com/current_user", {
+      const userResponse = await fetch("http://127.0.0.1:5000/current_user", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -86,7 +86,7 @@ export const UserProvider = ({ children }) => {
       setUser(userData);
       sessionStorage.setItem("user", JSON.stringify(userData));
 
-      console.log("User Role:", userData.full_name);
+      console.log("User role:", userData.full_name);
 
       // Ensure navigation happens only when userData is set
       if (userData.role === "admin") {
@@ -109,7 +109,7 @@ export const UserProvider = ({ children }) => {
   // Fetch current user data
   const fetchCurrentUser = async () => {
     try {
-      const response = await fetch("https://donex-uq5f.onrender.com/users", {
+      const response = await fetch("http://127.0.0.1:5000/current_user", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -130,12 +130,13 @@ export const UserProvider = ({ children }) => {
       logoutUser();
     }
   };
+  
 
   const login_with_google = async (email) => {
     try {
       toast.loading("Logging you in ...");
 
-      const response = await fetch("https://donex-uq5f.onrender.com/google-login", {
+      const response = await fetch("http://127.0.0.1:5000/google-login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -154,7 +155,7 @@ export const UserProvider = ({ children }) => {
         
         console.log("Google Token: ", token)
         // Fetch user details
-        const userResponse = await fetch("https://donex-uq5f.onrender.com/current_user", {
+        const userResponse = await fetch("http://127.0.0.1:5000/current_user", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -187,7 +188,7 @@ export const UserProvider = ({ children }) => {
     }
   
     try {
-      const response = await fetch(`https://donex-uq5f.onrender.com/user/${userId}`, {
+      const response = await fetch(`http://127.0.0.1:5000/user/${userId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -211,7 +212,7 @@ export const UserProvider = ({ children }) => {
   // Logout user
   const logoutUser = async () => {
     try {
-      await fetch("https://donex-uq5f.onrender.com/logout", {
+      await fetch("http://127.0.0.1:5000/logout", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -231,7 +232,7 @@ export const UserProvider = ({ children }) => {
   // admin to delete or user themselves
   const deleteUser = async (id) => {
     try {
-      const response = await fetch(`https://donex-uq5f.onrender.com/users/delete/${id}`, {
+      const response = await fetch(`http://127.0.0.1:5000/users/delete/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,

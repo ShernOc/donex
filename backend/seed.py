@@ -1,4 +1,4 @@
-from app import create_app, db  
+from app import create_app, db, app 
 from models import Charity, Story 
 from werkzeug.security import generate_password_hash  
 
@@ -11,7 +11,7 @@ def seed_charities():
             "status": "approved",
             "password": "unicef123",
             "user_id": 1,
-            "profile_picture": "backend/images/unicef.png"
+            "profile_picture": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Logo_of_UNICEF.svg/330px-Logo_of_UNICEF.svg.png"
         },
         {
             "email": "contact@redcross.org",
@@ -20,7 +20,7 @@ def seed_charities():
             "status": "approved",
             "password": "redcross456",
             "user_id": 2,
-            "profile_picture": "backend/images/redcross.png"
+            "profile_picture": "https://www.redcross.or.ke/wp-content/uploads/2025/02/at-60-logo-203x114-1.png.webp"
         },
         {
             "email": "support@oxfam.org",
@@ -29,7 +29,7 @@ def seed_charities():
             "status": "approved",
             "password": "oxfam789",
             "user_id": 3,
-            "profile_picture": "backend/images/Oxfam_logo_vertical.svg.png"
+            "profile_picture": "https://upload.wikimedia.org/wikipedia/en/thumb/3/35/Oxfam_logo_vertical.svg/225px-Oxfam_logo_vertical.svg.png"
         },
         {
             "email": "donate@savethechildren.org",
@@ -38,7 +38,7 @@ def seed_charities():
             "status": "pending",
             "password": "savethekids123",
             "user_id": 4,
-            "profile_picture": "backend/images/save.png"
+            "profile_picture": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Save_the_Children_Logo.svg/330px-Save_the_Children_Logo.svg.png"
         },
         {
             "email": "hello@doctorswithoutborders.org",
@@ -47,8 +47,10 @@ def seed_charities():
             "status": "approved",
             "password": "medic456",
             "user_id": 5,
-            "profile_picture": "backend/images/doctors.png"
+            "profile_picture":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Logo_of_UNICEF.svg/1024px-Logo_of_UNICEF.svg.png"
         },
+        
+        
         {
             "email": "info@wwf.org",
             "charity_name": "World Wildlife Fund (WWF)",
@@ -56,7 +58,7 @@ def seed_charities():
             "status": "approved",
             "password": "wildlife789",
             "user_id": 6,
-            "profile_picture": "backend/images/wwf.png"
+            "profile_picture": "https://upload.wikimedia.org/wikipedia/en/thumb/2/24/WWF_logo.svg/188px-WWF_logo.svg.png"
         },
         {
             "email": "contact@water.org",
@@ -65,7 +67,7 @@ def seed_charities():
             "status": "pending",
             "password": "waterlife123",
             "user_id": 7,
-            "profile_picture": "backend/images/water.png"
+            "profile_picture":"https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Water.org_logo.png_updated.png/330px-Water.org_logo.png_updated.png"
         },
         {
             "email": "team@feedingamerica.org",
@@ -74,7 +76,7 @@ def seed_charities():
             "status": "approved",
             "password": "hunger456",
             "user_id": 8,
-            "profile_picture": "backend/images/feedinga.png"
+            "profile_picture":"https://upload.wikimedia.org/wikipedia/en/thumb/a/aa/Feeding_America_logo.svg/330px-Feeding_America_logo.svg.png"
         },
         {
             "email": "support@habitat.org",
@@ -83,7 +85,7 @@ def seed_charities():
             "status": "approved",
             "password": "homes789",
             "user_id": 9,
-            "profile_picture": "backend/images/habitat.png"
+            "profile_picture": "https://upload.wikimedia.org/wikipedia/en/thumb/9/97/Habitat_for_humanity.svg/330px-Habitat_for_humanity.svg.png"
         },
         {
             "email": "info@amnesty.org",
@@ -92,7 +94,7 @@ def seed_charities():
             "status": "approved",
             "password": "justice123",
             "user_id": 10,
-            "profile_picture": "backend/images/amnesty.png"
+            "profile_picture": "https://upload.wikimedia.org/wikipedia/en/thumb/e/ee/Amnesty_International_logo.svg/375px-Amnesty_International_logo.svg.png"
         }
     ]
 
@@ -114,25 +116,31 @@ def seed_charities():
 def seed_stories():
     stories = [
     {
-      "user_id": 1,
-     "title": "A New Beginning for Sarah's Family",
-      "content":"Thanks to generous donors, Sarah's family received the support they needed during a difficult time..."
-      
-    #   image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&w=800&q=80",
+    "user_id": 1,
+     "title":"A New Beginning for Sarah's Family",
+     "charity_id":8,
+      "content":"Thanks to generous donors, Sarah's family received the support they needed during a difficult time...",
+    #   "date": "March 15, 2024",
+      "image":"https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&w=800&q=80",
     },
 
     
     {
      "user_id": 2,
       "title":"Building Schools in Rural Communities",
+      "charity_id":5,
       "content":"With your support, we've built 3 new schools reaching over 500 children in remote areas...",
-    #   image: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?ixlib=rb-4.0.3&w=800&q=80",
+    #   "date":"March 12, 2024",
+      "image":"https://images.unsplash.com/photo-1497633762265-9d179a990aa6?ixlib=rb-4.0.3&w=800&q=80",
     },
     {
       "user_id": 3,
+      "charity_id":4,
       "title":"Clean Water Initiative Success",
-      "content": "Our latest water purification project has provided clean drinking water to over 1,000 families...",
-    #   image: "https://images.unsplash.com/photo-1512578659172-63a4634c05ec?ixlib=rb-4.0.3&w=800&q=80",
+      "content":"Our latest water purification project has provided clean drinking water to over 1,000 families...",
+    #   "date":"March 06, 2024",
+      "image":"https://images.unsplash.com/photo-1512578659172-63a4634c05ec?ixlib=rb-4.0.3&w=800&q=80",
+      
     },
   ]
     
@@ -141,6 +149,9 @@ def seed_stories():
             content=story_data["content"],
             title=story_data["title"],
             user_id=story_data["user_id"],
+            charity_id=story_data["charity_id"],
+            # date=story_data["date"],
+            image=story_data["image"]
         )
         
         db.session.add(story)

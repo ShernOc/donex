@@ -1,41 +1,76 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useCharity } from '../context/CharityContext';
 
 const CharityDetail = () => {
   const { id } = useParams();
   const [charity, setCharity] = useState(null);
+  const [loading, setLoading]=useState(true)
 
+
+  // useEffect(()=>{
+  //   const getCharity = async () => {
+  //     try {
+  //       const data = await fetchApprovedCharities(); 
+  //       if (data) {
+  //         setCharity(data);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching charity:", error);
+  //     }
+  //   };
+
+  //   getCharity();
+  // },[fetchApprovedCharities]);
+
+
+  const fetchCurrentCharities = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("http://127.0.0.1:5000/charities/all_approved", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      const data = await response.json();
+      console.log("Fetched Charities:", data); 
+  
+      if (response.ok) {
+        setCharity(data.charities);
+      } else {
+        console.error("Failed to fetch approved charities:", data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching approved charities:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  
   useEffect(() => {
-    const token = localStorage.getItem('token'); // Get the token from localStorage (or other storage)
-    
-    fetch(`https://donex-uq5f.onrender.com/charities/${id}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Failed to fetch charity details');
-        }
-        return response.json();
-      })
-      .then((data) => setCharity(data))
-      .catch((error) => console.error(error));
-  }, [id]);
+    fetchCurrentCharities(); // Fetch charities when the component loads
+  }, []);
 
-  if (!charity) {
-    return <p>Charity not found!</p>;
-  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-16">
-      <h2 className="text-3xl font-bold">{charity.name}</h2>
-      <img src={charity.image} alt={charity.name} className="w-full h-64 object-cover mt-4" />
-      <p className="text-xl mt-4">{charity.moreInfo}</p>
+      {charity.length === 0 ? (
+         <p>No approved charities found.</p>):(
+
+          <ul>
+          {charity.map((charity) => (
+            <li key={charity.id}>
+              <h3>{charity.charity_name}</h3>
+              <p>{charity.description}</p>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
-  );
-};
+)
+}
 
 export default CharityDetail;

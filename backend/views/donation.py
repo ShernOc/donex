@@ -151,7 +151,6 @@ donation_bp = Blueprint("donation_bp", __name__)
 
 # get the donation 
 @donation_bp.route('/donations', methods =['GET'])
-@jwt_required()
 def get_donations():
     user_id = request.args.get("user_id", type=int)
     charity_id = request.args.get("charity_id", type=int)

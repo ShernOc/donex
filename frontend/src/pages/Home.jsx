@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Heart, Users, Trophy } from 'lucide-react';
+import { ArrowRight, Heart, Users,Trophy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import 'animate.css';
 
@@ -7,7 +7,7 @@ const Home = () => {
   const [totalDonations, setTotalDonations] = useState(0);
 
   useEffect(() => {
-    fetch("https://donex-uq5f.onrender.com/donations/total")
+    fetch("http://127.0.0.1:5000/donations/total")
       .then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -22,7 +22,7 @@ const Home = () => {
   return (
     <div className="flex-1 flex flex-col font-['Poppins']">
       {/* Hero Section */}
-      <section className="relative bg-gray-900 text-white min-h-[80vh] animate__animated animate__fadeIn">
+      <section className="relative bg-gray-900 text-pink-50 min-h-[80vh] animate__animated animate__fadeIn">
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80"
@@ -40,15 +40,24 @@ const Home = () => {
                 Join our community of donors making a real impact. Support causes you care about and track your contribution journey.
               </p>
               <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+
+                <Link
+                  to="/register"
+                  className="bg-rose-500 text-pink-50 px-8 py-3 rounded-md hover:bg-rose-600 flex items-center justify-center animate__animated animate__bounceIn animate__delay-3s"
+                >
+                  Start Donating <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+{/* 
                 <Link
                   to="/donate/:charityId?"
                   className="bg-rose-500 text-white px-8 py-3 rounded-md hover:bg-rose-600 flex items-center justify-center animate__animated animate__bounceIn animate__delay-3s"
                 >
                   Start Donating <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
+                </Link> */}
+
                 <Link
                   to="/charities"
-                  className="bg-white text-gray-900 px-8 py-3 rounded-md hover:bg-gray-100 animate__animated animate__bounceIn animate__delay-4s"
+                  className="bg-white text-black px-8 py-3 rounded-md hover:bg-pink-100 animate__animated animate__bounceIn animate__delay-4s"
                 >
                   Browse Charities
                 </Link>
@@ -70,8 +79,8 @@ const Home = () => {
       </section>
 
       {/* Overview Section */}
-      <section className="w-full bg-white animate__animated animate__fadeIn animate__delay-6s pt-16">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between space-y-8 md:space-y-0 md:space-x-8">
+      <section className="w-full bg-pink-50 animate__animated animate__fadeIn animate__delay-6s pt-16">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col bg-pink-50 rounded-2xl md:flex-row items-center justify-between space-y-8 md:space-y-0 md:space-x-8">
           {/* Text Content */}
           <div className="w-full md:w-1/2">
             <h2 className="text-2xl md:text-3xl font-bold mb-6">Every Person Deserves a Better Tomorrow</h2>
@@ -97,7 +106,7 @@ const Home = () => {
       </section>
 
       {/* About Us Section */}
-      <section className="w-full bg-white py-16 animate__animated animate__fadeIn animate__delay-7s">
+      <section className="bg-pink-50 py-16 animate__animated animate__fadeIn animate__delay-7s">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-6">About Us</h2>
           <p className="text-lg md:text-xl mb-8">
@@ -121,17 +130,17 @@ const Home = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="w-full bg-gray-50 py-16 animate__animated animate__fadeIn animate__delay-10s">
+      <section className="w-full bg-pink-50 py-16 animate__animated animate__fadeIn animate__delay-10s">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-12">What Our Donors Are Saying</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <p className="text-lg mb-4">"It feels good to know that my donation is making a tangible difference in the lives of those who need it most. I'm proud to be part of such a wonderful cause."</p>
+              <p className="text-lg mb-4">&quot;It feels good to know that my donation is making a tangible difference in the lives of those who need it most. I&apos;m proud to be part of such a wonderful cause.&quot;</p>
               <p className="font-semibold">John D.</p>
               <p className="text-gray-600">Long-time Donor</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <p className="text-lg mb-4">"As a mother, I feel proud knowing that my donation is helping provide sanitary products for young girls. It’s a small act, but it makes a big difference!"</p>
+              <p className="text-lg mb-4">"As a mother, I feel proud knowing that my donation is helping provide sanitary products for young girls. It’s a small act, but it makes a big difference!&quot;</p>
               <p className="font-semibold">Sarah T.</p>
               <p className="text-gray-600">Empowered Donor</p>
             </div>

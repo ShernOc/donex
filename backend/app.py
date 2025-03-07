@@ -10,14 +10,15 @@ import os
 app = Flask(__name__)
 
 # Database Configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://donex_db_539e_user:iECJTdtynhUqXVOL184YEOxI0HLGtK2y@dpg-cv4ekjij1k6c73biuj3g-a.oregon-postgres.render.com/donex_db_539e' 
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://donex_db_539e_user:iECJTdtynhUqXVOL184YEOxI0HLGtK2y@dpg-cv4ekjij1k6c73biuj3g-a.oregon-postgres.render.com/donex_db_539e' 
 
 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///donex.db'
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
 migrate = Migrate(app, db)
-CORS(app, resources={r"/*": {"origins":  "https://donex-5ecc.vercel.app"}}, 
+CORS(app, resources={r"/*": {"origins":  "http://127.0.0.1:5173"}}, 
      
      supports_credentials=True, 
      methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], 
@@ -78,6 +79,14 @@ def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
     jti = jwt_payload["jti"]
     token = db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
     return token is not None
+
+#seed.py
+def create_app():
+    app = Flask(__name__)
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///donex.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    db.init_app(app)
+    return app
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

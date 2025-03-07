@@ -19,6 +19,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ProtectedRoute from './components/ProtectedRoute';
 import CharityVerificationForm from './pages/CharityVerification';
+import { CharityProvider } from './context/CharityContext';
+import { StoryProvider } from './context/StoryContext';
 
 
 function App() {
@@ -26,6 +28,8 @@ function App() {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <UserProvider>
         <DonationProvider>
+        <CharityProvider>
+          <StoryProvider>
         <Navbar />
             <main className="flex-1 flex flex-col">
               <Routes>
@@ -56,6 +60,8 @@ function App() {
               </Routes>
             </main>
             <Footer />
+          </StoryProvider>
+      </CharityProvider>
       </DonationProvider>
     </UserProvider>
     </div>

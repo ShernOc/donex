@@ -23,6 +23,8 @@ def get_charities():
         })
     return jsonify({"charities": charity_list}), 200
 
+
+
 # Get a charity by id
 @charity_bp.route('/charities/<int:charity_id>', methods=['GET'])
 # @jwt_required()
@@ -43,6 +45,29 @@ def get_charity_by_id(charity_id):
         "status": charity.status,
         
     }), 200
+    
+    
+#current charities
+# Get only approved charities
+@charity_bp.route('/charities/all_approved', methods=['GET'])
+def get_approved_charities():
+    approved_charities = Charity.query.filter(Charity.status =="approved").all()
+    
+    charity_list = [
+        {
+            "id": charity.id,
+            "charity_name": charity.charity_name,
+            "email": charity.email,
+            "user_id": charity.user_id,
+            "description": charity.description,
+            "profile_picture": charity.profile_picture,
+            "status": charity.status
+        }
+        for charity in approved_charities
+    ]
+
+    return jsonify({"charities": charity_list}), 200
+
     
 
 # Post a charity no need to be login 

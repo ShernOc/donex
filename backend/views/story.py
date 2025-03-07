@@ -9,11 +9,14 @@ story_bp = Blueprint("story_bp", __name__)
 def get_story():
     stories= Story.query.all()    
     return jsonify([{ 
-            "id": stoy.id,
-            "title":stoy.title,
-            "content":stoy.content,
-            "user_id":stoy.user_id
-            }for stoy in stories]), 200
+            "id": story.id,
+            "title":story.title,
+            "content":story.content,
+            "user_id":story.user_id,
+            "charity_id":story.charity_id,
+            "image":story.image,
+            "date": story.date
+            }for story in stories]), 200
     
     
 # get story by id
@@ -38,7 +41,9 @@ def post_story():
     title = data.get("title")
     content = data.get("content")
     user_id = data.get("user_id")
-
+    charity_id= data.get("charity_id")
+    image=data.get("image")
+    date=data.get("date")
     #Check if the tittle already exist
     check_title = Story.query.filter(title==title).first()
     check_content = Story.query.filter(content==content).first()
@@ -47,7 +52,7 @@ def post_story():
         return jsonify({"Error":"The story already exist or has been posted"}), 406
    
     #create a new story
-    new_story =Story(title=title, user_id=current_user_id, content=content)
+    new_story =Story(title=title, user_id=current_user_id, content=content, image=image,charity_id=charity_id,date=date)
     
     #call the function 
     db.session.add(new_story)
@@ -71,17 +76,21 @@ def update_story_id(story_id):
     #if the data is not provided issues the data
     data = request.get_json()
     title = data.get("title",story.title)
-    content = data.get("content",story.content)    
+    content = data.get("content",story.content) 
+    image = data.get("image",story.image)     
              
     check_title = Story.query.filter(Story.title==title).first()
     check_content= Story.query.filter(Story.content==content).first()
+    check_image = Story.query.filter(Story.image==image).first()
          
-    if check_title and check_content:
+    if check_title and check_content and check_image:
         return jsonify({"Error":"A story with this title and already exist. Update the story"}),409
 
     #if no conflict update 
     story.title = title
     story.content = content
+    story.image=image
+    
             
     #commit the function 
     db.session.commit()

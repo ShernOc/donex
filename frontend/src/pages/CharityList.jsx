@@ -1,44 +1,42 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, Filter } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Search, Filter } from "lucide-react";
 
 const CharityList = () => {
   const [charities, setCharities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const accessToken = localStorage.getItem('token');
+
+  const fetchApprovedCharities = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("http://127.0.0.1:5000/charities/all_approved", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setCharities(data.charities); // Ensure response contains "charities"
+      } else {
+        setError("Failed to fetch approved charities.");
+        console.error("Failed to fetch approved charities:", data.msg);
+      }
+    } catch (error) {
+      setError("Error fetching approved charities.");
+      console.error("Error fetching approved charities:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetch('https://donex-uq5f.onrender.com/charities', {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log('Fetched approved charities:', data);
-        if (data && Array.isArray(data.charities)) {
-          setCharities(data.charities);
-        } else {
-          setCharities([]);
-          setError('Invalid data format received.');
-        }
-      })
-      .catch((error) => {
-        console.error('Error fetching charities:', error);
-        setError('Failed to fetch charities.');
-      })
-      .finally(() => setLoading(false));
-  }, [accessToken]);
+    fetchApprovedCharities();
+  }, []);
 
   const filteredCharities = charities.filter((charity) =>
     charity.charity_name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -48,7 +46,7 @@ const CharityList = () => {
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <div className="flex-1 bg-white">
+    <div className="flex-1 bg-gray-100">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Explore our Charities</h1>
@@ -79,9 +77,9 @@ const CharityList = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredCharities.map((charity) => (
-              <div key={charity.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div key={charity.id} className="bg-pink-100 rounded-lg shadow-md overflow-hidden">
                 <img
-                  src={charity.image || 'https://via.placeholder.com/300'}
+                  src={charity.image || "https://via.placeholder.com/300"}
                   alt={charity.charity_name}
                   className="w-full h-48 object-cover"
                 />
@@ -109,3 +107,4 @@ const CharityList = () => {
 };
 
 export default CharityList;
+

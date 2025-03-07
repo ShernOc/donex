@@ -109,6 +109,7 @@
 #         ]
 #     })
 
+
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import Charity, db, User
@@ -163,11 +164,10 @@ def get_charities():
 
 # Route to get pending charities for admin review
 @target_bp.route("/charities/pending", methods=["GET"])
-@jwt_required()
 def get_pending_charities():
     status = request.args.get("status")
-    if status =="pending":
-        pending_charities = Charity.query.filter_by(status=True).all()
+    if status=="pending":
+        pending_charities = Charity.query.filter(Charity.status=="pending").all()
     else: 
         pending_charities = Charity.query.all()
    
@@ -209,7 +209,7 @@ def get_charity_status(charity_id):
 def get_approved_charities():
     status = request.args.get("status")
     if status=="approved":
-        approved_charities = Charity.query.filter_by(status=False).all()
+        approved_charities = Charity.query.filter(Charity.status=="approved").all()
     else: 
         approved_charities = Charity.query.all()
         
